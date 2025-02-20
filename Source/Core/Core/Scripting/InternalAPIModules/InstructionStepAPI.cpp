@@ -74,7 +74,7 @@ ArgHolder* SingleStep(ScriptContext* current_script, std::vector<ArgHolder*>* ar
     return CreateNotInBreakpointError("SingleStep()");
   Core::CPUThreadGuard guard(Core::System::GetInstance());
   PowerPC::PowerPCManager& power_pc = Core::System::GetInstance().GetPowerPC();
-  power_pc.GetBreakPoints().ClearAllTemporary();
+  power_pc.GetBreakPoints().ClearTemporary();
 
   PowerPC::CoreMode old_mode = power_pc.GetMode();
   power_pc.SetMode(PowerPC::CoreMode::Interpreter);
@@ -89,9 +89,10 @@ ArgHolder* StepOver(ScriptContext* current_script, std::vector<ArgHolder*>* args
     return CreateNotInBreakpointError("StepOver()");
   Core::CPUThreadGuard guard(Core::System::GetInstance());
   PowerPC::PowerPCManager& power_pc = Core::System::GetInstance().GetPowerPC();
-  power_pc.GetBreakPoints().ClearAllTemporary();
+  Movie::MovieManager& movie_manager = Core::System::GetInstance().GetMovie();
+  power_pc.GetBreakPoints().ClearTemporary();
 
-  int starting_frame_number = Movie::GetCurrentFrame();
+  int starting_frame_number = movie_manager.GetCurrentFrame();
   u32 pc_value_to_end_on = power_pc.GetPPCState().pc + 4;
   PowerPC::CoreMode old_mode = power_pc.GetMode();
   power_pc.SetMode(PowerPC::CoreMode::Interpreter);
@@ -99,7 +100,7 @@ ArgHolder* StepOver(ScriptContext* current_script, std::vector<ArgHolder*>* args
   // Step until we hit the instruction after the one we started on, or until we hit the next frame
   // (whichever one happens first)
   while (power_pc.GetPPCState().pc != pc_value_to_end_on &&
-         Movie::GetCurrentFrame() == starting_frame_number)
+         movie_manager.GetCurrentFrame() == starting_frame_number)
     power_pc.SingleStep();
 
   power_pc.SetMode(old_mode);
@@ -130,14 +131,15 @@ ArgHolder* StepOut(ScriptContext* current_script, std::vector<ArgHolder*>* args_
     return CreateNotInBreakpointError("StepOut()");
   Core::CPUThreadGuard guard(Core::System::GetInstance());
   PowerPC::PowerPCManager& power_pc = Core::System::GetInstance().GetPowerPC();
-  power_pc.GetBreakPoints().ClearAllTemporary();
+  Movie::MovieManager& movie_manager = Core::System::GetInstance().GetMovie();
+  power_pc.GetBreakPoints().ClearTemporary();
 
   int function_call_depth_from_start = 0;
-  int starting_frame_number = Movie::GetCurrentFrame();
+  int starting_frame_number = movie_manager.GetCurrentFrame();
   PowerPC::CoreMode old_mode = power_pc.GetMode();
   power_pc.SetMode(PowerPC::CoreMode::Interpreter);
 
-  while (function_call_depth_from_start >= 0 && Movie::GetCurrentFrame() == starting_frame_number)
+  while (function_call_depth_from_start >= 0 && movie_manager.GetCurrentFrame() == starting_frame_number)
   {
     UGeckoInstruction current_instruction =
         PowerPC::MMU::HostRead_Instruction(guard, power_pc.GetPPCState().pc);

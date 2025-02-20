@@ -64,60 +64,65 @@ FunctionMetadata GetFunctionMetadataForVersion(const std::string& api_version,
                                deprecated_functions_map);
 }
 
-ArgHolder* IsRecordingInput(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
+static Movie::MovieManager& GetMovieManager()
 {
-  return CreateBoolArgHolder(Movie::IsRecordingInput());
+  return Core::System::GetInstance().GetMovie();
+}
+
+ArgHolder* IsRecordingInput(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
+  {
+  return CreateBoolArgHolder(GetMovieManager().IsRecordingInput());
 }
 
 ArgHolder* IsRecordingInputFromSaveState(ScriptContext* current_script,
                                          std::vector<ArgHolder*>* args_list)
 {
-  return CreateBoolArgHolder(Movie::IsRecordingInputFromSaveState());
+  return CreateBoolArgHolder(GetMovieManager().IsRecordingInputFromSaveState());
 }
 
 ArgHolder* IsPlayingInput(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateBoolArgHolder(Movie::IsPlayingInput());
+  return CreateBoolArgHolder(GetMovieManager().IsPlayingInput());
 }
 
 ArgHolder* IsMovieActive(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateBoolArgHolder(Movie::IsMovieActive());
+  return CreateBoolArgHolder(GetMovieManager().IsMovieActive());
 }
 
 ArgHolder* GetCurrentFrame(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetCurrentFrame());
+  return CreateS64ArgHolder(GetMovieManager().GetCurrentFrame());
 }
 
 ArgHolder* GetMovieLength(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetTotalFrames());
+  return CreateS64ArgHolder(GetMovieManager().GetTotalFrames());
 }
 
 ArgHolder* GetRerecordCount(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetRerecordCount());
+  return CreateS64ArgHolder(GetMovieManager().GetRerecordCount());
 }
 
 ArgHolder* GetCurrentInputCount(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetCurrentInputCount());
+  return CreateS64ArgHolder(GetMovieManager().GetCurrentInputCount());
 }
 
 ArgHolder* GetTotalInputCount(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetTotalInputCount());
+  return CreateS64ArgHolder(GetMovieManager().GetTotalInputCount());
 }
 
 ArgHolder* GetCurrentLagCount(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetCurrentLagCount());
+  return CreateS64ArgHolder(GetMovieManager().GetCurrentLagCount());
 }
 
 ArgHolder* GetTotalLagCount(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  return CreateS64ArgHolder(Movie::GetTotalLagCount());
+  return CreateS64ArgHolder(GetMovieManager().GetTotalLagCount());
 }
 
 ArgHolder* GetRAMSize(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)

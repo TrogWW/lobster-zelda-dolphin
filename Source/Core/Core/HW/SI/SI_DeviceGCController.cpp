@@ -270,7 +270,7 @@ GCPadStatus CSIDevice_GCController::GetPadStatus()
   if (!NetPlay::IsNetPlayRunning())
   {
     pad_status = Pad::GetStatus(m_device_number);
-    if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() && !Movie::IsPlayingInput())
+    if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() && !m_system.GetMovie().IsPlayingInput())
     {
       Scripting::OnGCControllerPolledCallbackAPI::current_controller_number_polled =
           m_device_number;

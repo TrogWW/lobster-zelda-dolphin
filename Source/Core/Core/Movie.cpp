@@ -345,9 +345,9 @@ u64 MovieManager::GetCurrentLagCount() const
   return m_current_lag_count;
 }
 
-u32 GetRerecordCount()
+u32 MovieManager::GetRerecordCount() const
 {
-  return s_rerecords;
+  return m_rerecords;
 }
 
 u64 MovieManager::GetTotalLagCount() const
@@ -393,9 +393,9 @@ bool MovieManager::IsUsingBongo(int controller) const
   return ((m_bongos & (1 << controller)) != 0);
 }
 
-bool IsUsingGCController(int controller)
+bool MovieManager::IsUsingGCController(int controller) const
 {
-  return s_controllers[controller] == ControllerType::GC;
+  return m_controllers[controller] == ControllerType::GC;
 }
 
 bool MovieManager::IsUsingGBA(int controller) const
@@ -1220,12 +1220,12 @@ void MovieManager::PlayController(GCPadStatus* PadStatus, int controllerID)
     Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
         [controllerID] = false;
     memcpy(&Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[controllerID],
-           &s_temp_input[s_currentByte], sizeof(ControllerState));
+           &m_temp_input[m_current_byte], sizeof(ControllerState));
     Scripting::ScriptUtilities::RunOnGCInputPolledCallbacks();
     if (Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
             [controllerID])
     {
-      memcpy(&s_temp_input[s_currentByte],
+      memcpy(&m_temp_input[m_current_byte],
              &Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[controllerID],
              sizeof(ControllerState));
     }

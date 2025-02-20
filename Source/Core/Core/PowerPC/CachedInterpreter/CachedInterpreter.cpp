@@ -24,6 +24,7 @@
 #include "Core/PowerPC/Jit64Common/Jit64Constants.h"
 #include "Core/PowerPC/PPCAnalyst.h"
 #include "Core/PowerPC/PowerPC.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 
 CachedInterpreter::CachedInterpreter(Core::System& system) : JitBase(system), m_block_cache(*this)

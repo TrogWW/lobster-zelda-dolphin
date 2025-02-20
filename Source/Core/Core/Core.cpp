@@ -892,8 +892,8 @@ void Callback_NewField(Core::System& system)
   if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
   {
     Core::QueueHostJob(
-        [] {
-          Core::RunOnCPUThread(
+        [](Core::System& system) {
+          Core::RunOnCPUThread(system,
               [] {
                 Scripting::ScriptUtilities::ProcessScriptQueueEvents();
                 if (!Scripting::ScriptUtilities::StartScripts())

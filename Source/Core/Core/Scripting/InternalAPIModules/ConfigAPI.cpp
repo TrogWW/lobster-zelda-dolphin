@@ -281,9 +281,12 @@ static std::map<Config::ValueType, std::map<std::string, int>> map_of_enum_type_
 
         {Config::ValueType::ASPECT_MODE,
          {{"AUTO", (int)AspectMode::Auto},
-          {"ANALOGWIDE", (int)AspectMode::AnalogWide},
-          {"ANALOG", (int)AspectMode::Analog},
-          {"STRETCH", (int)AspectMode::Stretch}}},
+          {"FORCEWIDE", (int)AspectMode::ForceWide},
+          {"FORCESTANDARD", (int)AspectMode::ForceStandard},
+          {"STRETCH", (int)AspectMode::Stretch},
+          {"CUSTOM", (int)AspectMode::Custom},
+          {"CUSTOMSTRETCH", (int)AspectMode::CustomStretch},
+          {"RAW", (int)AspectMode::Raw}}},
 
         {Config::ValueType::SHADER_COMPILATION_MODE,
          {{"SYNCHRONOUS", (int)ShaderCompilationMode::Synchronous},
@@ -448,8 +451,6 @@ std::optional<Config::System> ParseSystem(const std::string& system_name)
     return Config::System::GFX;
   else if (uppercase_system_name == "LOGGER")
     return Config::System::Logger;
-  else if (uppercase_system_name == "DEBUGGER")
-    return Config::System::Debugger;
   else if (uppercase_system_name == "DUALSHOCKUDPCLIENT")
     return Config::System::DualShockUDPClient;
   else if (uppercase_system_name == "FREELOOK")

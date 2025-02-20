@@ -310,7 +310,7 @@ typedef void (*exported_dll_func_type)(void*);
 
 static void queuePanicAlertEvent(const std::string& error_msg)
 {
-  Core::QueueHostJob([error_msg] { PanicAlertFmt("{}", error_msg); }, true);
+  Core::QueueHostJob([error_msg](Core::System& system) { PanicAlertFmt("{}", error_msg); }, true);
 }
 
 bool callSpecifiedDLLInitFunction(Common::DynamicLibrary* dynamic_lib, std::string file_name,

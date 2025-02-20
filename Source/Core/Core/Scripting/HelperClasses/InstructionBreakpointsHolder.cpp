@@ -16,7 +16,7 @@ InstructionBreakpointsHolder::~InstructionBreakpointsHolder()
 void InstructionBreakpointsHolder::AddBreakpoint(unsigned int addr)
 {
   if (!this->ContainsBreakpoint(addr))
-    Core::System::GetInstance().GetPowerPC().GetBreakPoints().Add(addr, false, true, false,
+    Core::System::GetInstance().GetPowerPC().GetBreakPoints().Add(addr, true, false,
                                                                   std::nullopt);
 
   breakpoint_addresses.push_back(

@@ -4,6 +4,7 @@
 #include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/HelperClasses/FunctionMetadata.h"
 #include "Core/Scripting/HelperClasses/VersionResolver.h"
+#include "Core/System.h"
 
 namespace Scripting::GameCubeControllerApi
 {
@@ -59,7 +60,7 @@ ArgHolder* IsGcControllerInPort(ScriptContext* current_script, std::vector<ArgHo
   if (controller_port_number < 1 || controller_port_number > 4)
     return CreateErrorStringArgHolder("controller port number was outside the valid range of 1-4");
 
-  return CreateBoolArgHolder(Movie::IsUsingGCController(controller_port_number - 1));
+  return CreateBoolArgHolder(Core::System::GetInstance().GetMovie().IsUsingGCController(controller_port_number - 1));
 }
 
 ArgHolder* IsUsingPort(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
@@ -68,7 +69,8 @@ ArgHolder* IsUsingPort(ScriptContext* current_script, std::vector<ArgHolder*>* a
   if (controller_port_number < 1 || controller_port_number > 4)
     return CreateErrorStringArgHolder("controller port number was outside the valid range of 1-4");
 
-  return CreateBoolArgHolder(Movie::IsUsingPad(controller_port_number - 1));
+  return CreateBoolArgHolder(
+      Core::System::GetInstance().GetMovie().IsUsingPad(controller_port_number - 1));
 }
 
 }  // namespace Scripting::GameCubeControllerApi
