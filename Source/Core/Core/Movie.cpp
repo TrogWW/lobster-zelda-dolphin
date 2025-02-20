@@ -65,6 +65,10 @@
 #include "Core/IOS/USB/Bluetooth/BTEmu.h"
 #include "Core/IOS/USB/Bluetooth/WiimoteDevice.h"
 #include "Core/NetPlayProto.h"
+#include "Core/Scripting/CoreScriptContextFiles/Enums/GCButtonNameEnum.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnGCControllerPolledCallbackAPI.h"
+#include "Core/Scripting/InternalAPIModules/GameCubeControllerAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/State.h"
 #include "Core/System.h"
 #include "Core/WiiUtils.h"
@@ -341,6 +345,11 @@ u64 MovieManager::GetCurrentLagCount() const
   return m_current_lag_count;
 }
 
+u32 GetRerecordCount()
+{
+  return s_rerecords;
+}
+
 u64 MovieManager::GetTotalLagCount() const
 {
   return m_total_lag_count;
@@ -382,6 +391,11 @@ bool MovieManager::IsUsingPad(int controller) const
 bool MovieManager::IsUsingBongo(int controller) const
 {
   return ((m_bongos & (1 << controller)) != 0);
+}
+
+bool IsUsingGCController(int controller)
+{
+  return s_controllers[controller] == ControllerType::GC;
 }
 
 bool MovieManager::IsUsingGBA(int controller) const
@@ -623,6 +637,8 @@ static std::string Analog1DToString(u32 v, const std::string& prefix, u32 range 
 // NOTE: CPU Thread
 static std::string GenerateInputDisplayString(ControllerState padState, int controllerID)
 {
+  Scripting::GameCubeControllerApi::controller_inputs_on_last_frame[controllerID] = padState;
+
   std::string display_str = fmt::format("P{}:", controllerID + 1);
 
   if (padState.is_connected)
@@ -1198,6 +1214,24 @@ void MovieManager::PlayController(GCPadStatus* PadStatus, int controllerID)
     return;
   }
 
+  if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+  {
+    Scripting::OnGCControllerPolledCallbackAPI::current_controller_number_polled = controllerID;
+    Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
+        [controllerID] = false;
+    memcpy(&Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[controllerID],
+           &s_temp_input[s_currentByte], sizeof(ControllerState));
+    Scripting::ScriptUtilities::RunOnGCInputPolledCallbacks();
+    if (Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
+            [controllerID])
+    {
+      memcpy(&s_temp_input[s_currentByte],
+             &Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[controllerID],
+             sizeof(ControllerState));
+    }
+    Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+  }
+
   memcpy(&m_pad_state, &m_temp_input[m_current_byte], sizeof(ControllerState));
   m_current_byte += sizeof(ControllerState);
 
@@ -1287,6 +1321,12 @@ bool MovieManager::PlayWiimote(int wiimote, WiimoteCommon::DataReportBuilder& rp
                    m_temp_input.size());
     EndPlayInput(!m_read_only);
     return false;
+  }
+
+  if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+  {
+    Scripting::ScriptUtilities::RunOnWiiInputPolledCallbacks();
+    Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
   }
 
   const u8 size = rpt.GetDataSize();

@@ -18,6 +18,10 @@
 #include "Core/Host.h"
 #include "Core/PowerPC/GDBStub.h"
 #include "Core/PowerPC/PowerPC.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnInstructionHitCallbackAPI.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressReadFromCallbackAPI.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressWrittenToCallbackAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 #include "Core/TimePlayed.h"
 #include "VideoCommon/Fifo.h"
@@ -118,6 +122,7 @@ void CPUManager::Run()
   }
 
   std::unique_lock state_lock(m_state_change_lock);
+  bool hit_breakpoint = false;
   while (m_state != State::PowerDown)
   {
     m_state_cpu_cvar.wait(state_lock, [this] { return !m_state_paused_and_locked; });
@@ -139,6 +144,15 @@ void CPUManager::Run()
       if (power_pc.GetBreakPoints().IsAddressBreakPoint(power_pc.GetPPCState().pc) ||
           power_pc.GetMemChecks().HasAny())
       {
+        const TBreakPoint* instr_br =
+            power_pc.GetBreakPoints().GetBreakpoint(power_pc.GetPPCState().pc);
+        if (instr_br != nullptr && instr_br->is_enabled && instr_br->break_on_hit &&
+            EvaluateCondition(m_system, instr_br->condition))
+        {
+          Scripting::OnInstructionHitCallbackAPI::in_instruction_hit_breakpoint = true;
+          Scripting::OnInstructionHitCallbackAPI::instruction_address_for_current_callback =
+              power_pc.GetPPCState().pc;
+        }
         m_state = State::Stepping;
         PowerPC::CoreMode old_mode = power_pc.GetMode();
         power_pc.SetMode(PowerPC::CoreMode::Interpreter);
@@ -149,6 +163,46 @@ void CPUManager::Run()
 
       // Enter a fast runloop
       power_pc.RunLoop();
+
+      hit_breakpoint = false;
+      if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() &&
+          Scripting::OnInstructionHitCallbackAPI::in_instruction_hit_breakpoint)
+      {
+        Scripting::ScriptUtilities::RunOnInstructionHitCallbacks(
+            Scripting::OnInstructionHitCallbackAPI::instruction_address_for_current_callback);
+        Scripting::OnInstructionHitCallbackAPI::in_instruction_hit_breakpoint = false;
+        hit_breakpoint = true;
+        Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+      }
+
+      if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() &&
+          Scripting::OnMemoryAddressReadFromCallbackAPI::in_memory_address_read_from_breakpoint)
+      {
+        Scripting::ScriptUtilities::RunOnMemoryAddressReadFromCallbacks(
+            Scripting::OnMemoryAddressReadFromCallbackAPI::
+                memory_address_read_from_for_current_callback);
+        Scripting::OnMemoryAddressReadFromCallbackAPI::in_memory_address_read_from_breakpoint =
+            false;
+        hit_breakpoint = true;
+        Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+      }
+
+      if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() &&
+          Scripting::OnMemoryAddressWrittenToCallbackAPI::in_memory_address_written_to_breakpoint)
+      {
+        Scripting::ScriptUtilities::RunOnMemoryAddressWrittenToCallbacks(
+            Scripting::OnMemoryAddressWrittenToCallbackAPI::
+                memory_address_written_to_for_current_callback,
+            Scripting::OnMemoryAddressWrittenToCallbackAPI::
+                value_written_to_memory_address_for_current_callback);
+        Scripting::OnMemoryAddressWrittenToCallbackAPI::in_memory_address_written_to_breakpoint =
+            false;
+        hit_breakpoint = true;
+        Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+      }
+
+      if (hit_breakpoint)
+        SetStateLocked(CPU::State::Running);
 
       state_lock.lock();
       m_state_cpu_thread_active = false;

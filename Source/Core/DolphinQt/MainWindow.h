@@ -45,6 +45,7 @@ class NetPlaySetupDialog;
 class NetworkWidget;
 class RegisterWidget;
 class RenderWidget;
+class ScriptWindow;
 class SearchBar;
 class SettingsWindow;
 class SkylanderPortalWindow;
@@ -174,6 +175,7 @@ private:
   void ShowSkylanderPortal();
   void ShowInfinityBase();
   void ShowMemcardManager();
+  void ShowScriptManager();
   void ShowResourcePackManager();
   void ShowCheatsManager();
   void ShowRiivolutionBootWidget(const UICommon::GameFile& game);
@@ -275,4 +277,5 @@ private:
   WatchWidget* m_watch_widget;
   CheatsManager* m_cheats_manager;
   QByteArray m_render_widget_geometry;
+  ScriptWindow* m_script_manager;
 };

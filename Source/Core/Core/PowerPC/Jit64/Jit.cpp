@@ -46,6 +46,7 @@
 #include "Core/PowerPC/MMU.h"
 #include "Core/PowerPC/PPCAnalyst.h"
 #include "Core/PowerPC/PowerPC.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 
 using namespace Gen;
@@ -767,7 +768,7 @@ void Jit64::Jit(u32 em_address, bool clear_cache_and_retry_on_failure)
 
   std::size_t block_size = m_code_buffer.size();
 
-  if (IsDebuggingEnabled())
+  if (m_enable_debugging || Scripting::ScriptUtilities::IsScriptingCoreInitialized())
   {
     // We can link blocks as long as we are not single stepping
     EnableBlockLink();
@@ -1034,7 +1035,7 @@ bool Jit64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
 
     if (op.skip)
     {
-      if (IsDebuggingEnabled())
+      if (m_enable_debugging || Scripting::ScriptUtilities::IsScriptingCoreInitialized())
       {
         // The only thing that currently sets op.skip is the BLR following optimization.
         // If any non-branch instruction starts setting that too, this will need to be changed.
@@ -1047,8 +1048,8 @@ bool Jit64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
     {
       auto& cpu = m_system.GetCPU();
       auto& power_pc = m_system.GetPowerPC();
-      if (IsDebuggingEnabled() && power_pc.GetBreakPoints().IsAddressBreakPoint(op.address) &&
-          !cpu.IsStepping())
+      if ((Scripting::ScriptUtilities::IsScriptingCoreInitialized() || m_enable_debugging) &&
+          power_pc.GetBreakPoints().IsAddressBreakPoint(op.address) && !cpu.IsStepping())
       {
         gpr.Flush();
         fpr.Flush();

@@ -23,6 +23,7 @@
 #include "Core/Core.h"
 #include "Core/HW/Wiimote.h"
 #include "Core/Movie.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 
 #include "Core/HW/WiimoteCommon/WiimoteConstants.h"
@@ -615,6 +616,11 @@ void Wiimote::SendDataReport(const DesiredWiimoteState& target_state)
   }
   else
   {
+    if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+    {
+      Scripting::ScriptUtilities::RunOnWiiInputPolledCallbacks();
+      Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+    }
     // Core buttons:
     if (rpt_builder.HasCore())
     {

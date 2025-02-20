@@ -45,6 +45,10 @@
 #include "Core/PowerPC/GDBStub.h"
 #include "Core/PowerPC/JitInterface.h"
 #include "Core/PowerPC/PowerPC.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnInstructionHitCallbackAPI.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressReadFromCallbackAPI.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressWrittenToCallbackAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 
 #include "VideoCommon/VideoBackendBase.h"
@@ -554,6 +558,28 @@ void MMU::Memcheck(u32 address, u64 var, bool write, size_t size)
   {
     // Disable when stepping so that resume works.
     return;
+  }
+
+    if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() && mc->is_enabled &&
+      mc->break_on_hit)
+  {
+    if (write && mc->is_break_on_write)
+    {
+      Scripting::OnMemoryAddressWrittenToCallbackAPI::in_memory_address_written_to_breakpoint =
+          true;
+      Scripting::OnMemoryAddressWrittenToCallbackAPI::
+          memory_address_written_to_for_current_callback = address;
+      Scripting::OnMemoryAddressWrittenToCallbackAPI::
+          value_written_to_memory_address_for_current_callback = var;
+      Scripting::OnMemoryAddressWrittenToCallbackAPI::write_size = static_cast<u32>(size);
+    }
+    if ((!write) && mc->is_break_on_read)
+    {
+      Scripting::OnMemoryAddressReadFromCallbackAPI::in_memory_address_read_from_breakpoint = true;
+      Scripting::OnMemoryAddressReadFromCallbackAPI::memory_address_read_from_for_current_callback =
+          address;
+      Scripting::OnMemoryAddressReadFromCallbackAPI::read_size = static_cast<u32>(size);
+    }
   }
 
   mc->num_hits++;

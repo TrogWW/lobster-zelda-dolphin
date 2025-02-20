@@ -19,6 +19,8 @@
 #include "Core/HW/SystemTimers.h"
 #include "Core/Movie.h"
 #include "Core/NetPlayProto.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnGCControllerPolledCallbackAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 #include "InputCommon/GCPadStatus.h"
 
@@ -120,6 +122,122 @@ int CSIDevice_GCController::RunBuffer(u8* buffer, int request_length)
   return 0;
 }
 
+void CopyControllerStateToGCPadStatus(Movie::ControllerState controller_state,
+                                      GCPadStatus& gc_pad_status)
+{
+  gc_pad_status.button |= PAD_USE_ORIGIN;
+
+  if (controller_state.A)
+  {
+    gc_pad_status.button |= PAD_BUTTON_A;
+    gc_pad_status.analogA = 0xFF;
+  }
+  else
+  {
+    gc_pad_status.button &= ~PAD_BUTTON_A;
+    gc_pad_status.analogA = 0;
+  }
+
+  if (controller_state.B)
+  {
+    gc_pad_status.button |= PAD_BUTTON_B;
+    gc_pad_status.analogB = 0xFF;
+  }
+  else
+  {
+    gc_pad_status.button &= ~PAD_BUTTON_B;
+    gc_pad_status.analogB = 0;
+  }
+
+  if (controller_state.X)
+    gc_pad_status.button |= PAD_BUTTON_X;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_X;
+
+  if (controller_state.Y)
+    gc_pad_status.button |= PAD_BUTTON_Y;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_Y;
+
+  if (controller_state.Z)
+    gc_pad_status.button |= PAD_TRIGGER_Z;
+  else
+    gc_pad_status.button &= ~PAD_TRIGGER_Z;
+
+  if (controller_state.Start)
+    gc_pad_status.button |= PAD_BUTTON_START;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_START;
+
+  if (controller_state.DPadUp)
+    gc_pad_status.button |= PAD_BUTTON_UP;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_UP;
+
+  if (controller_state.DPadDown)
+    gc_pad_status.button |= PAD_BUTTON_DOWN;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_DOWN;
+
+  if (controller_state.DPadLeft)
+    gc_pad_status.button |= PAD_BUTTON_LEFT;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_LEFT;
+
+  if (controller_state.DPadRight)
+    gc_pad_status.button |= PAD_BUTTON_RIGHT;
+  else
+    gc_pad_status.button &= ~PAD_BUTTON_RIGHT;
+
+  if (controller_state.L)
+    gc_pad_status.button |= PAD_TRIGGER_L;
+  else
+    gc_pad_status.button &= ~PAD_TRIGGER_L;
+
+  if (controller_state.R)
+    gc_pad_status.button |= PAD_TRIGGER_R;
+  else
+    gc_pad_status.button &= ~PAD_TRIGGER_R;
+
+  gc_pad_status.triggerLeft = controller_state.TriggerL;
+  gc_pad_status.triggerRight = controller_state.TriggerR;
+  gc_pad_status.stickX = controller_state.AnalogStickX;
+  gc_pad_status.stickY = controller_state.AnalogStickY;
+  gc_pad_status.substickX = controller_state.CStickX;
+  gc_pad_status.substickY = controller_state.CStickY;
+}
+
+void CopyGCPadStatusToControllerState(GCPadStatus gc_pad_status,
+                                      Movie::ControllerState& controller_state)
+{
+  controller_state.A = ((gc_pad_status.button & PAD_BUTTON_A) != 0);
+  controller_state.B = ((gc_pad_status.button & PAD_BUTTON_B) != 0);
+  controller_state.X = ((gc_pad_status.button & PAD_BUTTON_X) != 0);
+  controller_state.Y = ((gc_pad_status.button & PAD_BUTTON_Y) != 0);
+  controller_state.Z = ((gc_pad_status.button & PAD_TRIGGER_Z) != 0);
+  controller_state.Start = ((gc_pad_status.button & PAD_BUTTON_START) != 0);
+
+  controller_state.DPadUp = ((gc_pad_status.button & PAD_BUTTON_UP) != 0);
+  controller_state.DPadDown = ((gc_pad_status.button & PAD_BUTTON_DOWN) != 0);
+  controller_state.DPadLeft = ((gc_pad_status.button & PAD_BUTTON_LEFT) != 0);
+  controller_state.DPadRight = ((gc_pad_status.button & PAD_BUTTON_RIGHT) != 0);
+
+  controller_state.L = ((gc_pad_status.button & PAD_TRIGGER_L) != 0);
+  controller_state.R = ((gc_pad_status.button & PAD_TRIGGER_R) != 0);
+  controller_state.TriggerL = gc_pad_status.triggerLeft;
+  controller_state.TriggerR = gc_pad_status.triggerRight;
+
+  controller_state.AnalogStickX = gc_pad_status.stickX;
+  controller_state.AnalogStickY = gc_pad_status.stickY;
+
+  controller_state.CStickX = gc_pad_status.substickX;
+  controller_state.CStickY = gc_pad_status.substickY;
+
+  controller_state.is_connected = gc_pad_status.isConnected;
+
+  controller_state.get_origin = (gc_pad_status.button & PAD_GET_ORIGIN) != 0;
+}
+
 void CSIDevice_GCController::HandleMoviePadStatus(Movie::MovieManager& movie, int device_number,
                                                   GCPadStatus* pad_status)
 {
@@ -152,6 +270,29 @@ GCPadStatus CSIDevice_GCController::GetPadStatus()
   if (!NetPlay::IsNetPlayRunning())
   {
     pad_status = Pad::GetStatus(m_device_number);
+    if (Scripting::ScriptUtilities::IsScriptingCoreInitialized() && !Movie::IsPlayingInput())
+    {
+      Scripting::OnGCControllerPolledCallbackAPI::current_controller_number_polled =
+          m_device_number;
+      Movie::ControllerState temp_controller_state;
+      CopyGCPadStatusToControllerState(pad_status, temp_controller_state);
+      memcpy(&Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[m_device_number],
+             &temp_controller_state, sizeof(Movie::ControllerState));
+      Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
+          [m_device_number] = false;
+      Scripting::ScriptUtilities::RunOnGCInputPolledCallbacks();
+      if (Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
+              [m_device_number])
+      {
+        memset(&pad_status, 0, sizeof(GCPadStatus));
+        temp_controller_state =
+            Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[m_device_number];
+        pad_status.isConnected = temp_controller_state.is_connected;
+        pad_status.button |= PAD_USE_ORIGIN;
+        CopyControllerStateToGCPadStatus(temp_controller_state, pad_status);
+      }
+      Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+    }
   }
 
   HandleMoviePadStatus(m_system.GetMovie(), m_device_number, &pad_status);

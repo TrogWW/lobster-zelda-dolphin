@@ -23,11 +23,15 @@
 #include "Common/Config/Config.h"
 #include "Common/MsgHandler.h"
 #include "Common/ScopeGuard.h"
+#include "Common/StringUtil.h"
 
 #include "Core/Boot/Boot.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/Core.h"
+#include "Core/CoreTiming.h"
 #include "Core/DolphinAnalytics.h"
+#include "Core/Scripting/ScriptUtilities.h"
+#include "Core/System.h"
 #include "Core/System.h"
 
 #include "DolphinQt/Host.h"
@@ -114,6 +118,20 @@ static bool QtMsgAlertHandler(const char* caption, const char* text, bool yes_no
 #define main app_main
 #endif
 
+static void (*script_print_function)(void*, const char*) = [](void*, const char* val) {
+#ifdef _WIN32
+  ::OutputDebugStringW(UTF8ToWString(val).c_str());
+#endif
+};
+
+static CoreTiming::EventType* stop_script_from_callback_main_event = nullptr;
+
+static void (*script_end_function)(void*, int) = [](void* base_script_context_ptr, int identifier) {
+  Scripting::ScriptUtilities::SetIsScriptActiveToFalse(base_script_context_ptr);
+  Core::System::GetInstance().GetCoreTiming().ScheduleEvent(
+      -1, stop_script_from_callback_main_event, 0, CoreTiming::FromThread::ANY);
+};
+
 int main(int argc, char* argv[])
 {
 #ifdef _WIN32
@@ -186,6 +204,23 @@ int main(int argc, char* argv[])
   if (options.is_set("save_state"))
   {
     save_state_path = static_cast<const char*>(options.get("save_state"));
+  }
+
+    std::optional<std::string> starting_script_path;
+  if (options.is_set("script"))
+  {
+    starting_script_path = static_cast<const char*>(options.get("script"));
+    if (starting_script_path.has_value())
+    {
+      stop_script_from_callback_main_event =
+          Core::System::GetInstance().GetCoreTiming().RegisterEvent(
+              "SCRIPT_STOP_FROM_MAIN_FUNC", [](Core::System& system_, u64, s64) {
+                Scripting::ScriptUtilities::PushScriptStopQueueEvent(
+                    ScriptQueueEventTypes::StopScriptFromScriptEndCallback, -1);
+              });
+      Scripting::ScriptUtilities::PushScriptCreateQueueEvent(
+          -1, starting_script_path.value().c_str(), script_print_function, script_end_function);
+    }
   }
 
   std::unique_ptr<BootParameters> boot;

@@ -264,6 +264,8 @@ void MenuBar::AddToolsMenu()
 {
   QMenu* tools_menu = addMenu(tr("&Tools"));
 
+  tools_menu->addAction(tr("&Script Manager"), this, &MenuBar::ShowScriptManager);
+
   tools_menu->addAction(tr("&Resource Pack Manager"), this,
                         [this] { emit ShowResourcePackManager(); });
 
