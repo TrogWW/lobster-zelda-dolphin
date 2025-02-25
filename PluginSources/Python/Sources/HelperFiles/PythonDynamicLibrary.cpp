@@ -295,7 +295,7 @@ namespace PythonDynamicLibrary
           const std::string inner_filename = entry.path().filename().string();
           if (!entry.is_directory() && stringIsPathToPythonLib(inner_filename))
           {
-            path_to_lib = inner_filename;
+            path_to_lib = path_to_search + inner_filename;
             return;
           }
         }
