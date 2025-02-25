@@ -496,6 +496,9 @@
     <BinaryFiles Include="$(TargetPath)" />
     <AllInputFiles Include="@(DataSysFiles);@(DataTxtFiles);@(BinaryFiles)" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="Styles\IBMPlexMono-SemiBold.ttf" />
+  </ItemGroup>
   <Target Name="AfterBuild" Inputs="@(AllInputFiles)" Outputs="@(AllInputFiles -> '$(BinaryOutputDir)%(RecursiveDir)%(Filename)%(Extension)')">
     <Message Text="Copying Data directory..." Importance="High" />
     <RemoveDir Directories="$(BinaryOutputDir)Sys" />

@@ -31,6 +31,7 @@
 
 #include <imgui.h>
 #include <implot.h>
+#include <Common/FileUtil.h>
 
 namespace VideoCommon
 {
@@ -75,6 +76,11 @@ bool OnScreenUI::Initialize(u32 width, u32 height, float scale)
     ImGuiIO& io = ImGui::GetIO();
     u8* font_tex_pixels;
     int font_tex_width, font_tex_height;
+
+    std::string font_path =
+        File::GetSysDirectory() + "Resources\\CascadiaMono.ttf";  // IBMPlexMono-SemiBold.ttf";
+    io.Fonts->AddFontFromFileTTF(font_path.c_str(), 20);
+
     io.Fonts->GetTexDataAsRGBA32(&font_tex_pixels, &font_tex_width, &font_tex_height);
 
     TextureConfig font_tex_config(font_tex_width, font_tex_height, 1, 1, 1,
@@ -283,38 +289,47 @@ void OnScreenUI::DrawDebugText()
     ImGui::SetNextWindowSizeConstraints(
         ImVec2(150.0f * m_backbuffer_scale, 20.0f * m_backbuffer_scale),
         ImGui::GetIO().DisplaySize);
-    if (ImGui::Begin("Movie", nullptr, ImGuiWindowFlags_NoFocusOnAppearing))
+
+
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_NoBackground;
+    //window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+    window_flags |= ImGuiWindowFlags_NoFocusOnAppearing;
+    ImVec4 cyan = ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+    if (ImGui::Begin("Movie", nullptr, window_flags))
     {
+
       auto& movie = Core::System::GetInstance().GetMovie();
-      if (movie.IsPlayingInput())
-      {
-        ImGui::Text("Frame: %" PRIu64 " / %" PRIu64, movie.GetCurrentFrame(),
-                    movie.GetTotalFrames());
-        ImGui::Text("Input: %" PRIu64 " / %" PRIu64, movie.GetCurrentInputCount(),
-                    movie.GetTotalInputCount());
-      }
-      else if (Config::Get(Config::MAIN_SHOW_FRAME_COUNT))
-      {
-        ImGui::Text("Frame: %" PRIu64, movie.GetCurrentFrame());
-        if (movie.IsRecordingInput())
-          ImGui::Text("Input: %" PRIu64, movie.GetCurrentInputCount());
-      }
       if (movie.IsRecordingInput())
       {
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "RECORDING");
       }
-      else if (movie.IsPlayingInput())
+      if (movie.IsPlayingInput())
       {
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "PLAYBACK");
+        ImGui::TextColored(cyan, "Frame: %" PRIu64 " / %" PRIu64, movie.GetCurrentFrame(),
+                    movie.GetTotalFrames());
+        ImGui::TextColored(cyan, "Input: %" PRIu64 " / %" PRIu64, movie.GetCurrentInputCount(),
+                    movie.GetTotalInputCount());
       }
+      else if (Config::Get(Config::MAIN_SHOW_FRAME_COUNT))
+      {
+        ImGui::TextColored(cyan, "Frame: %" PRIu64,
+                           movie.GetCurrentFrame());
+        if (movie.IsRecordingInput())
+          ImGui::TextColored(cyan, "Input: %" PRIu64,
+                             movie.GetCurrentInputCount());
+      }
+
       if (Config::Get(Config::MAIN_SHOW_LAG))
-        ImGui::Text("Lag: %" PRIu64 "\n", movie.GetCurrentLagCount());
+        ImGui::TextColored(cyan, "Lag: %" PRIu64 "\n", movie.GetCurrentLagCount());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY))
-        ImGui::TextUnformatted(movie.GetInputDisplay().c_str());
+        ImGui::TextColored(cyan, movie.GetInputDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_RTC))
-        ImGui::TextUnformatted(movie.GetRTCDisplay().c_str());
+        ImGui::TextColored(cyan, movie.GetRTCDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_RERECORD))
-        ImGui::TextUnformatted(movie.GetRerecords().c_str());
+        ImGui::TextColored(cyan, movie.GetRerecords().c_str());
     }
     ImGui::End();
   }
