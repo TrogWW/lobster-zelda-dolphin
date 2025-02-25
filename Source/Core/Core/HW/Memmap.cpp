@@ -532,6 +532,16 @@ u32 MemoryManager::Read_U32(u32 address) const
   CopyFromEmu(&value, address, sizeof(value));
   return Common::swap32(value);
 }
+float MemoryManager::Read_F32(u32 address) const
+{
+  float value = 0.0f;
+  CopyFromEmu(&value, address, sizeof(value));
+  u32 intValue;
+  std::memcpy(&intValue, &value, sizeof(u32));
+  intValue = Common::swap32(intValue);
+  std::memcpy(&value, &intValue, sizeof(float));
+  return value;
+}
 
 u64 MemoryManager::Read_U64(u32 address) const
 {
