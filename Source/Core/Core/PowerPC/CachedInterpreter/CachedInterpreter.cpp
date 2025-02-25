@@ -24,6 +24,7 @@
 #include "Core/PowerPC/Jit64Common/Jit64Constants.h"
 #include "Core/PowerPC/PPCAnalyst.h"
 #include "Core/PowerPC/PowerPC.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 
 CachedInterpreter::CachedInterpreter(Core::System& system) : JitBase(system), m_block_cache(*this)
@@ -361,7 +362,8 @@ bool CachedInterpreter::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
 
     if (!op.skip)
     {
-      if (IsDebuggingEnabled() && !cpu.IsStepping() &&
+      if ((Scripting::ScriptUtilities::IsScriptingCoreInitialized() || m_enable_debugging)
+          &&!cpu.IsStepping() &&
           breakpoints.IsAddressBreakPoint(js.compilerPC))
       {
         Write(CheckBreakpoint, {power_pc, js.compilerPC, js.downcountAmount});

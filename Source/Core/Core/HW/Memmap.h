@@ -89,6 +89,14 @@ public:
   u8* GetL1Cache() { return m_l1_cache; }
   u8*& GetFakeVMEM() { return m_fake_vmem; }
 
+  // These are temporary functions which are only used once in the ReadAllMemoryAsUnsignedBytes()
+  // function in MemoryAPI.cpp. These will be replaced with their respective calls from the above 4
+  // functions once they stop returning their address.
+  u8* getRAM_scriptHelper() { return m_ram; }
+  u8* getEXRAM_scriptHelper() { return m_exram; }
+  u8* getL1Cache_scriptHelper() { return m_l1_cache; }
+  u8* getFakeVMEM_scriptHelper() { return m_fake_vmem; }
+
   MMIO::Mapping* GetMMIOMapping() const { return m_mmio_mapping.get(); }
 
   // Init and Shutdown
@@ -122,6 +130,7 @@ public:
   u8 Read_U8(u32 address) const;
   u16 Read_U16(u32 address) const;
   u32 Read_U32(u32 address) const;
+  float Read_F32(u32 address) const;
   u64 Read_U64(u32 address) const;
   void Write_U8(u8 var, u32 address);
   void Write_U16(u16 var, u32 address);

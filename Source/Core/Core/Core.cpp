@@ -72,6 +72,9 @@
 #include "Core/PowerPC/GDBStub.h"
 #include "Core/PowerPC/JitInterface.h"
 #include "Core/PowerPC/PowerPC.h"
+#include "Core/Scripting/InternalAPIModules/EmuAPI.h"
+#include "Core/Scripting/InternalAPIModules/GameCubeControllerAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/State.h"
 #include "Core/System.h"
 #include "Core/WiiRoot.h"
@@ -886,6 +889,24 @@ void Callback_FramePresented(double actual_emulation_speed)
 // Called from VideoInterface::Update (CPU thread) at emulated field boundaries
 void Callback_NewField(Core::System& system)
 {
+  if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+  {
+    Core::QueueHostJob(
+        [](Core::System& system) {
+          Core::RunOnCPUThread(system,
+              [] {
+                Scripting::ScriptUtilities::ProcessScriptQueueEvents();
+                if (!Scripting::ScriptUtilities::StartScripts())
+                  if (!Scripting::ScriptUtilities::RunOnFrameStartCallbacks())
+                    Scripting::ScriptUtilities::RunGlobalCode();
+
+                Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+              },
+              true);
+        },
+        true);
+  }
+
   if (s_frame_step)
   {
     // To ensure that s_stop_frame_step is up to date, wait for the GPU thread queue to empty,

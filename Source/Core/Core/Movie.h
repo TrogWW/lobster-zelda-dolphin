@@ -182,6 +182,7 @@ public:
   u64 GetCurrentInputCount() const;
   u64 GetTotalInputCount() const;
   u64 GetCurrentLagCount() const;
+  u32 GetRerecordCount() const;
   u64 GetTotalLagCount() const;
 
   void SetClearSave(bool enabled);
@@ -197,6 +198,7 @@ public:
   bool IsUsingPad(int controller) const;
   bool IsUsingWiimote(int wiimote) const;
   bool IsUsingBongo(int controller) const;
+  bool IsUsingGCController(int controller) const;
   bool IsUsingGBA(int controller) const;
   void ChangePads();
   void ChangeWiiPads(bool instantly = false);

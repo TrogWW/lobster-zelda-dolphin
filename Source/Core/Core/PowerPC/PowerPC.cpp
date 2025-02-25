@@ -29,6 +29,10 @@
 #include "Core/PowerPC/JitInterface.h"
 #include "Core/PowerPC/MMU.h"
 #include "Core/PowerPC/PPCSymbolDB.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnInstructionHitCallbackAPI.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressReadFromCallbackAPI.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressWrittenToCallbackAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/System.h"
 
 namespace PowerPC
@@ -654,6 +658,12 @@ bool PowerPCManager::CheckAndHandleBreakPoints()
 {
   if (CheckBreakPoints())
   {
+    if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+    {
+      Scripting::OnInstructionHitCallbackAPI::in_instruction_hit_breakpoint = true;
+      Scripting::OnInstructionHitCallbackAPI::instruction_address_for_current_callback =
+          m_ppc_state.pc;
+    }
     m_system.GetCPU().Break();
     if (GDBStub::IsActive())
       GDBStub::TakeControl();

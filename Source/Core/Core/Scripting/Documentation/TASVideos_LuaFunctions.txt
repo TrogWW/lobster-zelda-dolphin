@@ -1,0 +1,1467 @@
+This page documents the behavior and parameters of Lua functions available for the [Dolphin] emulator.
+
+Note that all builtin Lua classes that come with Dolphin use the colon operator to access member functions. For example, to frame advance, you would write emu:frameAdvance() and __NOT__ emu.frameAdvance()
+Lua scripts execute from top to bottom one time, so to run a script on multiple frames, you need to put your code in a loop like this:
+
+%%SRC_EMBED lua
+require ("emu")
+
+while true do
+	// code that executes once at the start of each frame
+	emu:frameAdvance()
+end
+%%END_EMBED
+
+Alternatively, you could register a callback function which runs at the start of each frame like this:
+
+%%SRC_EMBED lua
+require ("emu")
+
+function callbackFunc()
+	// code that executes once at the start of each frame
+end
+
+funcRef = OnFrameStart:register(callbackFunc) // Store funcRef so that the callback can be unregistered when you want it to stop running at the start of each frame.
+%%END_EMBED
+
+__Types and notation__
+* [[optional]]
+** If the string [[optional]] appears in front of a parameter, that means that the parameter is not required, and will default to None if nothing is included.
+* LuaColorString
+** Can be one of the following 2 String formats:
+** A String which has the format "0XRRGGBBAA", where RR, GG, and BB represent the hex values for red, blue and green in the color respectively, and AA is the hex value of the brightness. For example, "0X00FFFFFF" represents yellow, since it has max blue and max green. Note that this string is case-insensitive.
+** A string which the name of a specifically defined color. The following is a list of all currently defined colors (note that each one is case insensitive). Also, each string has their equivalent representation in the hex format described above specified after them: "BLACK" -> "0X000000ff", "BLUE" -> "0X0000ffff", "BROWN" = "0X5E2605ff", "GOLD" -> "0Xcdad00ff", "GOLDEN" -> "0Xcdad00ff", "GRAY" -> "0X919191ff", "GREY" -> "0X919191ff", "GREEN" -> "0X008b00ff", "LIME" -> "0X00ff00ff", "ORANGE" -> "0Xcd8500ff", "PINK" -> "0Xee6aa7ff", "PURPLE" -> "0X8a2be2ff", "RED" -> "0Xff0000ff", "SILVER" -> "0Xc0c0c0ff", "TURQUOISE" -> "0X00ffffff", "WHITE" -> "0Xffffffff", "YELLOW" -> "0Xffff00ff"
+* DataTypeString
+** A String which is used to specify what Data Type a function should use for a read or write. Each of these strings is case insensitive, and the characters ' ', '_', '-' and the empty string can all be substituted freely with each other in each String. The following is a list of valid names for DataTypeString, with  a definition of each data type appearing on the left side of each line, and the names which refer to the same type appearing on the right side of the line. Note that Lua does not support the Unsigned 64 bit integer type (so Signed 64 bit integers should be used instead).
+** Unsigned Byte: "u8", "unsignedByte", "unsigned8"
+** Unsigned 2-Byte Integer Type: "u16", "unsigned16"
+** Unsigned 4-Byte Integer Type: "u32", "unsigned32", "unsignedInt"
+** Signed Byte: "s8", "signedByte", "signed8"
+** Signed 2-Byte Integer Type: "s16", "signed16"
+** Signed 4-Byte Integer Type: "s32", "signed32", "signedInt"
+** Signed 8-Byte Integer Type: "s64", "signed64", "signedLongLong"
+** 4-Byte Floating Point Type: "float"
+** 8-Byte Floating Point Type: "double"
+* LuaFunction
+** A Lua function. Note that these will always refer to a Lua function which takes 0 arguments as input.
+
+
+Note that all libraries below are listed in alphabetical order, and all functions within each library are also listed in alphabetical order.
+%%TAB bit%%
+
+A library for performing standard bitwise operations. To use these functions, the following line __MUST__ be included at the top of your Lua script:
+
+%%SRC_EMBED lua
+require ("bit")
+%%END_EMBED
+
+__bit:bitwise_and__%%%
+
+* s64 bitwise_and(s64 inputArg1, s64 inputArg2)
+
+* Returns bitwise AND of inputArg1 and inputArg2
+
+* bit:bitwise_and(17, 41) ==> Returns 1
+
+__bit:bitwise_not__%%%
+
+* s64 bitwise_not(s64 inputArg)
+
+* Returns the bitwise NOT of inputArg
+
+* bit:bitwise_not(41) ==> Returns -42
+
+__bit:bitwise_or__%%%
+
+* s64 bitwise_or(s64 inputArg1, s64 inputArg2)
+
+* Returns bitwise OR of inputArg1 and inputArg2
+
+* bit:bitwise_or(17, 41) ==> returns 57
+
+__bit:bitwise_xor__%%%
+
+* s64 bitwise_xor(s64 inputArg1, s64 inputArg2)
+
+* Returns the bitwise XOR of inputArg1 and inputArg2
+
+* bit:bitwise_xor(17, 41) ==> Returns 56
+
+__bit:bit_shift_left__%%%
+
+* s64 bit_shift_left(s64 inputArg1, s64 inputArg2)
+
+* Returns the result of bit-shifting inputArg1 to the left by the number of bits specified by inputArg2
+
+* bit:bit_shift_left(16, 2) ==> Returns 64
+
+__bit:bit_shift_right__%%%
+
+* s64 bit_shift_right(s64 inputArg1, s64 inputArg2)
+
+* Returns the result of bit-shifting inputArg1 to the right by the number of bits specified by inputArg2
+
+* bit:bit_shift_right(16, 2) ==> Returns 4
+
+__bit:logical_and__%%%
+
+* boolean logical_and(boolean inputArg1, boolean inputArg2)
+
+* Returns the logical AND of inputArg1 and inputArg2
+
+* bit:logical_and(true, false) ==> Returns false
+
+__bit:logical_not__%%%
+
+* boolean logical_not(boolean inputArg)
+
+* Returns the logical NOT of inputArg
+
+* bit:logical_not(false) ==> Returns true
+
+__bit:logical_or__%%%
+
+* boolean logical_or(boolean inputArg1, boolean inputArg2)
+
+* Returns the logical OR of inputArg1 and inputArg2
+
+* bit:logical_or(true, false) ==> Returns true
+
+__bit:logical_xor__%%%
+
+* boolean logical_xor(boolean inputArg1, boolean inputArg2)
+
+* Returns the logical XOR of inputArg1 and inputArg2
+
+* bit:logical_xor(true, true) ==> Returns false
+
+%%TAB config%%
+
+A library for getting and setting Dolphin's configuration values. Dolphin's config settings are layered, where a setting in a more specific layer can override the same setting listed in a more general layer (ex. if the setting "emulatorSpeed"-> 4.0 is defined at the LocalGame layer, and "emulatorSpeed" -> 6.0 is defined at the GlobalGame layer, then the value of emulatorSpeed that Dolphin will use when it tries to get the emulatorSpeed setting is 4.0, since LocalGame is less global than GlobalGame.
+
+The functions below provide ways to get the value of settings in a layer, set the value of settings in a layer, and get the overall value of a setting (i.e the value that Dolphin will actually use for the setting - which is the most-specific layer that has the setting defined).
+
+Every config setting has a system name, a section name, and a setting name (the actual name of the setting). The system names are pre-defined, but the user can create arbitrary section and setting names using these functions. Note that all system names, section names, setting names and type names are case-insensitive.
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+
+%%SRC_EMBED lua
+require ("config")
+%%END_EMBED
+
+__config:deleteConfigSettingFromLayer__%%%
+
+* boolean deleteConfigSettingFromLayer(String settingType, String layerName, String systemName, String sectionName, String settingName)
+
+* Deletes the specified config setting from the specified layer. settingType specifies the type of the setting, which can be either "BOOLEAN", "S32", "U32", "FLOAT", "STRING", or one of the enum types (ex. "TriState"). Returns true if this setting was deleted from the specified layer, and false if the setting was not deleted from the layer (which only happens when the setting wasn't in the layer to begin with. Note that the settingType, layerName, systemName, sectionName, and settingName need to all match with a specific setting in order for the setting to be deleted).
+
+* config:deleteConfigSettingFromLayer("FLOAT", "Base", "GFX", "colorProps", "ColorSaturationRate") ==> Deletes the setting from the "Base" layer and returns true if a setting named "ColorSaturationRate" of type float was present in the "Base" layer in the system "GFX" and the sectionName "colorProps". Otherwise, returns false, and no setting is deleted (if this setting is present in a different layer, nothing happens to it - it needs to be in the specified layer in order to get deleted).
+
+* config:deleteConfigSettingFromLayer("TextureFilteringMode", "Base", "GFX", "textureProps", "mainFilterSetting") ==> Deletes the setting from the "Base" layer and returns true if a setting named "mainFilterSetting" of type enum "TextureFilteringMode" was present in the "Base" layer in the system "GFX" and the sectionName "textureProps".  Otherwise, returns false, and no setting is deleted (if this setting is present in a different layer, nothing happens to it - it needs to be in the specified layer in order to get deleted).
+
+__config:doesLayerExist__%%%
+
+* boolean doesLayerExist(String layerName)
+
+* Returns true if layerName is the name of a layer which is currently defined in Dolphin, and false otherwise. Note that some layers are only defined when doing certain actions. For example, the Netplay layer is only defined when the user is using Netplay. Otherwise, doesLayerExist("Netplay") will return false.
+
+* config:doesLayerExist("Netplay") ==> Returns true when the user is using Netplay, and false otherwise.
+
+__config:getConfigEnumTypes__%%%
+
+* List<String> getConfigEnumTypes()
+
+* Returns a list of all valid enum type names for config settings
+
+* config:getConfigEnumTypes() ==> Returns { "CPUCore", "DPL2Quality", "EXIDeviceType", "SIDeviceType", "HSPDeviceType", "Region", "ShowCursor", "LogLevel", "FreeLookControl", "AspectMode", "ShaderCompilationMode", "TriState", "TextureFilteringMode", "StereoMode", "WiimoteSource" }
+
+__config:getConfigSetting__%%%
+
+* returnType getConfigSetting(String returnType, String systemName, String sectionName, String settingName)
+
+* Returns the value of the config setting (what Dolphin will find when it looks for the value of the config setting). This returns the value of the specified config setting in the most specific layer that it's defined in. returnType can be either "BOOLEAN", "S32", "U32", "FLOAT",  "STRING", or one of the enum types (ex. "TriState").
+
+* config:getConfigSetting("U32", "Main", "Interface", "numberOfTriangles") ==> If "numberOfTriangles" is equal to 43 in "Base" and is equal to 65 in "LocalGame", then 65 will be returned, since LocalGame is more specific than Base.
+
+* config:getConfigSetting("TextureFilteringMode", "GFX", "textureProps", "mainFilterSetting") ==> If "mainFilterSetting" is equal to "DEFAULT" in the "Base" layer, and is equal to "NEAREST" in the "LocalGame" layer, then this function will return "NEAREST", since LocalGame is more specific than Base.
+
+__config:getConfigSettingForLayer__%%%
+
+* returnType getConfigSettingForLayer(String returnType, String layerName, String systemName, String sectionName, String settingName)
+
+* Returns the value of the config setting at the specified layer for the specified systemName, sectionName, and settingName (or returns nil if the setting isn't defined at that layer). The return type of this function is equal to the parameter returnType, where returnType can be either "BOOLEAN", "S32", "U32", "FLOAT", "STRING" or one of the enum types (ex. "AspectMode")
+
+* config:getConfigSettingForLayer("BOOLEAN", "LocalGame", "Main", "Interface",  "DebugModeEnabled") ==> Could return true.
+
+* config:getConfigSettingForLayer("AspectMode", "LocalGame", "GFX", "Settings", "AspectRatio") ==> Could return "ANALOG", if aspect ratio is in analog mode right now.
+
+__config:getLayerNames_mostGlobalFirst__%%%
+
+* List<String> getLayerNames_mostGlobalFirst()
+
+* Returns a list of all layer names, with the most global layer names first, and the most specific layer names last (more specific layer values override more global ones).
+
+* config:getLayerNames_mostGlobalFirst() ==> Returns {"Base", "CommandLine", "GlobalGame", "LocalGame", "Movie", "Netplay", "CurrentRun" }
+
+__config:getListOfValidValuesForEnumType__%%%
+
+* List<String> getListOfValidValuesForEnumType(String enumType)
+
+* Returns a list of all valid enum strings for the specified enumType.
+
+* config:getListOfValidValuesForEnumType("AspectMode") ==> Returns { "AUTO", "ANALOGWIDE", "ANALOG", "STRETCH" }
+
+__config:getListOfSystems__%%%
+
+* List<String> getListOfSystems()
+
+* Returns a list of all of the valid System values for config settings.
+
+* config:getListOfSystems() ==> Returns { "Main", "Sysconf", "GCPad", "WiiPad", "GCKeyboard", "GFX", "Logger", "Debugger", "DualShockUDPClient", "FreeLook", "Session", "GameSettingsOnly", "Achievements" }
+
+__config:saveSettings__%%%
+
+* void saveSettings()
+
+* Saves the settings to the config files, so they'll be loaded the next time Dolphin boots up. Note that most config functions save the settings to the config files right away, so this function is generally redundant/useless.
+
+* config:saveSettings() ==> Now all settings are saved/written out to the config files, and will be loaded again the next time Dolphin boots up.
+
+__config:setConfigSettingForLayer__%%%
+
+* void setConfigSettingForLayer(String settingType, String layerName, String systemName, String sectionName, String settingName, settingType newValue)
+
+* Sets the config setting at the specified layer for the specified systemName, sectionName and settingName equal to newValue. The type of newValue is specified by the settingType argument, which can have the values of "BOOLEAN", "S32", "U32", "FLOAT", "STRING", or one of the enum types (ex. "TriState")
+
+* config:setConfigSettingForLayer("U32", "LocalGame", "Main", "Interface", "SensorBarSensitivity", 45) ==> Sets the SensorBarSensitivity setting in the specified layer+systemName+sectionName to have the value of 45 (overwrites the setting in this layer if it already exists, or creates the setting in this layer if it didn't exist in this layer before).
+
+* config:setConfigSettingForLayer("TriState", "LocalGame", "GFX", "Settings", "ManuallyUploadBuffers", "AUTO") ==> Sets the ManuallyUploadBuggers setting in the specified layer+systemName+sectionName to have the value of "AUTO" (overwrites this setting in the layer if it already exists, or creates the setting in this layer if it didn't exist in this layer before).
+
+%%TAB dolphin%%
+
+A library for importing modules into scripts and shutting scripts down.
+
+This library is included by default, and therefore doesn't need to be imported.
+
+__dolphin:exitDolphin__%%%
+
+* void exitDolphin(int exitCode)
+
+* Terminates Dolphin with the exitCode specified by exitCode. Note that this function immediately closes the entire Dolphin application (without shutting anything down first).
+
+* dolphin:exitDolphin(1) ==> Dolphin will terminate with an exit code of 1.
+
+__dolphin:import__%%%
+__dolphin:importModule__%%%
+
+* void importModule(String moduleName, String moduleVersion)
+
+* import() and importModule() are 2 names for the same exact function, which is why they're included together here. This function imports the module specified by moduleName, using the version specified by moduleVersion.
+
+* __WARNING:__ Users almost certainly should NEVER call this function. It's generally used internally to import a builtin Dolphin library. All of the libraries which need a require( "X") statement in order to use them are actually Lua wrapper classes which internally call dolphin.importModule(), and then create functions around each API call for ease of use. For example, the bit Lua class imports the BitAPI internally. As such, you shouldn't be trying to import BitAPI if you already have require("bit") at the top of your program.
+
+* dolphin:importModule("BitAPI", "1.0") ==> Imports the BitAPI module using version 1.0 of the API. See the note above for why almost no one should ever actually call this method.
+
+__dolphin:shutdownScript_%%%
+
+* void shutdownScript()
+
+* Immediately ends the script that called this function. This will also unregister any callbacks that were set to run on various events by the script.
+
+* dolphin:shutdownScript() ==> Causes the script to terminate.
+
+%%TAB emu%%
+
+A library for performing certain functions on movies, save states, and advancing frames.
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+
+%%SRC_EMBED lua
+require ("emu")
+%%END_EMBED
+
+__emu:frameAdvance__%%%
+
+* void frameAdvance()
+
+* Advances to the next visual frame. This is called in a while(true) loop in order to advance the script to the next frame (otherwise, the script would never advance any frames, and would remain paused forever).
+
+* emu:frameAdvance() ==> if the frame count was 14,000 before this function was called, then it will be 14,001 after this function finishes.
+
+__emu:loadState__%%%
+
+* void loadState(String saveStatePath)
+
+* Loads the savestate specified by saveStatePath.
+
+* emu:loadState("myState.sav") ==> Loads the savestate from the file "MyState.sav"
+
+__emu:playMovie__%%%
+
+* void playMovie(String moviePath)
+
+* Starts playing the movie file specified by moviePath.
+
+* emu:playMovie("MyMovie.dtm") ==> Starts playing inputs from the movie file "MyMovie.dtm"
+
+__emu:saveMovie__%%%
+
+* void saveMovie(String moviePath)
+
+* Saves the movie which is currently being recorded to the file specified by moviePath.
+
+* emu:saveMovie("MyMovie.dtm") ==> Saves the inputs which are currently being recorded to the file "MyMovie.dtm"
+
+__emu:saveState__%%%
+
+* void saveState(String saveStatePath)
+
+* Saves a savestate to the file specified by saveStatePath.
+
+* emu:saveState("MyState.sav") ==> Saves a savestate to the file "MyState.sav"
+
+%%TAB gc_controller%%
+
+A library for getting and setting inputs on the game cube controllers, and for checking what inputs were pressed. There are 2 types of GameCube controller buttons: digital buttons (which can be either true when pressed or false when not pressed) and analog buttons (which are an integer between 0-255).
+
+The following is a list of the valid names for all digital buttons for the API functions listed below:
+
+"A", "B", "X", "Y", "Z", "L", "R", "Start", "Reset", "disc", "getOrigin", "isConnected", "dPadUp", "dPadleft", "dPadRight", "dPadDown"
+
+The following is a list of all analog buttons for the API functions listed below:
+
+"analogStickX", "analogStickY", "cStickX", "cStickY", "triggerL", "triggerR"
+
+Note that L and R refer to whether or not the L and R triggers are pressed at all (i.e. if they've been pressed hard enough to "click"), while triggerL and triggerR refer to how much the triggers are pressed down.
+
+The default value for all digital buttons is false (except for isConnected, which defaults to true). The default value for triggerL and triggerR is 0, and the default value for analogStickX, analogStickY, cStickX, and cStickY is 128.
+
+The functions in this library queue up events to run when the gc controller is polled for input during the frame (all set_input calls run first, followed by all add_input calls, and finishing off with all probability_input calls. Items within each type run in the same order that they were queued (for items of the same type), and with the same values for each input poll during the frame). All the queued events are cleared at the start of the next frame, so each of these function needs to be called at the start of each frame that you want to use them during. Also, whether or not a probability event will be evaluate to true (will happen) or false (won't happen) is determined at the moment when you call the probability_input function - which means that if all inputs polled during a frame were originally equal, then all inputs polled after this library modifies your inputs will also be equal to each other (whatever those values are).
+
+Also, if you create a save state or save a movie after calling these functions while playing back or recording a movie, the resulting movie will have its inputs updated to match the actual inputs that occured (i.e. if A is set to pressed on frame 15,004 and was not pressed in the original movie, then if you save a new movie at frame 15,010, it will have A pressed).
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+
+%%SRC_EMBED lua
+require ("gc_controller")
+%%END_EMBED
+
+__gc_controller:addButtonComboChance__%%%
+
+* void addButtonComboChance(u64 portNumber, double probability, Dict<GCButton> gcButtonTable, boolean setUnspecifiedValuesToDefaults)
+
+* Queues an event to run which has a chance of setting the buttons to be pressed on the controller which are specified by the gcButtonTable. If setUnspecifiedValuesToDefaults is true, then any values not included in gcButtonTable will be set to their default values when the event executes. Otherwise, any values not specified by gcButtonTable will retain their current values.
+
+* gc_controller:addButtonComboChance(1, 50.0, {A = true, X = false}, true) ==> There is a 50% chance that A will be set to true and X will be set to false and all other buttons will be set to their default values on the next frame for controller 1.
+
+__gc_controller:addButtonFlipChance__%%%
+
+* void addButtonFlipChance(u64 portNumber, double probability, String binaryButtonName)
+
+* Queues an event to run which has a chance of flipping a binary button (from either true to false or false to true), specified by binaryButtonName. Probability is a number between 0.0 - 100.0, where 0.0 means the event will never happen, and 100.0 means there's an 100% chance the event will happen. These events happen AFTER any call to set_inputs or add_inputs. Whether or not the event will happen or not is determined at the moment that the event is added to queue (which means it will either happen each time input is polled for the controller for the frame, or it will happen no times when input is polled for the controller for the frame). This is true for all of the other probability functions, as well.
+
+* gc_controller:addButtonFlipChance(1, 76.4, "A") ==> There is a 76.4% chance that button A will have its current value flipped for controller 1 on the next frame (only applies for the next frame. To make it apply for the frame after that, you would need to call this again at the start of the next frame).
+
+__gc_controller:addButtonPressChance__%%%
+
+* void addButtonPressChance(u64 portNumber, double probability, String binaryButtonName)
+
+* Queues an event to run which has a chance of pressing the binary button specified by binaryButtonName (sets it to true).
+
+* gc_controller:addButtonPressChance(2, 31.2, "X") ==> There is a 31.2% chance that button X will be pressed on controller 2 on the next frame.
+
+__gc_controller:addButtonReleaseChance__%%%
+
+* void addButtonReleaseChance(u64 portNumber, double probability, String binaryButtonName)
+
+* Queues an event to run which has a chance of releasing the binary button specified by binaryButtonName (sets it to falas).
+
+* gc_controller:addButtonReleaseChance(1, 10.3, "Y") ==> There is a 10.3% chance that button Y will be released on controller 1 on the next frame.
+
+__gc_controller:addControllerClearChance__%%%
+
+* void addControllerClearChance(u64 portNumber, double probability)
+
+* Queues an event to run which has a chance of clearing all values on the controller to their default values.
+
+* gc_controller:addControllerClearChance(3, 80.0) ==> There is an 80% chance that controller 3 will have all of its inputs set to their default values on the next frame.
+
+__gc_controller:addOrSubtractFromCurrentAnalogValueChance__%%%
+
+* void addOrSubtractFromCurrentAnalogValueChance(u64 portNumber, double probability, String analogButtonName, u64 amountToSubtract, [optional] u64 amountToAdd)
+
+* Queues an event to run which has a chance of adding or subtracting from the current analog value specified by analogButtonName. If amountToAdd is not included, then amountToSubtract is treated as both the amount to add and the amount to subtract. amountToSubtract is the maximum amount that can be subtracted from the input, and amountToAdd is the maximum amount that can be added to the input (if the input goes below 0, it's set to 0, and if it goes above 255, it's set to 255).
+
+* gc_controller:addOrSubtractFromCurrentAnalogValueChance(1, 25.0, "cStickX", 43, 10) ==> There is a 25% chance that cStickX will be altered from its current value. If cStickX is altered, it will be altered by a random value between currentValue - 43 and currentValue + 10.
+
+__gc_controller:addOrSubtractFromSpecificAnalogValueChance__%%%
+
+* void addOrSubtractFromSpecificAnalogValueChance(u64 portNumber, double probability, String analogButtonName, u64 baseValue, u64 amountToSubtract, [optional] u64 amountToAdd)
+
+* Queues an event to run which has a chance of setting the button specified by analogButtonName to a random value between baseValue - amountToSubtract and baseValue + amountToAdd. If amountToAdd is not included, then amountToSubtract is treated as both the amount to add and the amount to subtract. amountToSubtract is the maximum that can be subtracted from the input, and amountToAd is the maximum amount that can be added to the input (if the input goes below 0, it's set to 0, and if it goes above 255, it's set to 255).
+
+* gc_controller:addOrSubtractFromSpecificAnalogValueChance(1, 13.0, "analogStickX", 210, 30, 70) ==> There is a 13% chance that analogStickX will be altered from  its current value. If analogStickX is altered, it will be set to a random value between 180-255.
+
+__gc_controller:add_inputs__%%%
+
+* void add_inputs(u64 portNumber, Dict<GCButton> gcButtonTable)
+
+* Queues an event to add the inputs referenced by gcButtonTable to the specified controller. Buttons not specified by gcButtonTable retain their current values. All calls to add_inputs happen in the order they were called in AFTER any calls to set_inputs and BEFORE any calls to probability button functions.
+
+* gc_controller:add_inputs(1, {A = true, B = true, cStickX = 200}) ==> Sets controller 1 to have A and B pressed, cStickX set to 200, and all other buttons retain their current values.
+
+__gc_controller:getControllerInputsForPreviousFrame__%%%
+
+* Dict<GCButton> getControllerInputsForPreviousFrame(u64 portNumber)
+
+* Returns a dictionary which represents the buttons which were pressed on the controller on the previous frame (this assumes that the buttons pressed on a controller during multiple input polls during a frame are the same. Either way, this function is really returning the inputs that occured on the last controller poll, to be more precise).
+
+* gc_controller:getControllerInputsForPreviousFrame(1) ==> Could return { A = true, B = false, X = true, Y = true, Z = false, L = true, R = true, Start = false, Reset = false, triggerL = 255, triggerR = 0, dPadUp = false, dPadDown = false, dPadLeft = false, dPadRight = false, disc = false, getOrigin = false, isConnected = true, analogStickX = 128, analogStickY = 255, cStickX = 128, cStickY = 128 }
+
+__gc_controller:isGcControllerInPort__%%%
+
+* boolean isGcControllerInPort(u64 portNumber)
+
+* Returns true if a GameCube controller was plugged into the specified port, and false otherwise.
+
+* gc_controller:isGcControllerInPort(1) ==> Returns true if a GameCube controller was plugged into port 1.
+
+__gc_controller:isUsingPort__%%%
+
+* boolean isUsingPort(u64 portNumber)
+
+* Returns true if anything is plugged into the specified port, and false otherwise.
+
+* gc_controller:isUsingPort(1) ==> Returns true if anything was plugged into port 1.
+
+__gc_controller:set_inputs__%%%
+
+* void set_inputs(u64 portNumber, Dict<GCButton> gcButtonTable)
+
+* Queues an event to set the specified controller to have the inputs referenced by gcButtonTable (and any inputs not specified in gcButtonTable are set to their default values). portNumber is between 1-4. This happens before any call to add_inputs or any probability button functions are run for each input poll.
+
+* gc_controller:set_inputs(1, {A = true, B = true, cStickX = 200}) ==> Sets controller 1 to have A and B pressed, cStickX set to 200, and all other buttons are set to their default values.
+
+%%TAB graphics%%
+
+By default, all graphics are drawn directly over the game (in the same window as the game). However, when the user calls graphics:beginWindow(), it creates a new window, and any graphics calls that occur after the beginWindow call and before calling graphics:endWindow() will be drawn in this new window. Additionally, if the user calls graphics:beginWindow() again before closing the window, then it will create a nested subwindow inside of the current window (this can be repeated indefinitely to any depth). Unless a function listed below explicitly says otherwise, it can be called both when there are no extra windows on screen (besides the game window) and when there are extra windows on screen.
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+
+%%SRC_EMBED lua
+require ("graphics")
+%%END_EMBED
+
+__graphics:addButton__%%%
+
+* void addButton(String buttonName, int buttonId, LuaFunction callbackFunction, int width, int height)
+
+* Adds a button on the current window, with a label of buttonName, an associated ID value of buttonId, a width of width, and a height of height. When the button is clicked, the LuaFunction specified by callbackFunction will be called. Note that every button MUST have a unique button ID (since items with the same button ID are treated as the same object internally, which could cause undefined behavior if button IDs are reused elsewhere).
+
+* __WARNING:__ This function MUST be called from inside of a window (after a call to graphics:beginWindow() and before the last call to graphics:endWindow()). Otherwise, an error will occur.
+
+%%SRC_EMBED lua
+function myFunc()
+	print("Hello World!")
+end
+graphics:addButton("Click me!", 42, myFunc, 75, 25) 
+%%END_EMBED
+
+* ==> Creates a button in the most recently opened window/subwindow (defined as the last window/subwindow created by calling graphics:beginWindow()) which has a label of "Click me!", a width of 75 units, a height of 25 units, and a unique button ID of 42. When the button is clicked, myFunc will be called, and "Hello World!" will be printed to the screen.
+
+__graphics:addCheckbox__%%%
+
+* void addCheckbox(String checkboxLabel, int uniqueCheckboxId)
+
+* Adds a checkbox on the current window with a label of checkboxLabel, and an associated unique checkbox ID of uniqueCheckboxId. Note that uniqueCheckboxId MUST be unique for each checkbox in the application. Otherwise, clicking on one checkbox will cause another checkbox with the same ID to also become clicked!
+
+* __WARNING:__ This function MUST be called from inside of a window.
+
+%%SRC_EMBED lua
+graphics:addCheckbox("Ice Cream", 42)
+graphics:addCheckbox("Candy", 32)
+%%END_EMBED
+* ==> Creates 2 checkboxes  with the labels "Ice Cream" and "Candy".  When the user clicks on the "Ice Cream" checkbox, the checkbox ID of 42 will register as being clicked, and when the user clicks on the "Candy" checkbox, the checkbox ID of 32 will register as being clicked.
+
+__graphics:addRadioButton__%%%
+
+* void addRadioButton(String radioButtonLabel, int radioButtonGroupId, int radioButtonId)
+
+* Adds a radio button in the current window with a label of radioButtonLabel, a buttonId of radioButtonId, and a radio button group ID of radioButtonGroupID. radioButtonGroupId specifies a group of linked radio buttons (where only one can be clicked at a time), and a radio button group with that ID MUST be created by calling graphics:addRadioButtonGroup() BEFORE calling this function! Also, the radioButtonId must be unique within the specified radioButtonGroupId. Otherwise, clicking one radio button will cause the other radio button with the same radioButtonId to be clicked as well!
+
+* __WARNING:__ This function MUST be called from inside of a window.
+
+* graphics:addRadioButton("Ice Cream", 34, 2) ==> Creates a radio button in the current window with a label of "Ice Cream", an associated radioButtonGroupID of 34, and a radioButtonID of 2.
+
+__graphics:addRadioButtonGroup__%%%
+
+* void addRadioButtonGroup(int newRadioButtonGroupID)
+
+* Creates a radio button group with the associated radio button group ID in the current window. This MUST be called before graphics:addRadioButton() is called (which will then use the same radioButtonGroupID that was passed as the argument into this function).
+
+* __WARNING:__ This function MUST be called from inside of a window.
+
+%%SRC_EMBED lua
+graphics:addRadioButtonGroup(55)
+graphics:addRadioButton("Strawberry", 55, 1)
+graphics:addRadioButton("Chocolate", 55, 2)
+graphics:addRadioButton("Vanilla", 55, 7)
+%%END_EMBED
+
+* ==> Creates a radio button group with an ID of 55, and 3 associated radio buttons. When the "Strawberry" button is clicked, the other 2 buttons are unselected. The same thing happens when the "Chocolate" or "Vanilla" buttons are clicked.
+
+__graphics:addTextBox__%%%
+
+* void addTextBox(int textBoxId, String textBoxLabel)
+
+* Creates a text box with the associated textBoxId, and a label next to it of textBoxValue. The user can type characters into the inputted text box, which is what makes this different from the drawText() function, which just displays static text on the screen.
+
+* __WARNING:__ This function MUST be called from inside of a window.
+
+* graphics:addTextBox(42, "Enter your name here: ") ==> Creates a textbox in the last-opened window (the current window) with an ID of 42 and a label to the left of it of "Enter your name here:"
+
+__graphics:beginWindow__%%%
+
+* void beginWindow(String windowName)
+
+* Creates a new window on screen with the name specified by windowName. If a window is still open, this will create a new subwindow inside of the window. This window will become the "current window", which is where all future calls to draw or add buttons will put their items (it will remain this way until either a subwindow is opened, or the window is closed via graphics:endWindow()). Basically, beginWindow() is like pushing a window onto the stack, and endWindow() is like popping a window from the stack. Whichever window is at the top of the stack is the one where elements are placed when the various graphics calls are made (originally, the game screen is the only element on the stack - which isn't considered a real window that can be popped).
+
+* __WARNING:__ There must be an equal number of calls to graphics:beginWindow() and graphics:endWindow() in a given frame. Otherwise, an error will occur (graphics:endWindow() effectively says that we're done adding components to the window, and it can now be processed internally).
+
+* graphics:beginWindow("MyNewWindow") ==> Creates a new window on screen with the header "MyNewWindow"
+
+__graphics:drawCircle__%%%
+
+* void drawCircle(double centerX, double centerY, double radius, double borderThickness, LuaColorString outlineColor, [optional] LuaColorString fillColor)
+
+* Draws a circle on screen. The circle will have its center located at (centerX, centerY), where the coordinates are relative to the top-left edge of the currently open window (or the edge of the game screen, if no windows are currently open). The circle will have a radius specified by the radius parameter, and the thickness of the edge of the circle will be specified by borderThickness. outlineColor specifies what color to draw the outline of the circle (i.e. around the circumference). If fillColor isn't included, the the inside of the circle is clear/see-through. Otherwise, the circle will have an inner color specified by fillColor. To make a circle which is one solid color with no visible outline, set outlineColor and fillColor to the same value.
+
+* graphics:drawCircle(145.0, 125.0, 40.0, 2.0, "Black", "Yellow") ==> Draws a circle with a center of (145.0 125.0), and a radius of 40.0. The circle will have a black outline with a thickness of 2.0, and the circle will have a yellow interior.
+
+__graphics:drawLine__%%%
+
+* void drawLine(double x1, double y1, double x2, double y2, double thickness, LuaColorString colorString)
+
+* Draws a line which starts at the coordinate (x1, y1) and ends at the coordinate of (x2, y2). The coordinates are relative to the top-left corner of the currently open window (or the edge of the game screen, if no windows are currently open). The line has a thickness specified by the thickness parameter, and a color specified by colorString.
+
+* graphics:drawLine(34.0, 98.0, 534.0, 98.0, 2.0, "Black") ==> Draws a line segment whose 2 endpoints are (34.0, 98.0) and (534.0, 98.0). This line also has a thickness of 2.0, and a color of Black.
+
+__graphics:drawPolygon__%%%
+
+* void drawPolygon(ListOfPoints listOfPoints, double borderThickness, LuaColorString outlineColor, [optional] LuaColorString fillColor)
+
+* Draws a polygon on screen which is specified by listOfPoints (which is just a list of lists, where each sublist contains 2 doubles that represent the X and Y coordinate of a point. Thus, each sublist represents one point in the polygon, and a line is automatically drawn from the last point to the first point in order to complete the polygon). The coordinates of the points are relative to the top-left corner of the currently open window (or the edge of the game screen, if no windows are currently open). The polygon has a border thickness specified by borderThickness, and an outline color specified by outlineColor. If fillColor is not included, then the middle of the polygon will be clear. Otherwise, fillColor will be the color of the interior of the polygon. To make a polygon which is one solid color with no visible outline, set outlineColor and fillColor to the same value.
+
+* graphics:drawPolygon( { {250.0, 399.0}, {450.0, 150.0}, {650.0, 150.0}, {850.0, 399.0} }, 2.0, "Black", "Red") ==> Draws a trapezoid on screen with coordinates of (250.0, 399.0), (450.0, 150.0), (650.0, 150.0) and (850.0, 399.0). The trapezoid has a 2.0 units-thick black border, and the interior of the trapezoid is red.
+
+__graphics:drawRectangle__%%%
+
+* void drawRectangle(double upLeftX, double upLeftY, double bottomRightX, double bottomRightY, double borderThickness, LuaColorString outlineColor, [optional] LuaColorString fillColor)
+
+* Draws a rectangle on screen whose upper-left-most point is at (upLeftX, upLeftY), and whose bottom-right-most point is at (bottomRightX, bottomRightY). The coordinates of the points are relative to the top-left corner of the currently open window (or the edge of the game screen, if no windows are currently open). This rectangle will have a border thickness specified by borderThickness, and an outline color specified by outlineColor. If fillColor is not included, then the middle of the rectangle will be clear. Otherwise, fillColor will be the color of the interior of the rectangle. To make a rectangle which is one solid color with no visible outline, set outlineColor and fillColor to the same value.
+
+* graphics:drawRectangle(650.0, 730.0, 950.0, 430.0, 3.0, "black", "yellow") ==> Draws a rectangle whose top-left-most point is (650.0, 730.0) and whose bottom-right-most point is (950.0, 430.0). This rectangle has a 3.0 units-thick black border, and a yellow interior.
+
+__graphics:drawText__%%%
+
+* void drawText(double x, double y, LuaColorString textColor, String textContents)
+
+* Draws the text on screen specified by textContents. The text will have a color specified by textColor, and will be drawn at the coordinates (x, y). The coordinates of the text are relative to the top-left corner  of the currently open window (or the edge of the game screen, if no windows are currently open).
+
+* graphics:drawText(55.0, 75.0, "Red", "Hello World!") ==> At the coordinates (55.0, 75.0), draws the String "Hello World!" on screen in red-colored letters.
+
+__graphics:drawTriangle__%%%
+
+* void drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3, double borderThickness, LuaColorString outlineColor, [optional] LuaColorString fillColor)
+
+* Draws a triangle on screen defined by the 3 points (x1, y1), (x2, y2), and (x3, y3). The coordinates of the points are relative to the top-left corner of the currently open window (or the edge of the game screen, if no windows are currently open). This triangle will have a border thickness specified by borderThickness, and an outline color specified by outlineColor. If fill color is not included, then the middle of the triangle will be clear. Otherwise, fillColor will be the color of the interior of the triangle. To make a triangle one solide color with no visible outline, set outlineColor and fillColor to the same value.
+
+* graphics:drawTriangle( 460.0, 230.0, 660.0, 230.0, 560.0, 100.0, 15.0, "Black", "Red") ==> Draws a triangle on screen defined by the 3 points (460.0, 230.0), (660.0, 230.0) and (560.0, 100.0). The triangle has a 15.0 units-thick black border, and a red interior.
+
+__graphics:endWindow__%%%
+
+* void endWindow()
+
+* This function changes the currently-open window to be one level higher up than it was before (to the parent window of the current window, or to the game screen if this was the  last open window). Basically, beginWindow() is like pushing a window onto the stack, and endWindow() is like popping a window from the stack. Whichever window is at the top of the stack is the one where elements are placed when the various graphics calls are made (originally, the game screen is the only element on the stack - which isn't considered a real window that can be popped).
+
+* __WARNING:__ Every call to graphics:beginWindow() MUST have a matching call to graphics:endWindow() before the start of the next frame (since endWindow() specifies that we're finished adding components to whatever window/subwindow we're currently in).
+
+* __EXTRA WARNING:__ This function may NOT be called when no windows are currently open. Otherwise, an error will occur.
+
+* graphics:endWindow() ==> Changes the currently open window to its parent window/subwindow (or to the game screen, if this was the last opened window).
+
+__graphics:getCheckboxValue__%%%
+
+* boolean getCheckboxValue(int uniqueCheckboxId)
+
+* Returns the value associated with the specified uniqueCheckboxId. If the checkbox is clicked, then the function returns true. Otherwise, it returns false.
+
+* graphics:getCheckboxValue(42) ==> Returns true if the checkbox with the ID of 42 was currently pressed, and returns false otherwise.
+
+__graphics:getRadioButtonGroupValue__%%%
+
+* int getRadioButtonGroupValue(int radioButtonGroupId)
+
+* Returns the value associated with the specified radioButtonGroupId (which indicates which radio button in the group was clicked). This value defaults to 0, if none of the radio buttons have been clicked and setRadioButtonGroupValue() has never been called.
+
+* graphics:getRadioButtonGroupValue(42) ==> Returns the value stored in the radioButtonGroupId with the ID of 42.
+
+__graphics:getTextBoxValue__%%%
+
+* String getTextBoxValue(int uniqueTextBoxId)
+
+* Returns the contents of the String which is currently typed into the textbox with the ID of uniqiueTextBoxId.
+
+* graphics:getTextBoxValue(42) ==> If the user typed "Hello World!" into the textbox that was created with an ID of 42, then this function call will return "Hello World!"
+
+__graphics:newLine__%%%
+
+* void newLine(double verticalOffset)
+
+* Adds vertical space/padding below the last added element in the currently open window. After calling this function, the next item added to the window will be further down from what its original position would have been by verticalOffset units. This function is useful, since an element added to a window by default will be added directly below the last element in the window by a fixed amount.
+
+* __WARNING:__ This function may NOT be called when no windows are currently open. Otherwise, an error will occur.
+
+__graphics:pressButton__%%%
+
+* void pressButton(int uniqueButtonId)
+
+* Runs the callback associated with the button references by uniqueButtonId (has the same effects as though the button was actually clicked by the user).
+
+* graphics:pressButton(42) ==> Clicks the button with the associated ID of 42.
+
+__graphics:setCheckboxValue__%%%
+
+* void setCheckboxValue(int checkboxId, boolean newValue)
+
+* Sets the checkbox with an ID of checkboxId to have the value specified by newValue. If newValue is true, then the checkbox is set to checked off. Otherwise, the checkbox is set to not being checked off.
+
+%%SRC_EMBED lua
+graphics:addCheckbox("Ice Cream", 32)
+graphics:setCheckboxValue(32, true)
+%%END_EMBED
+
+* ==> Now the checkbox labeled "Ice Cream" is set to be checked off.
+
+__graphics:setRadioButtonGroupValue__%%%
+
+* void setRadioButtonGroupValue(int radioButtonGroupId, int newValue)
+
+* Sets the radio button group with the ID of radioButtonGroupId to have the value specified by newValue. Note that a radio button must exist in the radio button group with a radioButtonGroupId of newValue in order for that option to be selected. Otherwise, no option in the radio button group will be registered as selected.
+
+%%SRC_EMBED lua
+graphics:addRadioButtonGroup(20)
+graphics:addRadioButton("Vanilla", 20, 0)
+graphics:addRadioButton("Chocolate", 20, 1)
+graphics:addRadioButton("Strawberry", 20, 2)
+graphics:setRadioButtonGroupValue(20, 1)
+%%END_EMBED
+
+* ==> Now the radio button which is labeled "Chocolate" will be selected, and none of the other 2 radio buttons in the group will be selected.
+
+__graphics:setTextBoxValue__%%%
+
+* void setTextBoxValue(int textBoxId, String newValue)
+
+* Sets the textbox with the ID of textBoxId to have the value specified by newValue.
+
+%%SRC_EMBED lua
+graphics:addTextBox(42, "Enter your name here:")
+graphics:setTextBoxValue(42, "John Smith")
+%%END_EMBED
+
+* ==> Now the textbox labeled "Enter your name here:" will start with having its contents be "John Smith"
+
+%%TAB instruction_step%%
+
+A library for stepping through a game's code one instruction at a time. Note that with the exception of the getInstructionFromAddress() function, all of these functions MUST be called from inside of an OnInstructionHit callback function, an OnMemoryAddressReadFrom callback function, or an OnMemoryAddressWrittenTo callback function. Otherwise, an error will occur.
+
+Also, in order to prevent an infinite loop, additional callbacks for OnInstructionHit, OnMemoryAddressReadFrom and OnMemoryAddressWrittenTo will be skipped over when these step functions are used (even if PC becomes equal to an OnInstructionHit callback address).
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+
+%%SRC_EMBED lua
+require ("instruction_step")
+%%END_EMBED
+
+__instruction_step:getInstructionFromAddress__%%%
+
+* String getInstructionFromAddress(int instructionAddress)
+
+* Returns a human-readable representation of the instruction which is stored at instructionAddress in the game's code. Note that this is the only function in this library which can be called from anywhere anytime.
+
+* instruction_step:getInstructionFromAddress(0x85005432) ==> ex. could return "addi r0, r1, r2"
+
+__instruction_step:setPC__%%%
+
+* void setPC(int newPcValue)
+
+* Sets PC to have the value specified by newPcValue.
+
+* instruction_step:setPC(0X85005432) ==> Now PC is equal to 0X85005432, and the instruction at that address will be the next instruction executed by the game.
+
+__instruction_step:singleStep__%%%
+
+* void singleStep()
+
+* Executes the next instruction that the game would run (the instruction at the value of PC), and then returns.
+
+* instruction_step:singleStep() ==> Now the next instruction has been executed by the game.
+
+__instruction_step:skip__%%%
+
+* void skip()
+
+* Skips execution of the next instruction. After this instruction executes PC will equal the original value of PC + 4, and the instruction at PC will not have been executed.
+
+__WARNING:__ This function alters the execution of gameplay, since it skips over a function. If you want the game to run the next instruction or run until it reaches the instruction at PC + 4, then use either singleStep() or stepOver() respectively.
+
+* instruction_step:skip() ==> Now PC equals original value of PC + 4, and the instruction at address PC was not executed.
+
+__instruction_step:stepOut__%%%
+
+* void stepOut()
+
+* Executes code until the game returns from whatever function it was in when this function called. Note that if the frame-boundary is encountered before this function has ended, then the function will end immediately.
+
+* instruction_step:stepOut() ==>When this function ends, the game will have returned from the function it was in when stepOut() was called.
+
+__instruction_step:stepOver__%%%
+
+* void stepOver()
+
+* Executes code until PC is equal to original PC value + 4. Note that if the instruction at address PC isn't a function call or jump call, then this will behave the same as singleStep(). If a function call is the current instruction, then this function will execute instructions until the function has returned. Note that if the frame-boundary is encountered before this function has ended, then the function will end immediately.
+
+* instruction_step:stepOver() ==> Executes code until PC equals the original value of PC + 4
+
+%%TAB memory%%
+
+A library for reading and writing values to memory.
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+%%SRC_EMBED lua
+require ("memory")
+%%END_EMBED
+
+__memory:readFixedLengthString__%%%
+
+* String readFixedLengthString(int address, int numBytes)
+
+* reads numBytes total bytes starting at the address specified by address. Each byte is treated as being a signed ASCII char, and the resulting String that is returned contains each byte/char in order, followed by the null terminator char ('\0')
+
+* memory:readFixedLengthString(0X8D005320, 3) ==> If address 0X8D005320 contains the following bytes in order of increasing memory address of: 'H', 'e' 'l', 'l', 'o', then the String "Hel" will be returned (which is a null-terminated string. To be more precise, the sequence of chars in the returned string are: 'H', 'E', 'L', '\0')
+
+__memory:readFrom__%%%
+
+* typeString readFrom(int address, DataTypeString typeString)
+
+* Returns the data stored at the address specified by address. The data is returned as the type specified by typeString (for a definition of which Strings represent DataTypeString, see the top of this page).
+
+* memory:readFrom(0X8D004320, "S32") ==> Returns the value stored at 0X8D004320 as a 4-byte signed integer.
+
+__memory:readNullTerminatedString__%%%
+
+* String readNullTerminatedString(int address)
+
+* Returns a String which starts at the address specified by address. Each byte is treated as being a signed ASCII character. The function keeps adding bytes to the end of the return String until the null-terminator character is encountered.
+
+* memory:readNullTerminatedString(0X8D004320) ==> If the sequence of bytes stored between 0X8D00430 and 0X8D00435 (in order) are the following: 'H', 'E', 'L', 'L', 'O', '\0', then the null-terminated String "Hello" will be returned by the function.
+
+__memory:readSignedBytes__%%%
+
+* Dict<int, int> readSignedBytes(int address, int numBytes)
+
+* Returns a dictionary whose keys are addresses and whose values are the values at the corresponding address as a signed byte.
+
+* memory:readSignedBytes(0X8D004320, 4) ==> If the bytes stored at address 0X8d004320-0X8d004323 (as signed bytes) are the following: 45, 10, -54, 7, then the following dictionary will be returned: {0X8D004320 = 45, 0X8D004321 = 10, 0X8D004322 = -54, 0X8D004323 = 7}. Note that these are the same memory values as in the example below for readUnsignedBytes. The only difference is, we interpret the bytes as signed bytes here instead of unsigned bytes.
+
+__memory:readUnsignedBytes__%%%
+
+* Dict<int, int> readUnsignedBytes(int address, int numBytes)
+
+* Returns a dictionary whose keys are addresses and whose values are the values stored at the corresponding address as an unsigned byte.
+
+* memory:readUnsignedBytes(0X8D004320, 4) ==> If the bytes stored at address 0X8D004320-0X8D004323 (as unsigned bytes) are the following: 45, 10, 201, 7, then the following dictionary will be returned: {0X8D004320 = 45, 0X8D004321 = 10, 0X8D004322 = 201, 0X8D004323 = 7}. Note that these are the same memory values as in the example above for readSignedBytes. The only difference is, we interpret the bytes as unsigned bytes here instead of signed bytes.
+
+__memory:writeBytes__%%%
+
+* void writeBytes(Dict<int, int> addressToBytesDict)
+
+* addressToBytesDict is treated as a mapping from address to address-value (as a byte). All of the bytes represented in addressToBytesDict are written out to memory.
+
+__WARNING: The values in addressToBytesDict MUST be small enough to be contained within 1 byte. In other words, they must be between -128 to 255.  Values that are less than 0 are automatically written as signed bytes, and values greater than or equal to 0 are automatically written as unsigned bytes.
+
+* memory:writeBytes({0X8D004320 = -54, 0X8D004400 = 152}) ==> Writes the value -54 to 0X8D004320 (as a signed byte), and writes the value 152 to 0X8D004400 (as an unsigned byte).
+
+__memory:writeString__%%%
+
+* void writeString(int address, String stringToWrite)
+
+* Writes the bytes of stringToWrite to the address specified by the address parameter. Each character is treated as a signed byte, and the null-terminator character is added to the end of the string (technically, all Lua strings end in the null terminator, so my code doesn't do anything special to add this in).
+
+* memory:writeString(0X8D004400, "Hello") ==> After this code runs, the bytes from 0X8D004400 to 0X8D004405 contain the following bytes (in order): 'H', 'e', 'l', 'l', 'o', '\0'
+
+__memory:writeTo__%%%
+
+* void writeTo(int address, DataTypeString typeString, typeString newValue)
+
+* Writes the the value specified by newValue to the address specified by the address parameter. newValue is interpreted as being the type specified by typeString (to see a list of all valid DataTypeStrings, go to the top of this page). Each DataTypeString specifies an exact size of its parameter - which is the exact number of bytes that will be written by this function.
+
+* memory:writeTo(0X8D004400, "U32", 98543) ==> if memory:readFrom(0X8D004400, "U32") is called immediately after running the writeTo call described here, then 98543 will be returned.
+
+%%TAB OnFrameStart%%
+
+A library for registering functions which will be run at the start of each frame. If multiple functions are registered to run at the start of each frame, then the functions will execute each frame in the order that they were registered. Note that any registered OnFrameStart callbacks will be run before running global code (i.e. Lua code which is not in a registered callback function) which is still running at the start of each frame.
+
+This is a builtin library, so you don't need to put a require(X) statement at the top of your Lua script to use these functions.
+
+__OnFrameStart:isInFrameStartCallback__%%%
+
+* boolean isInFrameStartCallback()
+
+* Returns true if this function was called from inside of an OnFrameStart callback which is currently being executed at the start of a frame, and returns false otherwise.
+
+* if OnFrameStart:isInFrameStartCallback() then ==> Only executes the code inside the if statement block if the isInFrameStartCallback() function was called from inside of a currently executing OnFrameStart callback right now.
+
+__OnFrameStart:register__%%%
+
+* int register(LuaFunction callbackFunction)
+
+* Registers the function passed in as an argument to run at the start of each frame, and returns an int that can be used to unregister the callback later on.
+
+%%SRC_EMBED lua
+function myCallbackFunc()
+	print("Hello World!")
+end
+funcRef = OnFrameStart:register(myCallbackFunc)
+%%END_EMBED
+
+* ==> Now, myCallbackFunc() will run once at the start of each frame (which means "Hello World!" will be printed at the start of each frame), and funcRef can be used to unregister the function later on.
+
+__OnFrameStart:registerWithAutoDeregistration__%%%
+
+* void registerWithAutoDeregistration(LuaFunction callbackFunction)
+
+* Registers the function passed in as an argument to run at the start of each frame. This function will automatically unregister when the only functions which are still running are all callbacks which were registered with auto-deregistration.
+
+%%SRC_EMBED lua
+function myCallbackFunc()
+	print("Hello World!")
+end
+OnFrameStart:registerWithAutoDeregistration(myCallbackFunc)
+%%END_EMBED
+
+* ==> Registers the myCallbackFunc() function to run at the start of each frame (will auto-deregister when only functions which have been registered with auto-deregistration are still running).
+
+__OnFrameStart:unregister__
+
+* void unregister(int functionReference)
+
+* Unregisters the OnFrameStart callback specified by functionReference, so that it will no longer run at the start of each frame. The value passed into this function must be the return result of OnFrameStart:register()
+
+%%SRC_EMBED lua
+function myCallbackFunc()
+	print("Hello World!")
+end
+funcRef = OnFrameStart:register(myCallbackFunc)
+...
+OnFrameStart:unregister(funcRef)
+%%END_EMBED
+
+* ==> Now, the myCallbackFunc() won't run on the start of each frame anymore.
+
+%%TAB OnGCControllerPolled
+
+A library for registering functions which will be run each time a Game Cube Controller is polled. More specifically, the callbacks will be run right before input is read from or written to a movie/DTM file. If multiple functions are registered to run at the start of Game Cube Controller polls, then each callback will be executed in the order that they were registered.
+
+This is a builtin library, so you don't need to put a require(X) statement at the top of your Lua script to use these functions.
+
+__OnGCControllerPolled:getCurrentPortNumberOfPoll__%%%
+
+* int getCurrentPortNumberOfPoll()
+
+* Returns the port number of the controller that is currently being polled (between 1-4).
+
+* __WARNING:__ This function throws an exception if called from outside of an OnGCControllerPolled callback function.
+
+* getCurrentPortNumberOfPoll() ==> If controller 2 was being polled when the callback function containing this line was triggered, then this function will return 2.
+
+__OnGCControllerPolled:getInputsForPoll__
+
+* Dict<GCButton> getInputsForPoll()
+
+* Returns a dictionary which represents the buttons pressed/not-pressed for the current controller (see the gc_controller tab for a list of valid GCButton values. This dictionary contains all valid GCButtons). The controller that inputs are returned from is the one that was being polled when the OnGCControllerPolled callback function was triggered. Note that a call to setInputsForPoll() will update the buttons pressed on the controller immediately, and will change the values returned by the next call to getInputsForPoll() (if the call changed the buttons pressed).
+
+* __WARNING:__ This function throws an exception if called from outside of an OnGCControllerPolled callback function.
+
+* OnGCControllerPolled:getInputsForPoll() ==> If the user held slightly up left on this frame while holding L and pressing A, then this function could return the following dictionary: {A = true, B = false, X = false, Y = false, Z = false, L = true, R = false, disc = false, isConnected = true, getOrigin = false, Start = false, Reset = false, triggerL = 255, triggerR = 0, dPadUp = false, dPadDown = false, dPadLeft = false, dPadRight = false, analogStickX = 68, analogStickY = 255, cStickX = 128, cStickY = 128}
+
+__OnGCControllerPolled:isInGCControllerPolledCallback__%%%
+
+* boolean isInGCControllerPolledCallback()
+
+* Returns true if called from inside of an OnGCControllerPolledCallback function, and returns false otherwise.
+
+* OnGCControllerPolled:isInGCControllerPolledCallback() ==> Returns true if called from inside of an OnGCControllerPolled callback function (while a GC controller is being polled), and returns false otherwise.
+
+__OnGCControllerPolled:register__%%%
+
+* int register(LuaFunction callbackFunction)
+
+* Registers the callbackFunction to be run each time a GameCube controller is polled, and returns an identifier that can be used to unregister the callback later on.
+
+%%SRC_EMBED lua
+function callbackFunc()
+	print("Currently polling controller " .. tostring(OnGCControllerPolled:getCurrentPortNumberOfPoll()))
+end
+
+funcRef = OnGCControllerPolled:register(callbackFunc)
+%%END_EMBED
+
+* ==> Prints the controller number that's being currently polled (whenever a Game Cube controller is polled).
+
+__OnGCControllerPolled:registerWithAutoDeregistration__%%%
+
+* void registerWithAutoDeregistration(LuaFunction callbackFunction)
+
+* Registers the callbackFunction to be run each time a GameCube controller is polled. This function will be automatically de-registered when the only callbacks that are still running are callbacks that were registered with auto-deregistration.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+OnGCControllerPolled:registerWithAutoDeregistration(callbackFunc)
+%%END_EMBED
+
+* ==> Calls callbackFunc() each time a GameCube controller is being polled. This function will auto-deregister when the only callbacks that are still running are callbacks that were registered with auto-deregistration.
+
+__OnGCControllerPolled:setInputsForPoll__%%%
+
+* void setInputsForPoll(Dict<GCButton> newControllerInputs)
+
+* Sets the currently polled controller to have the value specified by newControllerInputs. Note that any values not specified in newControllerInputs will be set to their default value in the currently polled controller.
+
+* __WARNING:__ This function throws an exception if called from outside of an OnGCControllerPolled callback function.
+
+* OnGCControllerPolled:setInputsForPoll({A = true, B = true}) ==> Sets the currently-polled controller to have A and B pressed (and every other button on the controller is set to its default values. See the gc-controller tab for a list of default values for GC controller buttons).
+
+__OnGCCOntrollerPolled:unregister__%%%
+
+* void unregister(int functionReference)
+
+* Unregisters the callback specified by functionReference, so it won't keep running whenever a GameCube controller poll occurs. functionReference should be the return value from calling OnGCControllerPolled:register().
+
+%%SRC_EMBED lua
+function callbackFunc()
+	if (OnGCControllerPolled:getCurrentPortNumberOfPoll() == 2) then
+		OnGCControllerPolled:setInputs({A = true, X = true})
+	end
+end
+funcRef = OnGCControllerPolled:register(callbackFunc)
+...
+OnGCControllerPolled:unregister(funcRef)
+%%END_EMBED
+
+* ==> CallbackFunc() checks at the start of each GameCube controller poll if we're currently polling controller 2. If we are, then we set controller 2 to just have the A and X buttons pressed, and all other buttons are set to their default values. After the call to OnGCControllerPolled:unregister(), callbackFunc() won't run anymore when a GameCube controller poll occurs.
+
+%%TAB OnInstructionHit%%
+
+A library for registering functions that will be run when a specific instruction address is reached by the game. When PC equals the same value that the callback was registered to run on, the callback will be run. If multiple functions are registered to run on the same instruction address, then each callback will be executed in the order that they were registered.
+
+This is a builtin library, so you don't need to put a require(X) statement at the top of your Lua script to use these functions.
+
+__OnInstructionHit:getAddressOfInstructionForCurrentCallback__
+
+* unsigned int getAddressOfInstructionForCurrentCallback()
+
+* Returns the address of the instruction that triggered the current callback to run.
+
+* __WARNING: This function will throw an exception if called from outside of an OnInstructionHit callback function.
+
+__OnInstructionHit:isInInstructionHitCallback__%%%
+
+* boolean isInInstructionHitCallback()
+
+* Returns true if called from inside of an OnInstructionHit callback function that is currently being run, and returns false otherwise.
+
+* OnInstructionHit:isInInstructionHitCallback() ==> Returns true if called from inside of a callback that was triggered to run when a specific instruction was hit.
+
+__OnInstructionHit:register__ %%%
+
+* int register(unsigned int instructionAddress, LuaFunction callbackFunction)
+
+* Registers the callbackFunction to run whenever the game hits the specified instructionAddress (when PC = instructionAddress, the callbackFunction is called). The function also returns a unique value that can be used to unregister the callback function later on.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+funcRef = OnInstructionHit:register(0X8D005432, callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc() to be called whenever PC equals 0X8D005432. funcRef can be used to unregister the callback from running again later on.
+
+__OnInstructionHit:registerWithAutoDeregistration__%%%
+
+* void registerWithAutoDeregistration(unsigned int instructionAddress, LuaFunction callbackFunction)
+
+* Registers the callbackFunction to run whenever the game hits the specified instruction address (when PC = instructionAddress, the callbackFunction is called).
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+OnInstructionHit:registerWithAutoDeregistration(0X8D005432, callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc() to be called whenever PC equals 0X8D005432. This callback will automatically de-register when the only callbacks that are still running are ones which were registered with auto-deregistration.
+
+__OnInstructionHit:unregister__%%%
+
+*  void unregister(unsigned int instructionAddress, int functionReference)
+
+* Unregisters the callback specified by functionReference for the given instructionAddress. After this, the callback associated with functionReference won't run anymore when PC equals instructionAddress. Note that functionReference must be the return value of calling OnInstructionHit:register()
+
+%%SRC_EMBED lua
+function callbackFunc()
+	print("The instruction that was just hit to trigger this function was " .. tostring(OnInstructionHit:getAddressOfInstructionForCurrentCallback()))
+end
+funcRef = OnInstructionHit:register(0X8D005432, callbackFunc)
+...
+OnInstructionHit:unregister(0X8D005432, funcRef)
+%%END_EMBED
+
+* ==> Now, callbackFunc() won't run anymore when PC equals 0X8D005432.
+
+%%TAB OnMemoryAddressReadFrom%%
+
+A Library for registering functions that will be run when a game reads from a memory address which is in between a specified start and end address. If multiple functions are registered to run for a certain memory address (i.e. the address is between the start and end range of multiple registered callbacks), then each callback will be executed in the order that they were registered (when that memory address is read from).
+
+This is a builtin library, so you don't need to put a require(X) statement at the top of your Lua script to use these functions.
+
+__OnMemoryAddressReadFrom:getReadSize__%%%
+
+* unsigned int getReadSize()
+
+* Returns the number of bytes that were read in the memory-read which triggered the currently-running OnMemoryAddressReadFrom callback.
+
+* __WARNING:__ This function will throw an exception if called from outside of a currently-executing OnMemoryAddressReadFrom callback.
+
+* OnMemoryAddressReadFrom:getReadSize() ==> Could return 1, 2, 4, or 8.
+
+__OnMemoryAddressReadFrom:getMemoryAddressReadFromForCurrentCallback__%%%
+
+* unsigned int getMemoryAddressReadFromForCurrentCallback()
+
+* Returns the memory address that was read from to trigger the current OnMemoryAddressReadFrom callback function to run.
+
+* __WARNING:__ This function will throw an exception if called from outside of a currently-executing OnMemoryAddressReadFrom callback.
+
+* OnMemoryAddressReadFrom:getMemoryAddressReadFromForCurrentCallback() ==> Could return 0X8D005432
+
+__OnMemoryAddressReadFrom:isInMemoryAddressReadFromCallback__%%%
+
+* boolean isInMemoryAddressReadFrom()
+
+* Returns true if called from a currently-executing OnMemoryAddressReadFrom callback function, and returns false otherwise.
+
+* OnMemoryAddressReadFrom:isInMemoryAddressReadFromCallback() ==> Returns true if called from inside of a currently-executing OnMemoryAddressReadFrom callback function, and returns false otherwise.
+
+__OnMemoryAddressReadFrom:register__%%%
+
+* int register(unsigned int memoryStartAddress, unsigned int memoryEndAddress, LuaFunction callbackFunction)
+
+* Registers the specified callbackFunction to run when a memory address is read from between memoryStartAddress and memoryEndAddress. Note that if any byte that would be read from memory falls in between the start andend addresses, then the callback will be triggered. For example, if the startAddress is 0X8D004005 and the endAddress is 0X8D004010, and a 4-byte value is read starting at address 0X8D004004, then the callback will be triggered, since the 2nd byte of the number is read from address 0X8D004005. This function returns a unique identifier which can be used to unregister the callback later on.
+
+* __WARNING:__ This function will thrown an exception if memoryEndAddress is less than memoryStartAddress.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+funcRef = OnMemoryAddressReadFrom:register(0X8D004010, 0X8D004025, callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc() to run whenever a memory address between 0X8D004010 and 0X8D004025 is read from. funcRef can be used to unregister the callback later on.
+
+__OnMemoryAddressReadFrom:registerWithAutoDeregistration__%%%
+
+* void registerWithAutoDeregistration(unsigned int memoryStartAddress, unsigned int memoryEndAddress, LuaFunction callbackFunction)
+
+* Registers the specified callbackFunction to run when a memory address is read from which is between memoryStartAddress and memoryEndAddress. This function will be automatically de-registered when the only callbacks that are still running are callbacks which were registered with auto-deregistration.
+
+* __WARNING:__ This function will thrown an exception if memoryEndAddress is less than memoryStartAddress.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+OnMemoryAddressReadFrom:registerWithAutoDeregistration(0X8D004010, 0X8D004025, callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc() to run whenever a memory address is read from between 0X8D004010 and 0X8D004025. This callback will automatically de-register when the only callbacks that are still running are ones which were registered with auto-deregistration.
+
+__OnMemoryAddressReadFrom:unregister__%%%
+
+* void unregister(unsigned int memoryStartAddress, int functionReference)
+
+* Unregisters the callback specified by functionReference which was registered with the specified memoryStartAddress. Note that functionReference should be the return value of OnMemoryAddressReadFrom:register().
+
+%%SRC_EMBED lua
+function callbackFunc()
+	print("Read from an address between 0X8D004010 and 0X8D004025")
+	print("Actual address read from was: " .. tostring(OnMemoryAddressReadFrom:getMemoryAddressReadFromForCurrentCallback()))
+end
+funcRef = OnMemoryAddressReadFrom:register(0X8D004010, 0X8D004025, callbackFunc)
+....
+OnMemoryAddressReadFrom:unregister(0X8D004010, funcRef)
+%%END_EMBED
+
+* ==> Now callbackFunc() won't be called again when a memory address between 0X8D004010 and 0X8D004025 is read from.
+
+%%TAB OnMemoryAddressWrittenTo%%
+
+A Library for registering functions that will be run when a game writes to a memory address which is in between a specified start and end address. If multiple functions are registered to run for a certain memory address (i.e. the address is between the start and end range of multiple registered callbacks), then each callback will be executed in the order that they were registered (when that memory address is written to).
+
+This is a builtin library, so you don't need to put a require(X) statement at the top of your Lua script to use these functions.
+
+__OnMemoryAddressWrittenTo:getMemoryAddressWrittenToForCurrentCallback__%%%
+
+* unsigned int getMemoryAddressWrittenToForCurrentCallback()
+
+* Returns the memory address that was written to which triggered the current OnMemoryAddressWrittenTo callback function to run.
+
+* __WARNING:__ This function will throw an exception if called from outside of a currently-executing OnMemoryAddressWrittenTo callback.
+
+* OnMemoryAddressWrittenTo:getMemoryAddressWrittenToForCurrentCallback() ==> Could return 0X8D005432
+
+__OnMemoryAddressWrittenTo:getValueWrittenToMemoryAddressForCurrentCallback__%%%
+
+* unsigned long long getValueWrittenToMemoryAddressForCurrentCallback()
+
+* Returns the value which was written to the memory address which triggered the current OnMemoryAddressWrittenTo callback function to run.
+
+* __WARNING:__ This function will throw an exception if called from outside of a currently-executing OnMemoryAddressWrittenTo callback.
+
+* OnMemoryAddressWrittenTo:getValueWrittenToMemoryAddressForCurrentCallback() ==> Would return 5432, if 5432 was written to the memory address which triggered the currently-executing OnMemoryAddressWrittenTo callback to run.
+
+__OnMemoryAddressWrittenTo:getWriteSize__
+
+* int getWriteSize()
+
+* Returns the number of bytes that were written in the memory-write which triggered the currently-running OnMemoryAddressReadWrittenTo callback function to run.
+
+* __WARNING:__ This function will throw an exception if called from outside of a currently-executing OnMemoryAddressWrittenTo callback.
+
+* OnMemoryAddressWrittenTo:getWriteSize() ==> Could return 1, 2, 4, or 8.
+
+__OnMemoryAddressWrittenTo:isInMemoryAddressWrittenToCallback__%%%
+
+* boolean isInMemoryAddressWrittenToCallback()
+
+* Returns true if called from a currently-executing OnMemoryAddressWrittenTo callback function, and returns false otherwise.
+
+* OnMemoryAddressWrittenTo:isInMemoryAddressWrittenToCallback() ==> Returns true if called from a currently-executing OnMemoryAddressWrittenTo callback function, and returns false otherwise.
+
+__OnMemoryAddressWrittenTo:register__%%%
+
+* int register(unsigned int memoryStartAddress, unsigned int memoryEndAddress, LuaFunction callbackFunction)
+
+* Registers the specified callbackFunction to run when a memory address is written to between memoryStartAddress and memoryEndAddress. Note that if any byte that would be written to memory falls in between the start and end addresses, then the callback will be triggered. For example, if the startAddress is 0X8D004005 and the endAddress is 0X8D004010, and a 4-byte value is written starting at address 0X8D004004, then the callback will be triggered, since the 2nd byte of the number is written to address 0X8D004005. This function returns a unique identifier which can be used to unregister the callback later on.
+
+* __WARNING:__ This function will thrown an exception if memoryEndAddress is less than memoryStartAddress.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+funcRef = OnMemoryAddressWrittenTo:register(0X8D004010, 0X8D004025, callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc() to run whenever a memory address between 0X8D004010 and 0X8D004025 is written to. funcRef can be used to unregister the callback later on.
+
+__OnMemoryAddressWrittenTo:registerWithAutoDeregistration__%%%
+
+* void registerWithAutoDeregistration(unsigned int memoryStartAddress, unsigned int memoryEndAddress, LuaFunction callbackFunction)
+
+* Registers the specified callbackFunction to run when a memory address is written to which is between memoryStartAddress and memoryEndAddress. This function will be automatically de-registered when the only callbacks that are still running are callbacks which were registered with auto-deregistration.
+
+* __WARNING:__ This function will thrown an exception if memoryEndAddress is less than memoryStartAddress.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+OnMemoryAddressWrittenTo:registerWithAutoDeregistration(0X8D004010, 0X8D004025, callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc() to run whenever a memory address is written to between 0X8D004010 and 0X8D004025. This callback will automatically de-register when the only callbacks that are still running are ones which were registered with auto-deregistration.
+
+__OnMemoryAddressWrittenTo:unregister__%%%
+
+* void unregister(unsigned int memoryStartAddress, int functionReference)
+
+* Unregisters the callback specified by functionReference which was registered with the specified memoryStartAddress. Note that functionReference should be the return value of OnMemoryAddressWrittenTo:register().
+
+%%SRC_EMBED lua
+function callbackFunc()
+	print("Wrote to an address between 0X8D004010 and 0X8D004025")
+	print("Actual address written to was: " .. tostring(OnMemoryAddressWrittenTo:getMemoryAddressWrittenToForCurrentCallback()))
+end
+funcRef = OnMemoryAddressWrittenTo:register(0X8D004010, 0X8D004025, callbackFunc)
+....
+OnMemoryAddressWrittenTo:unregister(0X8D004010, funcRef)
+%%END_EMBED
+
+* ==> Now callbackFunc() won't be called again when a memory address between 0X8D004010 and 0X8D004025 is written to.
+
+%%TAB OnWiiInputPolled%%
+
+A library for registering functions which will be run each time a Wiimote is polled. More specifically, the callbacks will be run right before wiimote input is read from or written to a movie/DTM file. If multiple functions are registered to run at the start of Wiimote polls, then each callback will be executed in the order that they were registered.
+
+This is a builtin library, so you don't need to put a require(X) statement at the top of your Lua script to use these functions.
+
+__OnWiiInputPolled:isInWiiInputPolledCallback__%%%
+
+* boolean isInWiiInputPolledCallback()
+
+* Returns true if called from inside of a currently-executing OnWiiInputPolled callback function, and returns false otherwise.
+
+* OnWiiInputPolled:isInWiiInputPolledCallback() ==> Returns true if called from inside of a currently-executing OnWiiInputPolled callback function, and returns false otherwise.
+
+__OnWiiInputPolled:register__%%%
+
+* int register(LuaFunction callbackFunction)
+
+* Registers callbackFunction to be run each time a Wiimote is polled for input, and returns an identifier that can be used to unregister the callback later on.
+
+%%SRC_EMBED lua
+function callbackFunc()
+	print("Game polled for wii input!")
+end
+funcRef = OnWiiInputPolled(callbackFunc)
+%%END_EMBED
+
+* ==> Registers callbackFunc to run each time a wiimote is polled for input, and returns a unique identifier that can be used to unregister the callback later on.
+
+__OnWiiInputPolled:registerWithAutoDeregistration__%%%
+
+* void registerWithAutoDeregistration(LuaFunction callbackFunction)
+
+* Registers the callbackFunction to be run each time a Wiimote is polled for input. This function will be automatically de-registered when the only callbacks that are still running are callbacks that were registered with auto-deregistration.
+
+%%SRC_EMBED lua
+function callbackFunc()
+end
+OnWiiInputPolled:registerWithAutoDeregistration(callbackFunc)
+%%END_EMBED
+
+* ==> Calls callbackFunc() each time a Wiimote is being polled for input. This function will auto-deregister when the only callbacks that are still running are callbacks that were registered with auto-deregistration.
+
+__OnWiiInputPolled:unregister__%%%
+
+* void unregister(int functionReference)
+
+* Unregisters the OnWiiInputPolled callback specified by functionReference, so that it will no longer run whenever a wiimote is polled. The value passed into this function must be the return result of OnWiiInputPolled:register()
+
+%%SRC_EMBED lua
+function myCallbackFunc()
+	print("Hello World!")
+end
+funcRef = OnWiiInputPolled:register(myCallbackFunc)
+...
+OnWiiInputPolled:unregister(funcRef)
+%%END_EMBED
+
+* ==> Now, the myCallbackFunc() function won't run whenever a wiimote is polled anymore.
+
+%%TAB registers%%
+
+A library for reading from and writing to registers.
+
+RegisterTypeString in the documentation below refers to a String representing a register. Currently supported values are: 
+* "R0", "R1", ... , "R31"
+* "F0", "F1", ... , "F31"
+* "PC"
+* "LR" (register that stores where to return to when a function returns).
+
+All register types can hold a maximum size of 4 bytes, except for the floating-point registers (F0-F31), which can hold a maximum size of 16 bytes.
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+%%SRC_EMBED lua
+require ("registers")
+%%END_EMBED
+
+__registers:getRegister__%%%
+
+* returnType getRegister(RegisterTypeString registerTypeString, DataTypeString returnType, [[optional]] unsigned int optionalOffset)
+
+* This function takes as input a registerTypeString (representing which register to read from), a returnType (which specified the return type of the function, as described in the "DataTypeString" description at the top of this page), an an optional integer offset (in bytes) from the start of the register. The function returns the value stored in the specified register with the type specified by returnType. If optionalOffset is included, then we start reading from the register at an offset of optionalOffset total bytes from the start of the register. Otherwise, we start reading from the beginning of the register.
+
+* __WARNING:__ If the size of the type referred to by returnType plus the optionalOffset is greater than the maximum size of the register, then this function will thrown an exception.
+
+* registers:getRegister("R2", "S16", 2) ==> Returns the last 2 bytes of register R2 as a signed 2-byte integer.
+
+__registers:getRegisterAsSignedByteArray__%%%
+
+* Dict<unsigned int, int> getRegisterAsSignedByteArray(RegisterTypeString registerTypeString, unsigned int arraySize, [[optional]] unsigned int optionalOffset)
+
+* This function takes as input a registerTypeString representing which register to read from, an arraySize representing how many bytes to read, and an optional integer offset (in bytes) from the start of the register. The function returns a dictionary where the 1st key = 1, the 2nd key = 2, etc. and the associated 1st value is the 1st byte read from the register as a signed byte, and the 2nd value represents the 2nd byte read from the register as a signed byte, etc. If optionalOffset is included, then we start reading from the register at an offset of optionalOffset total bytes from the start of the register. Otherwise, we start reading from the beginning of the register.
+
+* __WARNING:__ If arraySize + optionalOffset is greater than the maximum size of the register, then this function will thrown an exception.
+
+* registers:getRegisterAsSignedByteArray("R3", 4) ==> Could return {1 = -30, 2 = 56, 3 = 120, 4 = 67}. Note that this represents the same bytes for R3 as shown in the example below for getRegisterAsUnsignedByteArray()
+
+__registers:getRegisterAsUnsignedByteArray__%%%
+
+* Dict<unsigned int, unsigned int> getRegisterAsUnsignedByteArray(RegisterTypeString registerTypeString, unsigned int arraySize, [[optional]] unsigned int optionalOffset)
+
+* This function takes as input a registerTypeString representing which register to read from, an arraySize representing how many bytes to read, and an optional integer offset (in bytes) from the start of the register. The function returns a dictionary where the 1st key = 1, the 2nd key = 2, etc. and the associated 1st value is the 1st byte read from the register as an unsigned byte, and the 2nd value represents the 2nd byte read from the register as a signed byte, etc.  If optionalOffset is included, then we start reading from the register at an offset of optionalOffset total bytes from the start of the register. Otherwise, we start reading from the beginning of the register.
+
+* __WARNING:__ If arraySize + optionalOffset is greater than the maximum size of the register, then this function will thrown an exception.
+
+* registers:getRegisterAsUnsignedByteArray("R3", 4) --> Could return {1 = 226, 2 = 56, 3 = 120, 4 = 67}. Note that this represents the same bytes for R3 as shown in the example above for getRegisterAsSignedByteArray().
+
+__registers:setRegister__%%%
+
+* void setRegister(RegisterTypeString registerTypeString, DataTypeString writeType, writeType writeValue, [[optional]] unsigned int optionalOffset)
+
+* This function takes as input a registerTypeString representing which register to write to, a DataTypeString specifying what data type writeValue will be (as described in the "DataTypeString" description at the top of this page), a writeValue, and an optional integer offset (in bytes) from the start of the register. The function interprets writeValue of being the type specified by writeType, and writes this value to the specified register. If optionalOffset is included, then we start writing to the register at an offset of optionalOffset total bytes from the start of the register. Otherwise, we start writing at the beginning of the register.
+
+* __WARNING:__ If the size of the type referred to by writeType plus the optionalOffset is greater than the maximum size of the register, then this function will thrown an exception.
+
+* registers:setRegister("R8", "U32", 512321) ==> Writes the value of 512,321 to register R8.
+
+__registers:setRegisterFromByteArray__%%%
+
+* void setRegisterFromByteArray(RegisterTypeString registerTypeString, Dict<unsigned int, int> indexToByteDict, [[optional]] unsigned int optionalOffset)
+
+* This function takes as input a registerTypeString representing which register to write to, an indexToByteDict representing the bytes to write to the register, and an optional integer offset (in bytes) from the start of the register. The function writes the bytes specified by indexToByteDict in order to the specified register (in order of bytes with the lowest key in the dictionary to the byte with the highest associated key). If optionalOffset is included, then we start writing to the register at an offset of optionalOffset total bytes from the start of the register. Otherwise, we start writing at the beginning of the register. Note that each byte is written one-after-the-other (consecutively) to the register. Also, any negative numbers in the dictionary are written as signed bytes, and any non-negative numbers in the dictionary are written as unsigned bytes.
+
+* __WARNING:__ If the number of elements in the dictionary + the optionalOffset is greater than the maximum size of the register, then this function will thrown an exception.
+
+* __SECOND WARNING:__ This function will throw an exception if indexToByteDict contains any values which can't be represented as a byte (i.e. any values < -128 or > 255).
+
+* registers:setRegisterFromByteArray("R3", {1 = -65, 2 = 211, 3 = 40, 4 = 12}) ==> Will write the specified bytes (in order) to register R3. 1st byte is written as a signed byte, and the next 3 bytes are written as unsigned bytes.
+
+%%TAB statistics%%
+
+A library which returns various dolphin statistics.
+
+To use these functions, the following line __MUST__ be included at the top of your Lua script:
+%%SRC_EMBED lua
+require ("statistics")
+%%END_EMBED
+
+__statistics:getCurrentFrame__%%%
+
+* unsigned int getCurrentFrame()
+
+* Returns the current frame number.
+
+* statistics:getCurrentFrame() ==> Would return 1503, if we're on the 1,503rd visual frame since emulation started.
+
+__statistics:getCurrentInputCount__%%%
+
+* unsigned int getCurrentInputCount()
+
+* Returns the current input count.
+
+* statistics:getCurrentInputCount() ==> Would return 1503, if there have been 1503 input polls since emulation started.
+
+__statistics:getCurrentLagCount__%%%
+
+* unsigned int getCurrentLagCount()
+
+* Returns the current lag count.
+
+* statistics:getCurrentLagCount() ==> Would return 4, if there have been 4 lag frames since emulation started.
+
+__statistics:getExRAMSize__%%%
+
+* unsigned int getExRAMSize()
+
+* Returns the size of ExRAM (in bytes), or 0 if this isn't used by the game.
+
+* statistics:getExRAMSize() ==> Could return 67108864 (the value for a lot of games).
+
+__statistics:getFakeVMemSize__%%%
+
+* unsigned int getFakeVMemSize()
+
+* Returns the size of FakeVMem (in bytes), or 0 if this isn't used by the game.
+
+* statistics:getFakeVMem() ==> Could return 33554432 (the value for a lot of games).
+
+__statistics:getL1CacheSize__%%%
+
+* unsigned int getL1CacheSize()
+
+* Returns the size of L1Cache (in bytes), or 0 if this isn't used by the game.
+
+* statistics:getL1CacheSize() ==> Could return 262144 (the value for a lot of games).
+
+__statistics:getMovieLength__%%%
+
+* unsigned int getMovieLength()
+
+* Returns the number of visual frames in the currently-active movie.
+
+* statistics:getMovieLength() ==> Could return 12000, if the currently-active movie is 12000 frames-long.
+
+__statistics:getRAMSize__%%%
+
+* unsigned int getRAMSize()
+
+* Returns the size of RAM (in bytes).
+
+* statistics:getRAMSize() ==> Could return 25165824 (the value for most games).
+
+__statistics:getRerecordCount__%%%
+
+* unsigned int getRerecordCount()
+
+* Returns the number of re-records in the currently-active movie.
+
+* statistics:getRerecordCount() ==> Could return 2642, if there have been 2,642 re-records in the currently-active movie.
+
+__statistics:getTotalInputCount__%%%
+
+* unsigned int getTotalInputCount()
+
+* Returns the total number of input polls that occur from emulation start up to the end of the currently-active movie.
+
+* statistics:getTotalInputCount() ==> Could return 10542, if there are 10,542 total input polls from emulation start up until the end of the DTM.
+
+__statistics:getTotalLagCount__%%%
+
+* unsigned int getTotalLagCount()
+
+* Returns the total number of lag frames that occur from emulation start up to the end of the currently-active movie.
+
+* statistics:getTotalLagCount() ==> Could return 143, if there are 143 total lag frames from emulation start up until the end of the DTM.
+
+__statistics:isMovieActive__%%%
+
+* boolean isMovieActive()
+
+* Returns true if a movie is currently active, and returns false otherwise.
+
+* statistics:isMovieActive() ==> Returns true if a movie is currently playing back or being recorded, and returns false otherwise.
+
+__statistics:isPlayingInput__%%%
+
+* boolean isPlayingInput()
+
+* Returns true if a movie is currently being played back, and returns false otherwise.
+
+* statistics:isPlayingInput() ==> Returns true if a movie is currently playing back, and returns false otherwise.
+
+__statistics:isRecordingInput__%%%
+
+* boolean isRecordingInput()
+
+* Returns true if a movie is currently being recorded, and returns false otherwise.
+
+* statistics:isRecordingInput() ==> Returns true if a movie is currently being recorded, and returns false otherwise.
+
+__statistics:isRecordingInputFromSaveState__%%%
+
+* boolean isRecordingInputFromSaveState()
+
+* Returns true if a movie is currently being played or recorded which started from a save state (as opposed to the DTM starting from power-on).
+
+* statistics:isRecordingInputFromSaveState() ==> Returns true if a movie is currently being played or recorded which started from a save state, and returns false otherwise.

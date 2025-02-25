@@ -24,6 +24,30 @@ struct ConfigChangedCallbackID
 
 using ConfigChangedCallback = std::function<void()>;
 
+enum class ValueType
+{
+  BOOLEAN,
+  INT,
+  U32,
+  FLOAT,
+  STRING,
+  CPU_CORE,
+  DPL2_QUALITY,
+  EXI_DEVICE_TYPE,
+  SI_DEVICE_TYPE,
+  HSP_DEVICE_TYPE,
+  REGION,
+  SHOW_CURSOR_VALUE_TYPE,
+  LOG_LEVEL_TYPE,
+  FREE_LOOK_CONTROL_TYPE,
+  ASPECT_MODE,
+  SHADER_COMPILATION_MODE,
+  TRI_STATE,
+  TEXTURE_FILTERING_MODE,
+  STERERO_MODE,
+  WIIMOTE_SOURCE
+};
+
 // Layer management
 void AddLayer(std::unique_ptr<ConfigLayerLoader> loader);
 std::shared_ptr<Layer> GetLayer(LayerType layer);

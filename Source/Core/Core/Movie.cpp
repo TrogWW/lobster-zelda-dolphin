@@ -65,6 +65,10 @@
 #include "Core/IOS/USB/Bluetooth/BTEmu.h"
 #include "Core/IOS/USB/Bluetooth/WiimoteDevice.h"
 #include "Core/NetPlayProto.h"
+#include "Core/Scripting/CoreScriptContextFiles/Enums/GCButtonNameEnum.h"
+#include "Core/Scripting/EventCallbackRegistrationAPIs/OnGCControllerPolledCallbackAPI.h"
+#include "Core/Scripting/InternalAPIModules/GameCubeControllerAPI.h"
+#include "Core/Scripting/ScriptUtilities.h"
 #include "Core/State.h"
 #include "Core/System.h"
 #include "Core/WiiUtils.h"
@@ -76,6 +80,7 @@
 #include "VideoCommon/VideoBackendBase.h"
 #include "VideoCommon/VideoConfig.h"
 
+#include "Core/HW/Memmap.h"
 // The chunk to allocate movie data in multiples of.
 #define DTM_BASE_LENGTH (1024)
 
@@ -158,7 +163,249 @@ std::string MovieManager::GetInputDisplay()
       if (IsUsingWiimote(i))
         input_display += m_input_display[i + 4] + '\n';
     }
+    // Dragonbane
+    Core::System& system = Core::System::GetInstance();
+    Memory::MemoryManager& memory = system.GetMemory();
+    std::string gameID = SConfig::GetInstance().m_debugger_game_id;
+    std::string iniContent;
+
+    bool success = File::ReadFileToString(
+        File::GetExeDirectory() + "\\InfoDisplay\\" + gameID + ".ini", iniContent);
+
+
+    if (success)
+    {
+      int lineCounter = 0;
+      bool inProgress = true;
+      input_display.append("\n");
+
+      while (inProgress)
+      {
+        lineCounter++;
+
+        std::string lineName = StringFromFormat("Line%i", lineCounter);
+
+        std::string::size_type loc = iniContent.find(lineName, 0);
+        if (loc == std::string::npos)
+        {
+          inProgress = false;
+          break;
+        }
+
+        iniContent = iniContent.substr(loc);
+        iniContent = iniContent.substr(iniContent.find("\"", 0) + 1);
+
+        std::string line = iniContent.substr(0, iniContent.find("\"", 0));
+        std::string blockContent = iniContent.substr(0, iniContent.find("End Line", 0));
+
+        std::string::size_type locNext = line.find("%", 0);
+        std::string subLine = line;
+        int argCounter = 0;
+
+        while (locNext != std::string::npos)
+        {
+          argCounter++;
+
+          std::string currSectionOutput = subLine.substr(0, locNext);
+          subLine = subLine.substr(locNext + 1);
+
+          int numBytes = 0;
+          std::string currIdenti = "";
+
+          if (subLine[2] == 'b')
+          {
+            currIdenti = subLine.substr(0, 3);
+
+            numBytes = atoi(currIdenti.substr(1, 1).c_str());
+
+            subLine = subLine.substr(3);
+          }
+          else
+          {
+            currIdenti = subLine.substr(0, 4);
+
+            numBytes = atoi(currIdenti.substr(1, 2).c_str());
+
+            subLine = subLine.substr(4);
+          }
+
+          std::string identifier = "%" + currIdenti.substr(0, 1);
+          u32 readAddress;
+
+          std::string nextArgName = StringFromFormat("Arg%i", argCounter);
+
+          std::string::size_type locNextArg = blockContent.find(nextArgName, 0);
+
+          if (locNextArg == std::string::npos)
+            break;
+
+          std::string argString = blockContent.substr(locNextArg);
+          argString = argString.substr(argString.find("=", 0) + 1);
+          argString = argString.substr(0, argString.find(";", 0));
+
+          std::string::size_type locPlus = argString.find("+", 0);
+          std::string::size_type locHint = argString.find(">>", 0);
+
+          std::string currHint;
+
+          if (locHint != std::string::npos)
+            currHint = argString.substr(locHint + 3);
+
+          if (locPlus == std::string::npos)
+          {
+            std::string arguString;
+
+            if (locHint != std::string::npos)
+            {
+              arguString = argString.substr(0, locHint - 1);
+            }
+            else
+            {
+              arguString = argString;
+            }
+
+            readAddress = strtol(arguString.c_str(), nullptr, 16);
+          }
+          else
+          {
+            u32 pointerAddress;
+            u32 offset;
+
+            pointerAddress = strtol(argString.substr(0, locPlus - 1).c_str(), nullptr, 16);
+
+            std::string arguString = argString.substr(locPlus + 2);
+
+            if (locHint != std::string::npos)
+            {
+              locHint = arguString.find(">>", 0);
+
+              arguString = arguString.substr(0, locHint - 1);
+            }
+
+            offset = strtol(arguString.c_str(), nullptr, 16);
+            
+            //u32 pointer = //system.GetMemory().Read_U32(pointerAddress);
+            u32 pointer = memory.Read_U32(pointerAddress);
+
+            if (pointer > 0x80000000)
+            {
+              pointer -= 0x80000000;
+
+              readAddress = pointer + offset;
+            }
+            else
+            {
+              input_display.append(currSectionOutput + "N/A");
+              locNext = subLine.find("%", 0);
+              continue;
+            }
+          }
+
+          std::string finalOutput;
+
+          if (identifier.compare("%s") == 0)
+          {
+            std::string outputString = memory.GetString(readAddress, numBytes);
+
+            finalOutput = StringFromFormat(identifier.c_str(), outputString.c_str());
+          }
+          else if (identifier.compare("%f") == 0)
+          {
+            float outputFloat = memory.Read_F32(readAddress);
+            finalOutput = StringFromFormat(identifier.c_str(), outputFloat);
+          }
+          else if (numBytes == 4)
+          {
+            u32 output4Bytes = memory.Read_U32(readAddress);
+            finalOutput = StringFromFormat(identifier.c_str(), output4Bytes);
+          }
+          else if (numBytes == 2)
+          {
+            u16 output2Bytes = memory.Read_U16(readAddress);
+
+            // Special Formatting for 2 Byte
+            if (currHint.compare("Degrees") == 0)
+            {
+              double degrees = output2Bytes;
+              degrees = (degrees / 182.04) + 0.5;
+
+              int finalDegrees = (int)degrees;
+
+              if (finalDegrees >= 360)
+                finalDegrees = finalDegrees - 360;
+
+              std::string newIdentifier = identifier;
+              newIdentifier.append(" (%i DEG)");
+
+              finalOutput = StringFromFormat(newIdentifier.c_str(), output2Bytes, finalDegrees);
+            }
+            else if (currHint.compare("Time") == 0)
+            {
+              // ToD
+              int time = output2Bytes;
+              int hours = time / 256;
+
+              float minutes = (float)time / 256;
+              minutes = (minutes - hours) * 256;
+
+              int finalMinutes = (int)minutes;
+
+              std::stringstream ss;
+
+              ss << finalMinutes;
+              std::string minutesString = ss.str();
+
+              if (finalMinutes < 10)
+                minutesString = "0" + minutesString;
+
+              std::string newIdentifier = identifier;
+              newIdentifier.append(":%s");
+
+              finalOutput = StringFromFormat(newIdentifier.c_str(), hours, minutesString.c_str());
+            }
+            else
+            {
+              finalOutput = StringFromFormat(identifier.c_str(), output2Bytes);
+            }
+          }
+          else if (numBytes == 1)
+          {
+            u8 output1Byte = memory.Read_U8(readAddress);
+            finalOutput = StringFromFormat(identifier.c_str(), output1Byte);
+          }
+
+          if (finalOutput.length() == 0)
+          {
+            finalOutput = "N/A";
+          }
+          else
+          {
+            if (locHint == std::string::npos)
+            {
+              if (identifier.compare("%X") == 0 || identifier.compare("%x") == 0)
+              {
+                if (finalOutput.length() < 2)
+                {
+                  finalOutput = "0" + finalOutput;
+                }
+              }
+            }
+          }
+
+          std::string completeOutput =
+              StringFromFormat("%s%s", currSectionOutput.c_str(), finalOutput.c_str());
+
+          input_display.append(completeOutput);
+
+          locNext = subLine.find("%", 0);
+        }
+
+        input_display.append("\n");
+      }
+    }
   }
+
+  
   return input_display;
 }
 
@@ -341,6 +588,11 @@ u64 MovieManager::GetCurrentLagCount() const
   return m_current_lag_count;
 }
 
+u32 MovieManager::GetRerecordCount() const
+{
+  return m_rerecords;
+}
+
 u64 MovieManager::GetTotalLagCount() const
 {
   return m_total_lag_count;
@@ -382,6 +634,11 @@ bool MovieManager::IsUsingPad(int controller) const
 bool MovieManager::IsUsingBongo(int controller) const
 {
   return ((m_bongos & (1 << controller)) != 0);
+}
+
+bool MovieManager::IsUsingGCController(int controller) const
+{
+  return m_controllers[controller] == ControllerType::GC;
 }
 
 bool MovieManager::IsUsingGBA(int controller) const
@@ -623,6 +880,8 @@ static std::string Analog1DToString(u32 v, const std::string& prefix, u32 range 
 // NOTE: CPU Thread
 static std::string GenerateInputDisplayString(ControllerState padState, int controllerID)
 {
+  Scripting::GameCubeControllerApi::controller_inputs_on_last_frame[controllerID] = padState;
+
   std::string display_str = fmt::format("P{}:", controllerID + 1);
 
   if (padState.is_connected)
@@ -1198,6 +1457,24 @@ void MovieManager::PlayController(GCPadStatus* PadStatus, int controllerID)
     return;
   }
 
+  if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+  {
+    Scripting::OnGCControllerPolledCallbackAPI::current_controller_number_polled = controllerID;
+    Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
+        [controllerID] = false;
+    memcpy(&Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[controllerID],
+           &m_temp_input[m_current_byte], sizeof(ControllerState));
+    Scripting::ScriptUtilities::RunOnGCInputPolledCallbacks();
+    if (Scripting::OnGCControllerPolledCallbackAPI::overwrite_controller_at_specified_port
+            [controllerID])
+    {
+      memcpy(&m_temp_input[m_current_byte],
+             &Scripting::OnGCControllerPolledCallbackAPI::new_controller_inputs[controllerID],
+             sizeof(ControllerState));
+    }
+    Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
+  }
+
   memcpy(&m_pad_state, &m_temp_input[m_current_byte], sizeof(ControllerState));
   m_current_byte += sizeof(ControllerState);
 
@@ -1287,6 +1564,12 @@ bool MovieManager::PlayWiimote(int wiimote, WiimoteCommon::DataReportBuilder& rp
                    m_temp_input.size());
     EndPlayInput(!m_read_only);
     return false;
+  }
+
+  if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
+  {
+    Scripting::ScriptUtilities::RunOnWiiInputPolledCallbacks();
+    Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
   }
 
   const u8 size = rpt.GetDataSize();

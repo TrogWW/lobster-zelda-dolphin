@@ -1,0 +1,5 @@
+bl	->0x8024377C
+
+Total Tests: 6
+	Tests Passed: 6
+	Tests Failed: 0

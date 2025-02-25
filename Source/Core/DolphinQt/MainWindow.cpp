@@ -116,6 +116,7 @@
 #include "DolphinQt/ResourcePackManager.h"
 #include "DolphinQt/Resources.h"
 #include "DolphinQt/RiivolutionBootWidget.h"
+#include "DolphinQt/ScriptWindow.h"
 #include "DolphinQt/SearchBar.h"
 #include "DolphinQt/Settings.h"
 #include "DolphinQt/SkylanderPortal/SkylanderPortalWindow.h"
@@ -294,8 +295,9 @@ MainWindow::MainWindow(Core::System& system, std::unique_ptr<BootParameters> boo
       std::optional<std::string> savestate_path;
       if (m_system.GetMovie().PlayInput(movie_path, &savestate_path))
       {
-        m_pending_boot->boot_session_data.SetSavestateData(std::move(savestate_path),
-                                                           DeleteSavestateAfterBoot::No);
+        if (!m_pending_boot->boot_session_data.GetSavestatePath().has_value())
+          m_pending_boot->boot_session_data.SetSavestateData(std::move(savestate_path),
+                                                             DeleteSavestateAfterBoot::No);
         emit RecordingStatusChanged(true);
       }
     }
@@ -476,6 +478,7 @@ void MainWindow::CreateComponents()
   m_breakpoint_widget = new BreakpointWidget(this);
   m_code_widget = new CodeWidget(this);
   m_cheats_manager = new CheatsManager(m_system, this);
+  m_script_manager = new ScriptWindow(this);
   m_assembler_widget = new AssemblerWidget(this);
 
   const auto request_watch = [this](QString name, u32 addr) {
@@ -560,6 +563,7 @@ void MainWindow::ConnectMenuBar()
 
   // Tools
   connect(m_menu_bar, &MenuBar::ShowMemcardManager, this, &MainWindow::ShowMemcardManager);
+  connect(m_menu_bar, &MenuBar::ShowScriptManager, this, &MainWindow::ShowScriptManager);
   connect(m_menu_bar, &MenuBar::ShowResourcePackManager, this,
           &MainWindow::ShowResourcePackManager);
   connect(m_menu_bar, &MenuBar::ShowCheatsManager, this, &MainWindow::ShowCheatsManager);
@@ -2000,6 +2004,11 @@ void MainWindow::ShowMemcardManager()
 
   SetQWidgetWindowDecorations(&manager);
   manager.exec();
+}
+
+void MainWindow::ShowScriptManager()
+{
+  m_script_manager->show();
 }
 
 void MainWindow::ShowResourcePackManager()

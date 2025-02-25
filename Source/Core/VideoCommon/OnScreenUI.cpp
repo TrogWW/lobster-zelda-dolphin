@@ -299,6 +299,14 @@ void OnScreenUI::DrawDebugText()
         if (movie.IsRecordingInput())
           ImGui::Text("Input: %" PRIu64, movie.GetCurrentInputCount());
       }
+      if (movie.IsRecordingInput())
+      {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "RECORDING");
+      }
+      else if (movie.IsPlayingInput())
+      {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "PLAYBACK");
+      }
       if (Config::Get(Config::MAIN_SHOW_LAG))
         ImGui::Text("Lag: %" PRIu64 "\n", movie.GetCurrentLagCount());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY))
