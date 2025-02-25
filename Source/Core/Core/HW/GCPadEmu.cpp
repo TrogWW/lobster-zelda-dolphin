@@ -165,6 +165,11 @@ GCPadStatus GCPad::GetInput() const
   pad.triggerLeft = MapFloat<u8>(triggers[0], 0);
   pad.triggerRight = MapFloat<u8>(triggers[1], 0);
 
+  // set digital L/R to full
+  if (pad.button & PAD_TRIGGER_L)
+    pad.triggerLeft = 0xFF;
+  if (pad.button & PAD_TRIGGER_R)
+    pad.triggerRight = 0xFF;
   return pad;
 }
 
