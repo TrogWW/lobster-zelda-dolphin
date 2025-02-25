@@ -155,8 +155,8 @@ void GBAWidget::ToggleMute()
 
 void GBAWidget::ToggleDisconnect()
 {
-  if (!CanControlCore())
-    return;
+  //if (!CanControlCore())
+  //  return;
 
   m_force_disconnect = !m_force_disconnect;
 
@@ -390,7 +390,7 @@ void GBAWidget::contextMenuEvent(QContextMenuEvent* event)
 
   auto* disconnect_action =
       new QAction(m_force_disconnect ? tr("Dis&connected") : tr("&Connected"), menu);
-  disconnect_action->setEnabled(CanControlCore());
+  disconnect_action->setEnabled(true);
   disconnect_action->setCheckable(true);
   disconnect_action->setChecked(!m_force_disconnect);
   connect(disconnect_action, &QAction::triggered, this, &GBAWidget::ToggleDisconnect);
