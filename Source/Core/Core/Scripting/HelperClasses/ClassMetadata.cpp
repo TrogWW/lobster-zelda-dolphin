@@ -1,4 +1,5 @@
 #include "Core/Scripting/HelperClasses/ClassMetadata.h"
+
 namespace Scripting
 {
 

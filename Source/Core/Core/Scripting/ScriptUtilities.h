@@ -1,5 +1,4 @@
-#ifndef SCRIPTING_UTILITIES
-#define SCRIPTING_UTILITIES
+#pragma once
 
 #include <functional>
 #include <mutex>
@@ -60,4 +59,3 @@ void RunOnWiiInputPolledCallbacks();
 void RunButtonCallbacksInQueues();
 
 }  // namespace Scripting::ScriptUtilities
-#endif

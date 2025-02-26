@@ -1,5 +1,4 @@
-#ifndef VECTOR_OF_ARG_HOLDERS_APIS
-#define VECTOR_OF_ARG_HOLDERS_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +38,4 @@ typedef struct VectorOfArgHolders_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

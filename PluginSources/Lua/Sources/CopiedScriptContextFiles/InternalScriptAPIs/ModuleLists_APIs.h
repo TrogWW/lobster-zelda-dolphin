@@ -1,5 +1,4 @@
-#ifndef MODULE_LISTS_APIS
-#define MODULE_LISTS_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,6 +30,4 @@ typedef struct ModuleLists_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

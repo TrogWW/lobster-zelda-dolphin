@@ -4,6 +4,7 @@
 
 namespace Scripting::OnWiiInputPolledCallbackAPI
 {
+
 const char* class_name = "OnWiiInputPolled";
 
 static std::array all_on_wii_input_polled_callback_functions_metadata_list = {
@@ -76,4 +77,5 @@ ArgHolder* IsInWiiInputPolledCallback(ScriptContext* current_script,
   return CreateBoolArgHolder(current_script->current_script_call_location ==
                              ScriptingEnums::ScriptCallLocations::FromWiiInputPolled);
 }
+
 }  // namespace Scripting::OnWiiInputPolledCallbackAPI

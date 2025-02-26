@@ -1,5 +1,4 @@
-#ifndef SCRIPT_CONTEXT_IMPL
-#define SCRIPT_CONTEXT_IMPL
+#pragma once
 
 #include <memory>
 #include <mutex>
@@ -93,6 +92,4 @@ void ScriptContext_AddScriptToQueueOfScriptsWaitingToStart_impl(void*);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

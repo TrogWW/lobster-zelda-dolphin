@@ -90,4 +90,5 @@ GetAllFunctions(const std::array<FunctionMetadata, array_size> all_functions)
 {
   return std::vector<FunctionMetadata>(&all_functions[0], &all_functions[0] + array_size);
 }
+
 }  // namespace Scripting

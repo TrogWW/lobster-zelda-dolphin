@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
@@ -7,6 +8,7 @@
 
 namespace Scripting::OnGCControllerPolledCallbackAPI
 {
+
 extern const char* class_name;
 
 extern std::array<bool, 4> overwrite_controller_at_specified_port;

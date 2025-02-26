@@ -10,6 +10,7 @@
 
 namespace Scripting::MemoryApi
 {
+
 extern const char* class_name;
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version);

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
@@ -7,6 +8,7 @@
 
 namespace Scripting::InstructionStepAPI
 {
+
 extern const char* class_name;
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version);

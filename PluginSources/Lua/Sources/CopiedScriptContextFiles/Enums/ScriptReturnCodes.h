@@ -1,7 +1,8 @@
-#ifndef SCRIPT_RETURN_CODES
-#define SCRIPT_RETURN_CODES
+#pragma once
+
 namespace ScriptingEnums
 {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,5 +19,5 @@ enum ScriptReturnCodes
 #ifdef __cplusplus
 }
 #endif
+
 }  // namespace ScriptingEnums
-#endif

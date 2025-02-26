@@ -615,7 +615,7 @@ static void EmuThread(Core::System& system, std::unique_ptr<BootParameters> boot
   system.GetPowerPC().SetMode(PowerPC::CoreMode::Interpreter);
 
   // Determine the CPU thread function
-  void (*cpuThreadFunc)(Core::System & system, const std::optional<std::string>& savestate_path,
+  void (*cpuThreadFunc)(Core::System& system, const std::optional<std::string>& savestate_path,
                         bool delete_savestate);
   if (std::holds_alternative<BootParameters::DFF>(boot->parameters))
     cpuThreadFunc = FifoPlayerThread;
@@ -893,13 +893,15 @@ void Callback_NewField(Core::System& system)
   {
     Core::QueueHostJob(
         [](Core::System& system) {
-          Core::RunOnCPUThread(system,
+          Core::RunOnCPUThread(
+              system,
               [] {
                 Scripting::ScriptUtilities::ProcessScriptQueueEvents();
                 if (!Scripting::ScriptUtilities::StartScripts())
+                {
                   if (!Scripting::ScriptUtilities::RunOnFrameStartCallbacks())
                     Scripting::ScriptUtilities::RunGlobalCode();
-
+                }
                 Scripting::ScriptUtilities::RunButtonCallbacksInQueues();
               },
               true);

@@ -1,5 +1,4 @@
-#ifndef FILE_UTILITY_API_IMPLS
-#define FILE_UTILITY_API_IMPLS
+#pragma once
 
 #include <string>
 
@@ -18,6 +17,4 @@ const char* GetSystemDirectory_impl();
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

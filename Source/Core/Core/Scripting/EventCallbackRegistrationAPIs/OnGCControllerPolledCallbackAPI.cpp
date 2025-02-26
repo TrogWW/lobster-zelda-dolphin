@@ -4,6 +4,7 @@
 
 namespace Scripting::OnGCControllerPolledCallbackAPI
 {
+
 const char* class_name = "OnGCControllerPolled";
 
 std::array<bool, 4> overwrite_controller_at_specified_port{};
@@ -125,4 +126,5 @@ ArgHolder* GetInputsForPoll(ScriptContext* current_script, std::vector<ArgHolder
         "OnGCControllerPolled callback function!");
   return CreateControllerStateArgHolder(new_controller_inputs[current_controller_number_polled]);
 }
+
 }  // namespace Scripting::OnGCControllerPolledCallbackAPI

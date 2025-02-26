@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
@@ -7,8 +8,10 @@
 
 namespace Scripting
 {
+
 class FunctionMetadata
 {
+
 public:
   FunctionMetadata()
   {

@@ -72,8 +72,10 @@ ArgHolder* EmuLoadState(ScriptContext* current_script, std::vector<ArgHolder*>* 
 {
   load_state_name = (*args_list)[0]->string_val;
   if (!CheckIfFileExists(load_state_name))
+  {
     return CreateErrorStringArgHolder(
         fmt::format("could not find savestate with filename of {}", load_state_name).c_str());
+  }
   State::LoadAs(Core::System::GetInstance(), load_state_name);
   return CreateVoidTypeArgHolder();
 }
@@ -89,8 +91,10 @@ ArgHolder* EmuPlayMovie(ScriptContext* current_script, std::vector<ArgHolder*>* 
 {
   play_movie_name = (*args_list)[0]->string_val;
   if (!CheckIfFileExists(play_movie_name))
+  {
     return CreateErrorStringArgHolder(
         fmt::format("could not find a movie with filename of {}", play_movie_name).c_str());
+  }
   Movie::MovieManager& movie_manager = Core::System::GetInstance().GetMovie();
   movie_manager.EndPlayInput(false);
   movie_manager.PlayInput(play_movie_name, &blank_string);

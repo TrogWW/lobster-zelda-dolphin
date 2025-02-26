@@ -5,6 +5,7 @@
 
 namespace Scripting::OnMemoryAddressReadFromCallbackAPI
 {
+
 const char* class_name = "OnMemoryAddressReadFrom";
 u32 memory_address_read_from_for_current_callback = 0;
 u32 read_size = 0;
@@ -156,4 +157,5 @@ ArgHolder* GetReadSize(ScriptContext* current_script, std::vector<ArgHolder*>* a
                                       "OnMemoryAddressReadFrom callback function!");
   return CreateU32ArgHolder(read_size);
 }
+
 }  // namespace Scripting::OnMemoryAddressReadFromCallbackAPI

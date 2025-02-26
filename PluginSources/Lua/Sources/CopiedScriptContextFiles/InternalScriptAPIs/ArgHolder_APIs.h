@@ -1,5 +1,4 @@
-#ifndef ARG_HOLDER_APIS
-#define ARG_HOLDER_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,7 +9,7 @@ extern "C" {
 typedef struct ArgHolder_APIs
 {
   // Takes an opaque ArgHolder* as input, and returns its type as int (which represents an
-  // ScriptingEnums::ArgTypeEnum)
+  // ArgTypeEnum)
   int (*GetArgType)(void*);
 
   // Returns 1 if the ArgHolder* passed into it was empty, and 0 otherwise.
@@ -193,6 +192,4 @@ typedef struct ArgHolder_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

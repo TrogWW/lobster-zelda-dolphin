@@ -1,8 +1,8 @@
-#ifndef ARG_HOLDER_API_IMPLS
-#define ARG_HOLDER_API_IMPLS
+#pragma once
 
 namespace Scripting
 {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,10 +74,9 @@ const char* GetStringFromArgHolder_impl(void*);
 const char* GetErrorStringFromArgHolder_impl(void*);
 
 void Delete_ArgHolder_impl(void*);
+
 #ifdef __cplusplus
 }
 #endif
 
 }  // namespace Scripting
-
-#endif

@@ -13,6 +13,7 @@
 
 namespace Scripting::MemoryApi
 {
+
 const char* class_name = "MemoryAPI";
 
 static std::array all_memory_functions_metadata_list = {

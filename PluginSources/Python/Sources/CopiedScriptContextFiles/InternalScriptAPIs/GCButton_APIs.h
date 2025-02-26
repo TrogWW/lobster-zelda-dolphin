@@ -1,5 +1,4 @@
-#ifndef GC_BUTTON_APIS
-#define GC_BUTTON_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,6 +32,4 @@ typedef struct GCButton_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

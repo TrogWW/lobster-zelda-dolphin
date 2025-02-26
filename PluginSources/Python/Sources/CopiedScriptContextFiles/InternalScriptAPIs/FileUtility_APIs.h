@@ -1,5 +1,4 @@
-#ifndef FILE_UTILITY_APIS
-#define FILE_UTILITY_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,6 +16,4 @@ typedef struct FileUtility_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

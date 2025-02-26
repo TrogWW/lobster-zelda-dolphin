@@ -22,6 +22,7 @@ namespace Scripting::ConfigAPI
 {
 
 const char* class_name = "ConfigAPI";
+
 static std::array all_config_functions_metadata_list = {
 
     FunctionMetadata("getLayerNames_mostGlobalFirst", "1.0", "getLayerNames_mostGlobalFirst()",

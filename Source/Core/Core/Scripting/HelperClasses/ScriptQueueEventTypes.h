@@ -1,5 +1,4 @@
-#ifndef SCRIPT_QUEUE_EVENT_TYPES
-#define SCRIPT_QUEUE_EVENT_TYPES
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +14,4 @@ enum ScriptQueueEventTypes
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

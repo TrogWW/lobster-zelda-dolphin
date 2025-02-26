@@ -7,6 +7,7 @@
 
 namespace Scripting::ConfigAPI
 {
+
 extern const char* class_name;
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version);

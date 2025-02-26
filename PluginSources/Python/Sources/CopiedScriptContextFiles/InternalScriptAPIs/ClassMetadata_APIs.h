@@ -1,5 +1,4 @@
-#ifndef CLASS_METADATA_APIS
-#define CLASS_METADATA_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +34,4 @@ typedef struct ClassMetadata_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

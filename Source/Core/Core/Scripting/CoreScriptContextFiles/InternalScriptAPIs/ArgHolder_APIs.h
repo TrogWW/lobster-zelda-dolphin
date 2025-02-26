@@ -1,5 +1,4 @@
-#ifndef ARG_HOLDER_APIS
-#define ARG_HOLDER_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -193,6 +192,4 @@ typedef struct ArgHolder_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

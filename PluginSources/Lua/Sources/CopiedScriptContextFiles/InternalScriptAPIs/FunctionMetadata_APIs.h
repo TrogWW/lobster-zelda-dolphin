@@ -1,5 +1,4 @@
-#ifndef FUNCTION_METADATA_APIS
-#define FUNCTION_METADATA_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +27,7 @@ typedef struct FunctionMetadata_APIs
   const char* (*GetExampleFunctionCall)(void*);
 
   // Takes an opaque handle for a FunctionMetadata* as input, and returns an int which
-  // represents the return type of the function (the int is of type ScriptingEnums::ArgTypeEnum).
+  // represents the return type of the function (the int is of type ArgTypeEnum).
   int (*GetReturnType)(void*);
 
   // Takes an opaque handle for a FunctionMetadata* as input, and returns the total
@@ -38,7 +37,7 @@ typedef struct FunctionMetadata_APIs
   // Takes an opaque handle to a FunctionMetadata* as its 1st input, and an index into the array of
   // argument types for the function as it's 2nd argument (is a 0-indexed array). This function then
   // returns an int which represents the type of the argument at the specified position for the
-  // function (the int is of type ScriptingEnums::ArgTypeEnum).
+  // function (the int is of type ArgTypeEnum).
   int (*GetTypeOfArgumentAtIndex)(void*, unsigned int);
 
   // DOUBLE WARNING: DO NOT call the return result of this function directly. Instead, pass it in as
@@ -61,6 +60,4 @@ typedef struct FunctionMetadata_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

@@ -8,6 +8,7 @@
 
 namespace Scripting::GameCubeControllerApi
 {
+
 const char* class_name = "GameCubeControllerAPI";
 std::array<Movie::ControllerState, 4> controller_inputs_on_last_frame{};
 
@@ -60,7 +61,8 @@ ArgHolder* IsGcControllerInPort(ScriptContext* current_script, std::vector<ArgHo
   if (controller_port_number < 1 || controller_port_number > 4)
     return CreateErrorStringArgHolder("controller port number was outside the valid range of 1-4");
 
-  return CreateBoolArgHolder(Core::System::GetInstance().GetMovie().IsUsingGCController(controller_port_number - 1));
+  return CreateBoolArgHolder(
+      Core::System::GetInstance().GetMovie().IsUsingGCController(controller_port_number - 1));
 }
 
 ArgHolder* IsUsingPort(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)

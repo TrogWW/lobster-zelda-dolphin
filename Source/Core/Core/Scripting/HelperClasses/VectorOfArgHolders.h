@@ -1,5 +1,4 @@
-#ifndef VECTOR_ARG_HOLDERS_IMPL
-#define VECTOR_ARG_HOLDERS_IMPL
+#pragma once
 
 #include <vector>
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
@@ -19,4 +18,3 @@ void Delete_VectorOfArgHolders_impl(void*);
 }
 #endif
 
-#endif
