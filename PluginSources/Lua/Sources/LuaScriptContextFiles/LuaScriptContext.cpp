@@ -1,4 +1,5 @@
 #include "LuaScriptContext.h"
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <map>
