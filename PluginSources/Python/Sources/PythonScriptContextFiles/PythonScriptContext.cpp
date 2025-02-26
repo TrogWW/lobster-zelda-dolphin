@@ -1,6 +1,7 @@
 #include "PythonScriptContext.h"
 #include "../HelperFiles/PythonInterface.h"
 #include "../CopiedScriptContextFiles/Enums/ScriptReturnCodes.h"
+#include <algorithm>
 #include <vector>
 
 
