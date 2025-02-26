@@ -31,14 +31,18 @@ GetLatestFunctionsForVersion(const std::array<FunctionMetadata, array_size> all_
 
     if (function_to_latest_version_found_map.count(current_function_name) == 0 &&
         !IsFirstVersionGreaterThanSecondVersion(function_version_number, api_version))
+    {
       function_to_latest_version_found_map[current_function_name] = all_functions[i];
+    }
 
     else if (function_to_latest_version_found_map.count(current_function_name) > 0 &&
              IsFirstVersionGreaterThanSecondVersion(
                  function_version_number,
                  function_to_latest_version_found_map[current_function_name].function_version) &&
              !IsFirstVersionGreaterThanSecondVersion(function_version_number, api_version))
+    {
       function_to_latest_version_found_map[current_function_name] = all_functions[i];
+    }
   }
 
   std::vector<FunctionMetadata> final_list_of_functions_for_version_with_deprecated_functions;

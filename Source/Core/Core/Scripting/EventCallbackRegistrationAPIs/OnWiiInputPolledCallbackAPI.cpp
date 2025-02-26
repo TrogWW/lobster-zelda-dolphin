@@ -64,11 +64,16 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
       current_script->dll_specific_api_definitions.UnregisterOnWiiInputPolledCallback(
           current_script, (*args_list)[0]->void_pointer_val);
   if (!return_value)
+  {
     return CreateErrorStringArgHolder(
         "Argument passed into OnWiiInputPolled:unregister() was not a reference to a function "
         "currently registered as an OnWiiInputPolled callback!");
+  }
+
   else
+  {
     return CreateUnregistrationReturnTypeArgHolder(nullptr);
+  }
 }
 
 ArgHolder* IsInWiiInputPolledCallback(ScriptContext* current_script,

@@ -16,8 +16,9 @@ InstructionBreakpointsHolder::~InstructionBreakpointsHolder()
 void InstructionBreakpointsHolder::AddBreakpoint(unsigned int addr)
 {
   if (!this->ContainsBreakpoint(addr))
-    Core::System::GetInstance().GetPowerPC().GetBreakPoints().Add(addr, true, false,
-                                                                  std::nullopt);
+  {
+    Core::System::GetInstance().GetPowerPC().GetBreakPoints().Add(addr, true, false, std::nullopt);
+  }
 
   breakpoint_addresses.push_back(
       addr);  // add this to the list of breakpoints regardless of whether or not its a duplicate

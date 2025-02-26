@@ -133,7 +133,9 @@ void MemoryAddressBreakpointsHolder::RemoveWriteBreakpoint(unsigned int start_ad
   int index_of_last_write_breakpoint = GetIndexOfStartAddress(start_address);
   if (index_of_last_write_breakpoint == -1 ||
       memory_breakpoints[index_of_last_write_breakpoint].write_breakpoint_count == 0)
+  {
     return;
+  }
 
   memory_breakpoints[index_of_last_write_breakpoint].write_breakpoint_count--;
 
