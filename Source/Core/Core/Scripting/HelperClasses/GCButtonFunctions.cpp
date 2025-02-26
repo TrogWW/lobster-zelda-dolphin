@@ -1,34 +1,23 @@
-#include "Core/Scripting/HelperClasses/GCButtonFunctions.h"
+#include <string_view>
+
+#include "Common/StringUtil.h"
 
 #include "Core/Scripting/CoreScriptContextFiles/Enums/GCButtonNameEnum.h"
+#include "Core/Scripting/HelperClasses/GCButtonFunctions.h"
 
 #include "string.h"
 
-static bool IsEqualIgnoreCase(const char* string_1, const char* string_2)
-{
-  int index = 0;
-  while (string_1[index] != '\0')
-  {
-    if (string_1[index] != string_2[index])
-    {
-      char first_char = string_1[index];
-      if (first_char >= 65 && first_char <= 90)
-        first_char += 32;
-      char second_char = string_2[index];
-      if (second_char >= 65 && second_char <= 90)
-        second_char += 32;
-      if (first_char != second_char)
-        return false;
-    }
-    ++index;
-  }
-
-  return string_2[index] == '\0';
-}
-
 int ParseGCButton_impl(const char* button_name)
 {
-  if (strlen(button_name) == 1)
+  if (button_name == nullptr)
+    return static_cast<int>(ScriptingEnums::GcButtonNameEnum::UnknownButton);
+
+  size_t button_string_length = strlen(button_name);
+
+  if (button_string_length == 0)
+    return static_cast<int>(ScriptingEnums::GcButtonNameEnum::UnknownButton);
+
+  if (button_string_length == 1)
   {
     switch (button_name[0])
     {
@@ -69,19 +58,19 @@ int ParseGCButton_impl(const char* button_name)
   {
   case 'd':
   case 'D':
-    if (IsEqualIgnoreCase(button_name, "dPadUp"))
+    if (Common::CaseInsensitiveEquals(button_name, "dPadUp"))
       return (int)ScriptingEnums::GcButtonNameEnum::DPadUp;
 
-    else if (IsEqualIgnoreCase(button_name, "dPadDown"))
+    else if (Common::CaseInsensitiveEquals(button_name, "dPadDown"))
       return (int)ScriptingEnums::GcButtonNameEnum::DPadDown;
 
-    else if (IsEqualIgnoreCase(button_name, "dPadLeft"))
+    else if (Common::CaseInsensitiveEquals(button_name, "dPadLeft"))
       return (int)ScriptingEnums::GcButtonNameEnum::DPadLeft;
 
-    else if (IsEqualIgnoreCase(button_name, "dPadRight"))
+    else if (Common::CaseInsensitiveEquals(button_name, "dPadRight"))
       return (int)ScriptingEnums::GcButtonNameEnum::DPadRight;
 
-    else if (IsEqualIgnoreCase(button_name, "disc"))
+    else if (Common::CaseInsensitiveEquals(button_name, "disc"))
       return (int)ScriptingEnums::GcButtonNameEnum::Disc;
 
     else
@@ -89,10 +78,10 @@ int ParseGCButton_impl(const char* button_name)
 
   case 'a':
   case 'A':
-    if (IsEqualIgnoreCase(button_name, "analogStickX"))
+    if (Common::CaseInsensitiveEquals(button_name, "analogStickX"))
       return (int)ScriptingEnums::GcButtonNameEnum::AnalogStickX;
 
-    else if (IsEqualIgnoreCase(button_name, "analogStickY"))
+    else if (Common::CaseInsensitiveEquals(button_name, "analogStickY"))
       return (int)ScriptingEnums::GcButtonNameEnum::AnalogStickY;
 
     else
@@ -100,10 +89,10 @@ int ParseGCButton_impl(const char* button_name)
 
   case 'c':
   case 'C':
-    if (IsEqualIgnoreCase(button_name, "cStickX"))
+    if (Common::CaseInsensitiveEquals(button_name, "cStickX"))
       return (int)ScriptingEnums::GcButtonNameEnum::CStickX;
 
-    else if (IsEqualIgnoreCase(button_name, "cStickY"))
+    else if (Common::CaseInsensitiveEquals(button_name, "cStickY"))
       return (int)ScriptingEnums::GcButtonNameEnum::CStickY;
 
     else
@@ -111,10 +100,10 @@ int ParseGCButton_impl(const char* button_name)
 
   case 't':
   case 'T':
-    if (IsEqualIgnoreCase(button_name, "triggerL"))
+    if (Common::CaseInsensitiveEquals(button_name, "triggerL"))
       return (int)ScriptingEnums::GcButtonNameEnum::TriggerL;
 
-    else if (IsEqualIgnoreCase(button_name, "triggerR"))
+    else if (Common::CaseInsensitiveEquals(button_name, "triggerR"))
       return (int)ScriptingEnums::GcButtonNameEnum::TriggerR;
 
     else
@@ -122,7 +111,7 @@ int ParseGCButton_impl(const char* button_name)
 
   case 'r':
   case 'R':
-    if (IsEqualIgnoreCase(button_name, "reset"))
+    if (Common::CaseInsensitiveEquals(button_name, "reset"))
       return (int)ScriptingEnums::GcButtonNameEnum::Reset;
 
     else
@@ -130,7 +119,7 @@ int ParseGCButton_impl(const char* button_name)
 
   case 's':
   case 'S':
-    if (IsEqualIgnoreCase(button_name, "start"))
+    if (Common::CaseInsensitiveEquals(button_name, "start"))
       return (int)ScriptingEnums::GcButtonNameEnum::Start;
 
     else
@@ -138,7 +127,7 @@ int ParseGCButton_impl(const char* button_name)
 
   case 'g':
   case 'G':
-    if (IsEqualIgnoreCase(button_name, "getOrigin"))
+    if (Common::CaseInsensitiveEquals(button_name, "getOrigin"))
       return (int)ScriptingEnums::GcButtonNameEnum::GetOrigin;
 
     else
@@ -146,7 +135,7 @@ int ParseGCButton_impl(const char* button_name)
 
   case 'i':
   case 'I':
-    if (IsEqualIgnoreCase(button_name, "isConnected"))
+    if (Common::CaseInsensitiveEquals(button_name, "isConnected"))
       return (int)ScriptingEnums::GcButtonNameEnum::IsConnected;
 
     else

@@ -78,11 +78,16 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
       current_script->dll_specific_api_definitions.UnregisterOnGCControllerPolledCallback(
           current_script, (*args_list)[0]->void_pointer_val);
   if (!return_value)
+  {
     return CreateErrorStringArgHolder(
         "Argument passed into OnGCControllerPolled:unregister() was not a reference to a function "
         "currently registered as an OnGCControllerPolled callback!");
+  }
+
   else
+  {
     return CreateUnregistrationReturnTypeArgHolder(nullptr);
+  }
 }
 
 ArgHolder* IsInGCControllerPolledCallback(ScriptContext* current_script,
@@ -97,9 +102,12 @@ ArgHolder* GetCurrentPortNumberOfPoll(ScriptContext* current_script,
 {
   if (current_script->current_script_call_location !=
       ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnGCControllerPolled:getCurrentPortNumberOfPoll() outside of an "
         "OnGCControllerPolled callback function!");
+  }
+
   return CreateS64ArgHolder(current_controller_number_polled + 1);
 }
 
@@ -109,9 +117,12 @@ ArgHolder* SetInputsForPoll(ScriptContext* current_script, std::vector<ArgHolder
 {
   if (current_script->current_script_call_location !=
       ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnGCControllerPolled:setInputsForPoll() outside of an "
         "OnGCControllerPolled callback function!");
+  }
+
   overwrite_controller_at_specified_port[current_controller_number_polled] = true;
   new_controller_inputs[current_controller_number_polled] = (*args_list)[0]->controller_state_val;
   return CreateVoidTypeArgHolder();
@@ -121,9 +132,12 @@ ArgHolder* GetInputsForPoll(ScriptContext* current_script, std::vector<ArgHolder
 {
   if (current_script->current_script_call_location !=
       ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnGCControllerPolled:getInputsForPoll() outside of an "
         "OnGCControllerPolled callback function!");
+  }
+
   return CreateControllerStateArgHolder(new_controller_inputs[current_controller_number_polled]);
 }
 

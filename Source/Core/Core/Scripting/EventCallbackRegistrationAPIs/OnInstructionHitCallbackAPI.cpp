@@ -83,9 +83,11 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
   void* callback = (*args_list)[1]->void_pointer_val;
 
   if (!current_script->instructionBreakpointsHolder.ContainsBreakpoint(address_of_breakpoint))
+  {
     return CreateErrorStringArgHolder(
         "Error: Address passed into OnInstructionHit:Unregister() did not correspond to any "
         "breakpoint that was currently enabled!");
+  }
 
   current_script->instructionBreakpointsHolder.RemoveBreakpoint(address_of_breakpoint);
 
@@ -93,11 +95,16 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
       current_script->dll_specific_api_definitions.UnregisterOnInstructionReachedCallback(
           current_script, callback);
   if (!return_value)
+  {
     return CreateErrorStringArgHolder(
         "Argument passed into OnInstructionHit:unregister() was not a reference to a function "
         "currently registered as an OnInstructionHit callback!");
+  }
+
   else
+  {
     return CreateUnregistrationReturnTypeArgHolder(nullptr);
+  }
 }
 
 ArgHolder* IsInInstructionHitCallback(ScriptContext* current_script,
@@ -112,9 +119,12 @@ ArgHolder* GetAddressOfInstructionForCurrentCallback(ScriptContext* current_scri
 {
   if (current_script->current_script_call_location !=
       ScriptingEnums::ScriptCallLocations::FromInstructionHitCallback)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnInstructionHit:getAddressOfInstructionForCurrentCallback() "
         "outside of an OnInstructionHit callback function!");
+  }
+
   return CreateU32ArgHolder(instruction_address_for_current_callback);
 }
 

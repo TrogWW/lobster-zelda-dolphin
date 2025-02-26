@@ -14,6 +14,8 @@ namespace Scripting
 struct ArgHolder
 {
   ScriptingEnums::ArgTypeEnum argument_type;
+
+  // True if the ArgHolder contains a value, and false if it's empty
   bool contains_value;
 
   // The below lines should all ideally be in a union. However, C++ won't let vectors be included in

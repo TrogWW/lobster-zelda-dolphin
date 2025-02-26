@@ -65,11 +65,16 @@ ArgHolder* Register(ScriptContext* current_script, std::vector<ArgHolder*>* args
   void* callback = (*args_list)[2]->void_pointer_val;
 
   if (memory_breakpoint_start_address == 0)
+  {
     return CreateErrorStringArgHolder("Error: Memory address read breakpoint cannot be 0!");
+  }
+
   else if (memory_breakpoint_start_address > memory_breakpoint_end_address)
+  {
     return CreateErrorStringArgHolder(
         "Error: Memory address read breakpoint has an ending address less "
         "than its starting address!");
+  }
 
   current_script->memoryAddressBreakpointsHolder.AddReadBreakpoint(memory_breakpoint_start_address,
                                                                    memory_breakpoint_end_address);
@@ -87,10 +92,15 @@ ArgHolder* RegisterWithAutoDeregistration(ScriptContext* current_script,
   void* callback = (*args_list)[2]->void_pointer_val;
 
   if (memory_breakpoint_start_address == 0)
+  {
     return CreateErrorStringArgHolder("Error: Memory address read breakpoint cannot be 0!");
+  }
+
   else if (memory_breakpoint_start_address > memory_breakpoint_end_address)
+  {
     return CreateErrorStringArgHolder("Error: Memory address read breakpoint has ending address "
                                       "less than its starting address!");
+  }
 
   current_script->memoryAddressBreakpointsHolder.AddReadBreakpoint(memory_breakpoint_start_address,
                                                                    memory_breakpoint_end_address);
@@ -108,10 +118,12 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
 
   if (!current_script->memoryAddressBreakpointsHolder.ContainsReadBreakpoint(
           memory_breakpoint_start_address))
+  {
     return CreateErrorStringArgHolder(
         "Error: Address passed into OnMemoryAddressReadFrom:Unregister() did not represent the "
         "start address of a read "
         "breakpoint that was currently enabled!");
+  }
 
   current_script->memoryAddressBreakpointsHolder.RemoveReadBreakpoint(
       memory_breakpoint_start_address);
@@ -121,12 +133,16 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
           current_script, callback);
 
   if (!return_value)
+  {
     return CreateErrorStringArgHolder(
         "2nd Argument passed into OnMemoryAddressReadFrom:unregister() was not a reference to a "
         "function currently registered as an OnMemoryAddressReadFrom callback!");
+  }
 
   else
+  {
     return CreateUnregistrationReturnTypeArgHolder(nullptr);
+  }
 }
 
 ArgHolder* IsInMemoryAddressReadFromCallback(ScriptContext* current_script,
@@ -141,10 +157,13 @@ ArgHolder* GetMemoryAddressReadFromForCurrentCallback(ScriptContext* current_scr
 {
   if (current_script->current_script_call_location !=
       ScriptingEnums::ScriptCallLocations::FromMemoryAddressReadFromCallback)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call "
         "OnMemoryAddressReadFrom:getMemoryAddressReadFromForCurrentCallback() outside of an "
         "OnMemoryAddressReadFrom callback function!");
+  }
+
   return CreateU32ArgHolder(memory_address_read_from_for_current_callback);
 }
 
@@ -152,9 +171,12 @@ ArgHolder* GetReadSize(ScriptContext* current_script, std::vector<ArgHolder*>* a
 {
   if (current_script->current_script_call_location !=
       ScriptingEnums::ScriptCallLocations::FromMemoryAddressReadFromCallback)
+  {
     return CreateErrorStringArgHolder("User attempted to call "
                                       "OnMemoryAddressReadFrom:getReadSize() outside of an "
                                       "OnMemoryAddressReadFrom callback function!");
+  }
+
   return CreateU32ArgHolder(read_size);
 }
 

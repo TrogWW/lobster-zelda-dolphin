@@ -62,11 +62,16 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
   bool return_value = current_script->dll_specific_api_definitions.UnregisterOnFrameStartCallback(
       current_script, (*args_list)[0]->void_pointer_val);
   if (!return_value)
+  {
     return CreateErrorStringArgHolder(
         "Argument passed into OnFrameStart:unregister() was not a reference to a function "
         "currently registered as an OnFrameStart callback!");
+  }
+
   else
+  {
     return CreateUnregistrationReturnTypeArgHolder(nullptr);
+  }
 }
 
 ArgHolder* IsInFrameStartCallback(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)

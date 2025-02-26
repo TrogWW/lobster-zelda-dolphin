@@ -247,8 +247,10 @@ ArgHolder* CreateShutdownTypeArgHolder()
 ArgHolder* CreateEmptyOptionalArgument()
 {
   ArgHolder* return_val = new ArgHolder();
-  return_val->contains_value =
-      false;  // We always check if the ArgHolder contains a value before looking at anything else.
+
+  // We always check if the ArgHolder contains a value before looking at anything else.
+  return_val->contains_value = false;
+
   return return_val;
 }
 
