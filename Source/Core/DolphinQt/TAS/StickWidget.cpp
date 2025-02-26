@@ -77,7 +77,7 @@ void StickWidget::mousePressEvent(QMouseEvent* event)
 void StickWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   handleMouseEvent(event);
-  m_ignore_movement = event->button() == Qt::LeftButton;
+  m_ignore_movement = event->button() == Qt::LeftButton || event->button() == Qt::RightButton;
 }
 
 void StickWidget::mouseMoveEvent(QMouseEvent* event)
@@ -141,26 +141,7 @@ void StickWidget::keyReleaseEvent(QKeyEvent* event)
       default:
         break;
     }
-    if (event->key() == Qt::Key_J)
-    {
-      m_x = 110;
-      m_y = 128;
-      changed = true;
-    }
   }
-
-  //if (text == "i")
-  //{
-  //  m_x = 128;
-  //  m_x = 146;
-  //  changed = true;
-  //}
-  //else if (text == "j")
-  //{
-  //  m_x = 110;
-  //  m_x = 128;
-  //  changed = true;
-  //}
   emit ChangedX(m_x);
   emit ChangedY(m_y);
   if (changed)
