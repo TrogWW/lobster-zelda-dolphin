@@ -1,5 +1,4 @@
-#ifndef SCRIPT_CONTEXT_APIS
-#define SCRIPT_CONTEXT_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,6 +9,7 @@ extern "C" {
 // These functions are the same for all DLLs.
 typedef struct Dolphin_Defined_ScriptContext_APIs
 {
+
   typedef void (*PRINT_CALLBACK_FUNCTION_TYPE)(void*, const char*);
   typedef void (*SCRIPT_END_CALLBACK_FUNCTION_TYPE)(void*, int);
 
@@ -274,6 +274,4 @@ typedef struct DLL_Defined_ScriptContext_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

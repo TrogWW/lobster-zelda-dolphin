@@ -17,6 +17,7 @@
 
 namespace Scripting::RegistersAPI
 {
+
 const char* class_name = "RegistersAPI";
 
 static std::array all_registers_functions_metadata_list = {

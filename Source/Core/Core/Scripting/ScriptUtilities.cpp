@@ -838,4 +838,5 @@ void RunButtonCallbacksInQueues()
     current_script->script_specific_lock.unlock();
   }
 }
+
 }  // namespace Scripting::ScriptUtilities

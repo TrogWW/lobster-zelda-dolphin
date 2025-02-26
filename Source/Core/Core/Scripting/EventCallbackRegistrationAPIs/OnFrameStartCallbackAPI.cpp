@@ -4,7 +4,9 @@
 
 namespace Scripting::OnFrameStartCallbackAPI
 {
+
 const char* class_name = "OnFrameStart";
+
 static std::array all_on_frame_start_callback_functions_metadata_list = {
     FunctionMetadata("register", "1.0", "register(value)", Register,
                      ScriptingEnums::ArgTypeEnum::RegistrationReturnType,
@@ -72,4 +74,5 @@ ArgHolder* IsInFrameStartCallback(ScriptContext* current_script, std::vector<Arg
   return CreateBoolArgHolder(current_script->current_script_call_location ==
                              ScriptingEnums::ScriptCallLocations::FromFrameStartCallback);
 }
+
 }  // namespace Scripting::OnFrameStartCallbackAPI

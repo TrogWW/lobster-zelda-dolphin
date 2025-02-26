@@ -1,5 +1,4 @@
-#ifndef CLASS_FUNCTIONS_RESOLVER_APIS
-#define CLASS_FUNCTIONS_RESOLVER_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +26,4 @@ typedef struct ClassFunctionsResolver_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

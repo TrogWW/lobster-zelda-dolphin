@@ -2,6 +2,7 @@
 
 namespace Scripting
 {
+
 // This helper function returns -1 if firstVersion < secondVersion, 0 if firstVersion ==
 // secondVersion, and 1 if firstVersion > secondVersion
 int CompareFirstVersionToSecondVersion(std::string first_version, std::string second_version)

@@ -797,4 +797,5 @@ ArgHolder* EndWindow(ScriptContext* current_script, std::vector<ArgHolder*>* arg
   }
   return CreateVoidTypeArgHolder();
 }
+
 }  // namespace Scripting::GraphicsAPI

@@ -16,6 +16,7 @@
 
 namespace Scripting::InstructionStepAPI
 {
+
 const char* class_name = "InstructionStepAPI";
 
 static std::array all_instruction_step_functions_metadata_list = {
@@ -139,7 +140,8 @@ ArgHolder* StepOut(ScriptContext* current_script, std::vector<ArgHolder*>* args_
   PowerPC::CoreMode old_mode = power_pc.GetMode();
   power_pc.SetMode(PowerPC::CoreMode::Interpreter);
 
-  while (function_call_depth_from_start >= 0 && movie_manager.GetCurrentFrame() == starting_frame_number)
+  while (function_call_depth_from_start >= 0 &&
+         movie_manager.GetCurrentFrame() == starting_frame_number)
   {
     UGeckoInstruction current_instruction =
         PowerPC::MMU::HostRead_Instruction(guard, power_pc.GetPPCState().pc);
@@ -192,4 +194,5 @@ ArgHolder* GetInstructionFromAddress(ScriptContext* current_script,
   std::string disasm = Common::GekkoDisassembler::Disassemble(op, instruction_addr);
   return CreateStringArgHolder(disasm);
 }
+
 }  // namespace Scripting::InstructionStepAPI

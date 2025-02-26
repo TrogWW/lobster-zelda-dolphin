@@ -1,5 +1,4 @@
-#ifndef INSTRUCTION_BREAKPOINTS_HOLDER_IMPL
-#define INSTRUCTION_BREAKPOINTS_HOLDER_IMPL
+#pragma once
 
 #include <vector>
 
@@ -23,6 +22,4 @@ private:
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

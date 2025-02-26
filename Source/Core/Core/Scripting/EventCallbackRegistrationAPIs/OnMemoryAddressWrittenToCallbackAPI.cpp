@@ -5,6 +5,7 @@
 
 namespace Scripting::OnMemoryAddressWrittenToCallbackAPI
 {
+
 const char* class_name = "OnMemoryAddressWrittenTo";
 
 u32 memory_address_written_to_for_current_callback = 0;

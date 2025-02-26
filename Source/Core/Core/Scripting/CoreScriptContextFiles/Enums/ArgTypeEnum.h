@@ -1,11 +1,12 @@
 #pragma once
-#ifndef ARG_TYPE_ENUM
-#define ARG_TYPE_ENUM
+
 namespace ScriptingEnums
 {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 enum ArgTypeEnum
 {
   VoidType = 0,
@@ -37,8 +38,9 @@ enum ArgTypeEnum
   ShutdownType = 26,
   UnknownArgTypeEnum = 27
 };
+
 #ifdef __cplusplus
 }
 #endif
+
 }  // namespace ScriptingEnums
-#endif

@@ -16,6 +16,7 @@ namespace Scripting::ImportAPI
 {
 
 const char* class_name = "dolphin";
+
 static std::array all_import_functions_metadata_list = {
     FunctionMetadata("importModule", "1.0", "importModule(apiName, versionNumber)", ImportModule,
                      ScriptingEnums::ArgTypeEnum::VoidType,

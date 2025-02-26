@@ -10,6 +10,7 @@
 
 namespace Scripting::StatisticsApi
 {
+
 const char* class_name = "StatisticsAPI";
 
 static std::array all_statistics_functions_metadata_list = {
@@ -70,7 +71,7 @@ static Movie::MovieManager& GetMovieManager()
 }
 
 ArgHolder* IsRecordingInput(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
-  {
+{
   return CreateBoolArgHolder(GetMovieManager().IsRecordingInput());
 }
 

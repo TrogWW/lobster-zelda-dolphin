@@ -1,5 +1,4 @@
-#ifndef FUNCTION_METADATA_APIS
-#define FUNCTION_METADATA_APIS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,6 +60,4 @@ typedef struct FunctionMetadata_APIs
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

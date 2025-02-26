@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
@@ -7,6 +8,7 @@
 
 namespace Scripting::OnMemoryAddressWrittenToCallbackAPI
 {
+
 extern const char* class_name;
 extern u32 memory_address_written_to_for_current_callback;
 extern u64 value_written_to_memory_address_for_current_callback;

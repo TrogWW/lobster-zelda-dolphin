@@ -1,5 +1,4 @@
-#ifndef GC_BUTTONS_FUNCS
-#define GC_BUTTONS_FUNCS
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,6 +12,4 @@ int IsAnalogButton_impl(int);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

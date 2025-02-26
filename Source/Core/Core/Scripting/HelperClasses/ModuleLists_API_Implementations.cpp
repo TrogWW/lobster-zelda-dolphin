@@ -43,4 +43,5 @@ const char* GetImportModuleName_impl()
 {
   return import_module_name;
 }
+
 }  // namespace Scripting

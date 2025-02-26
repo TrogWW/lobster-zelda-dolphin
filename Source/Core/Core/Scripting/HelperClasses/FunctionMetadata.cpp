@@ -1,4 +1,5 @@
 #include "Core/Scripting/HelperClasses/FunctionMetadata.h"
+
 namespace Scripting
 {
 
@@ -64,4 +65,5 @@ void* RunFunctionMain_impl(FUNCTION_POINTER_TYPE_FOR_FUNCTION_METADATA_API funct
           reinterpret_cast<ScriptContext*>(script_context),
           reinterpret_cast<std::vector<ArgHolder*>*>(ptr_to_vector_of_arg_holder_ptrs)));
 }
+
 }  // namespace Scripting

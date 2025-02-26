@@ -6,6 +6,7 @@
 
 namespace Scripting
 {
+
 ArgHolder* castToArgHolderPtr(void* input)
 {
   return reinterpret_cast<ArgHolder*>(input);

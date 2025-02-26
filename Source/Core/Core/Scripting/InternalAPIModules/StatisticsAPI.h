@@ -1,5 +1,5 @@
 #pragma once
-#pragma once
+
 #include <string>
 
 #include <vector>
@@ -10,6 +10,7 @@
 
 namespace Scripting::StatisticsApi
 {
+
 extern const char* class_name;
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version);
@@ -35,4 +36,5 @@ ArgHolder* GetRAMSize(ScriptContext* current_script, std::vector<ArgHolder*>* ar
 ArgHolder* GetL1CacheSize(ScriptContext* current_script, std::vector<ArgHolder*>* args_list);
 ArgHolder* GetFakeVMemSize(ScriptContext* current_script, std::vector<ArgHolder*>* args_list);
 ArgHolder* GetExRAMSize(ScriptContext* current_script, std::vector<ArgHolder*>* args_list);
+
 }  // namespace Scripting::StatisticsApi

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
@@ -8,6 +9,7 @@
 
 namespace Scripting::BitApi
 {
+
 extern const char* class_name;
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version);

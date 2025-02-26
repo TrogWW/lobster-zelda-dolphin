@@ -5,6 +5,7 @@
 
 namespace Scripting::OnInstructionHitCallbackAPI
 {
+
 const char* class_name = "OnInstructionHit";
 u32 instruction_address_for_current_callback = 0;
 bool in_instruction_hit_breakpoint = false;
@@ -116,4 +117,5 @@ ArgHolder* GetAddressOfInstructionForCurrentCallback(ScriptContext* current_scri
         "outside of an OnInstructionHit callback function!");
   return CreateU32ArgHolder(instruction_address_for_current_callback);
 }
+
 }  // namespace Scripting::OnInstructionHitCallbackAPI

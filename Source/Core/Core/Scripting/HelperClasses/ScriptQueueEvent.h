@@ -1,5 +1,4 @@
-#ifndef SCRIPT_QUEUE_EVENT
-#define SCRIPT_QUEUE_EVENT
+#pragma once
 
 #include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ScriptContext_APIs.h"
 #include "Core/Scripting/HelperClasses/ScriptQueueEventTypes.h"
@@ -12,6 +11,7 @@ extern "C" {
 
 class ScriptQueueEvent
 {
+
 public:
   ScriptQueueEvent(const ScriptQueueEventTypes new_event_type,
                    const int new_unique_script_identifier, const char* new_script_filename,
@@ -45,6 +45,4 @@ public:
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

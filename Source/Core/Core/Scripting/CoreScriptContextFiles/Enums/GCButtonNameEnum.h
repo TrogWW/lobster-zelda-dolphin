@@ -1,7 +1,8 @@
-#ifndef GC_BUTTON_ENUMS
-#define GC_BUTTON_ENUMS
+#pragma once
+
 namespace ScriptingEnums
 {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,5 +37,5 @@ enum GcButtonNameEnum
 #ifdef __cplusplus
 }
 #endif
+
 }  // namespace ScriptingEnums
-#endif

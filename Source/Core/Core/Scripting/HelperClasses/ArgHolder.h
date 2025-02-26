@@ -1,5 +1,5 @@
-#ifndef ARG_HOLDER
-#define ARG_HOLDER
+#pragma once
+
 #include <imgui.h>
 #include <map>
 #include <string>
@@ -73,4 +73,3 @@ ArgHolder* CreateShutdownTypeArgHolder();
 ArgHolder* CreateEmptyOptionalArgument();
 
 }  // namespace Scripting
-#endif
