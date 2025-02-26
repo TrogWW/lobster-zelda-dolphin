@@ -1,7 +1,9 @@
 #include "PythonDynamicLibrary.h"
 #include "../DolphinDefinedAPIs.h"
 #include "../CopiedScriptContextFiles/Enums/ScriptReturnCodes.h"
+#include <iostream>
 #include <filesystem>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -233,7 +235,7 @@ namespace PythonDynamicLibrary
   static const std::string LIBRARY_SUFFIX = std::string(".so");
 #endif
 
-  // python311_d.dll
+  // ex. python311.dll or python311_d.dll
   bool stringIsPathToPythonLib(std::string path_string)
   {
     unsigned long long path_string_length = path_string.length();
@@ -262,7 +264,7 @@ namespace PythonDynamicLibrary
       if (number_of_digits < 2) // NOTE: This code will work until Python10 comes out. However, based on Python's release schedule, that probably won't happen for another 150 years - so this should be safe for the forseeable future...
         return false;
 
-#ifndef NDEBUG // case where we're in debug mode
+#ifdef _DEBUG // case where we're in debug mode
       if (path_string[index_in_string] == '_' &&
         (path_string[index_in_string + 1] == 'd') || path_string[index_in_string + 1] == 'D')
         index_in_string += 2;
@@ -276,6 +278,25 @@ namespace PythonDynamicLibrary
     return false;
   }
 
+  // If this is the first file exception encountered on this run, then we first delete the old contents of the pythonDllLoadErrors.txt file.
+  static bool exception_loading_lib_occurred = false;
+
+  void HandleFileErrors(const std::exception& e)
+  {
+    if (!exception_loading_lib_occurred) {
+      std::ofstream exception_file("pythonDllLoadErrors.txt");
+      exception_file << "";
+      exception_file.flush();
+      exception_file.close();
+      exception_loading_lib_occurred = true;
+    }
+    std::cerr << e.what();
+    std::ofstream exception_file("pythonDllLoadErrors.txt", std::ios::app);
+    exception_file << e.what() << std::endl;
+    exception_file.flush();
+    exception_file.close();
+  }
+
   void GetPythonLibFromEnvVariable(const char* env_variable)
   {
     const char* raw_env_value = getenv(env_variable);
@@ -287,23 +308,38 @@ namespace PythonDynamicLibrary
 
     for (unsigned long long i = 0; i < number_of_paths; ++i)
     {
-      std::string path_to_search = python_paths_to_search[i];
-      if (std::filesystem::is_directory(std::filesystem::path(path_to_search)))
+      std::string path_to_search_string = python_paths_to_search[i];
+      try
       {
-        for (auto& entry : std::filesystem::directory_iterator(path_to_search))
+        std::filesystem::path current_search_path = std::filesystem::path(path_to_search_string);
+        if (std::filesystem::is_directory(current_search_path))
         {
-          const std::string inner_filename = entry.path().filename().string();
-          if (!entry.is_directory() && stringIsPathToPythonLib(inner_filename))
+          for (auto& entry : std::filesystem::directory_iterator(current_search_path))
           {
-            path_to_lib = path_to_search + inner_filename;
-            return;
+            try
+            {
+              const std::string inner_filename = entry.path().filename().string();
+              if (!entry.is_directory() && stringIsPathToPythonLib(inner_filename))
+              {
+                path_to_lib = entry.path().string();
+                return;
+              }
+            }
+            catch (const std::exception& e)
+            {
+              HandleFileErrors(e);
+            }
           }
         }
+        else if (stringIsPathToPythonLib(current_search_path.filename().string()))
+        {
+          path_to_lib = current_search_path.string();
+          return;
+        }
       }
-      else if (stringIsPathToPythonLib(path_to_search))
+      catch (const std::exception& e)
       {
-        path_to_lib = path_to_search;
-        return;
+        HandleFileErrors(e);
       }
     }
   }
