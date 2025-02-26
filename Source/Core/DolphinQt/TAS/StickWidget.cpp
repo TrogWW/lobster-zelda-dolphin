@@ -16,10 +16,10 @@ constexpr int PADDING = 1;
 StickWidget::StickWidget(QWidget* parent, u16 max_x, u16 max_y)
     : QWidget(parent), m_max_x(max_x), m_max_y(max_y)
 {
-  setMouseTracking(false);
+  setMouseTracking(true);
   setToolTip(tr("Left click to set the stick value.\n"
                 "Right click to re-center it."));
-
+  setFocusPolicy(Qt::StrongFocus);
   // If the widget gets too small, it will get deformed.
   setMinimumSize(QSize(64, 64));
 }
@@ -74,12 +74,101 @@ void StickWidget::mousePressEvent(QMouseEvent* event)
   m_ignore_movement = event->button() == Qt::RightButton;
 }
 
+void StickWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+  handleMouseEvent(event);
+  m_ignore_movement = event->button() == Qt::LeftButton;
+}
+
 void StickWidget::mouseMoveEvent(QMouseEvent* event)
 {
   if (!m_ignore_movement)
     handleMouseEvent(event);
 }
+void StickWidget::keyReleaseEvent(QKeyEvent* event)
+{
+  //ESS Positions -- TODO (set as configurable hotkeys?)
+  bool changed = false;
+  if (event->modifiers() == Qt::NoModifier)
+  {
+    switch (event->key())
+    {
+      case Qt::Key_J:
+        m_x = 110;
+        m_y = 128;
+        changed = true;
+        break;
+      case Qt::Key_I:
+        m_x = 128;
+        m_y = 146;
+        changed = true;
+        break;
+      case Qt::Key_L:
+        m_x = 146;
+        m_y = 128;
+        changed = true;
+        break;
+      case Qt::Key_Comma:
+        m_x = 128;
+        m_y = 110;
+        changed = true;
+        break;
+      case Qt::Key_Period:
+        m_x = 146;
+        m_y = 110;
+        changed = true;
+        break;
+      case Qt::Key_M:
+        m_x = 110;
+        m_y = 110;
+        changed = true;
+        break;
+      case Qt::Key_U:
+        m_x = 110;
+        m_y = 146;
+        changed = true;
+        break;
+      case Qt::Key_O:
+        m_x = 146;
+        m_y = 146;
+        changed = true;
+        break;
+      case Qt::Key_K:
+        m_x = 128;
+        m_y = 128;
+        changed = true;
+        break;
+      default:
+        break;
+    }
+    if (event->key() == Qt::Key_J)
+    {
+      m_x = 110;
+      m_y = 128;
+      changed = true;
+    }
+  }
 
+  //if (text == "i")
+  //{
+  //  m_x = 128;
+  //  m_x = 146;
+  //  changed = true;
+  //}
+  //else if (text == "j")
+  //{
+  //  m_x = 110;
+  //  m_x = 128;
+  //  changed = true;
+  //}
+  emit ChangedX(m_x);
+  emit ChangedY(m_y);
+  if (changed)
+  {
+    update();
+  }
+
+}
 void StickWidget::handleMouseEvent(QMouseEvent* event)
 {
   u16 prev_x = m_x;
@@ -115,3 +204,5 @@ void StickWidget::handleMouseEvent(QMouseEvent* event)
   if (changed)
     update();
 }
+
+
