@@ -266,7 +266,7 @@ namespace PythonDynamicLibrary
 
 #ifdef _DEBUG // case where we're in debug mode
       if (path_string[index_in_string] == '_' &&
-        (path_string[index_in_string + 1] == 'd') || path_string[index_in_string + 1] == 'D')
+        (path_string[index_in_string + 1] == 'd' || path_string[index_in_string + 1] == 'D'))
         index_in_string += 2;
       else
         return false;
