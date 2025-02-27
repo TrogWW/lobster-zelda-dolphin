@@ -4,7 +4,7 @@
 #include <vector>
 #include "PythonDynamicLibrary.h"
 
-namespace PythonInterface
+namespace Scripting::PythonInterface
 {
   const char* function_metadata_capsule_name = "functionMetadataCapsule";
   const char* THIS_MODULE_NAME = "ThisBaseScriptModuleNamesdbkhcjs";
@@ -415,6 +415,16 @@ namespace PythonInterface
   bool PythonDict_Next(void* raw_dict_obj, signed long long* ptr_to_index, void** raw_key_ptr_ptr, void** raw_value_ptr_ptr)
   {
     return PythonDynamicLibrary::PyDict_Next(raw_dict_obj, ptr_to_index, raw_key_ptr_ptr, raw_value_ptr_ptr);
+  }
+
+  void* PythonList_New()
+  {
+    return PythonDynamicLibrary::PyList_New(0);
+  }
+
+  void PyList_Append(void* py_list, void* new_val)
+  {
+    PythonDynamicLibrary::PyList_Append(py_list, new_val);
   }
 
   unsigned long long PythonList_Size(void* raw_py_obj)
