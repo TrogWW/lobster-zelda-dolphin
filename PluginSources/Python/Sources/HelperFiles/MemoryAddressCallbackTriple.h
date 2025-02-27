@@ -1,21 +1,22 @@
-#ifndef MEMORY_ADDRESS_TRIPLE
-#define MEMORY_ADDRESS_TRIPLE
+#pragma once
 
 #include "IdentifierToCallback.h"
 
+namespace Scripting
+{
+
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
 
-  typedef struct MemoryAddressCallbackTriple
-  {
-    unsigned int memory_start_address;
-    unsigned int memory_end_address;
-    IdentifierToCallback identifier_to_callback;
-  } MemoryAddressCallbackTriple;
+    typedef struct MemoryAddressCallbackTriple
+    {
+      unsigned int memory_start_address;
+      unsigned int memory_end_address;
+      IdentifierToCallback identifier_to_callback;
+    } MemoryAddressCallbackTriple;
 
 #ifdef __cplusplus
+  }
+#endif
 }
-#endif
-
-#endif

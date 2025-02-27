@@ -45,7 +45,7 @@ class NetPlaySetupDialog;
 class NetworkWidget;
 class RegisterWidget;
 class RenderWidget;
-class ScriptWindow;
+class ScriptManager;
 class SearchBar;
 class SettingsWindow;
 class SkylanderPortalWindow;
@@ -277,5 +277,5 @@ private:
   WatchWidget* m_watch_widget;
   CheatsManager* m_cheats_manager;
   QByteArray m_render_widget_geometry;
-  ScriptWindow* m_script_manager;
+  ScriptManager* m_script_manager;
 };

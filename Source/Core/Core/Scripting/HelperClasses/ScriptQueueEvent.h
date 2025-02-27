@@ -1,7 +1,6 @@
-#ifndef SCRIPT_QUEUE_EVENT
-#define SCRIPT_QUEUE_EVENT
+#pragma once
 
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ScriptContext_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ScriptContext_APIs.h"
 #include "Core/Scripting/HelperClasses/ScriptQueueEventTypes.h"
 
 #include <string>
@@ -13,12 +12,13 @@ extern "C" {
 class ScriptQueueEvent
 {
 public:
-  ScriptQueueEvent(const ScriptQueueEventTypes new_event_type,
-                   const int new_unique_script_identifier, const char* new_script_filename,
-                   const Dolphin_Defined_ScriptContext_APIs::PRINT_CALLBACK_FUNCTION_TYPE&
-                       new_print_callback_func,
-                   const Dolphin_Defined_ScriptContext_APIs::SCRIPT_END_CALLBACK_FUNCTION_TYPE&
-                       new_script_end_callback_func)
+  ScriptQueueEvent(
+      const ScriptQueueEventTypes new_event_type, const int new_unique_script_identifier,
+      const char* new_script_filename,
+      const Scripting::Dolphin_Defined_ScriptContext_APIs::PRINT_CALLBACK_FUNCTION_TYPE&
+          new_print_callback_func,
+      const Scripting::Dolphin_Defined_ScriptContext_APIs::SCRIPT_END_CALLBACK_FUNCTION_TYPE&
+          new_script_end_callback_func)
   {
     event_type = new_event_type;
     unique_script_identifier = new_unique_script_identifier;
@@ -39,12 +39,11 @@ public:
   ScriptQueueEventTypes event_type;
   int unique_script_identifier;
   std::string script_filename;
-  Dolphin_Defined_ScriptContext_APIs::PRINT_CALLBACK_FUNCTION_TYPE print_callback_func;
-  Dolphin_Defined_ScriptContext_APIs::SCRIPT_END_CALLBACK_FUNCTION_TYPE script_end_callback_func;
+  Scripting::Dolphin_Defined_ScriptContext_APIs::PRINT_CALLBACK_FUNCTION_TYPE print_callback_func;
+  Scripting::Dolphin_Defined_ScriptContext_APIs::SCRIPT_END_CALLBACK_FUNCTION_TYPE
+      script_end_callback_func;
 };
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

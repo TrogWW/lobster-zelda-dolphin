@@ -1,4 +1,4 @@
-#include "DolphinQt/ScriptWindow.h"
+#include "DolphinQt/ScriptManager.h"
 
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -14,13 +14,13 @@
 static void (*callback_print_function)(void*, const char*);
 static void (*finished_script_callback_function)(void*, int);
 static CoreTiming::EventType* stop_script_from_callback_event = nullptr;
-static ScriptWindow* copy_of_window = nullptr;
-static ScriptWindow* GetThis()
+static ScriptManager* copy_of_window = nullptr;
+static ScriptManager* GetThis()
 {
   return copy_of_window;
 }
 
-ScriptWindow::ScriptWindow(QWidget* parent) : QDialog(parent)
+ScriptManager::ScriptManager(QWidget* parent) : QDialog(parent)
 {
   copy_of_window = this;
   stop_script_from_callback_event = Core::System::GetInstance().GetCoreTiming().RegisterEvent(
@@ -33,7 +33,7 @@ ScriptWindow::ScriptWindow(QWidget* parent) : QDialog(parent)
   callback_print_function = [](void* x, const char* message) {
     std::lock_guard<std::mutex> lock(GetThis()->print_lock);
     GetThis()->output_lines.push_back(message);
-    QueueOnObject(GetThis(), &ScriptWindow::UpdateOutputWindow);
+    QueueOnObject(GetThis(), &ScriptManager::UpdateOutputWindow);
   };
 
   finished_script_callback_function = [](void* base_script_context_ptr, int unique_identifier) {
@@ -42,22 +42,22 @@ ScriptWindow::ScriptWindow(QWidget* parent) : QDialog(parent)
     Scripting::ScriptUtilities::SetIsScriptActiveToFalse(base_script_context_ptr);
     Core::System::GetInstance().GetCoreTiming().ScheduleEvent(
         -1, stop_script_from_callback_event, unique_identifier, CoreTiming::FromThread::ANY);
-    QueueOnObject(GetThis(), &ScriptWindow::OnScriptFinish);
+    QueueOnObject(GetThis(), &ScriptManager::OnScriptFinish);
   };
 
   CreateMainLayout();
   ConnectWidgets();
   auto& settings = Settings::GetQSettings();
-  restoreGeometry(settings.value(QStringLiteral("scriptwindow/geometry")).toByteArray());
+  restoreGeometry(settings.value(QStringLiteral("ScriptManager/geometry")).toByteArray());
 }
 
-ScriptWindow::~ScriptWindow()
+ScriptManager::~ScriptManager()
 {
   auto& settings = Settings::GetQSettings();
-  settings.setValue(QStringLiteral("scriptwindow/geometry"), saveGeometry());
+  settings.setValue(QStringLiteral("ScriptManager/geometry"), saveGeometry());
 }
 
-void ScriptWindow::CreateMainLayout()
+void ScriptManager::CreateMainLayout()
 {
   auto* layout = new QGridLayout();
   m_load_script_button = new NonDefaultQPushButton(tr("Load Script"));
@@ -97,22 +97,22 @@ void ScriptWindow::CreateMainLayout()
   setLayout(layout);
 }
 
-void ScriptWindow::ConnectWidgets()
+void ScriptManager::ConnectWidgets()
 {
-  connect(m_load_script_button, &QPushButton::clicked, this, &ScriptWindow::LoadScriptFunction);
+  connect(m_load_script_button, &QPushButton::clicked, this, &ScriptManager::LoadScriptFunction);
   connect(m_play_or_stop_script_button, &QPushButton::clicked, this,
-          &ScriptWindow::PlayOrStopScriptFunction);
+          &ScriptManager::PlayOrStopScriptFunction);
   connect(script_name_list_widget_ptr, &QListWidget::itemSelectionChanged, this,
-          &ScriptWindow::UpdateButtonText);
+          &ScriptManager::UpdateButtonText);
 }
 
-void ScriptWindow::LoadScriptFunction()
+void ScriptManager::LoadScriptFunction()
 {
   std::lock_guard<std::mutex> lock(script_start_or_stop_lock);
   auto& settings = Settings::Instance().GetQSettings();
   QString path = DolphinFileDialog::getOpenFileName(
       this, tr("Select a File"),
-      settings.value(QStringLiteral("scriptwindow/lastdir"), QString{}).toString(),
+      settings.value(QStringLiteral("ScriptManager/lastdir"), QString{}).toString(),
       QStringLiteral("%1 (*.lua *.txt *.py);;%3 (*)")
           .arg(tr("All Lua/txt files"))
           .arg(tr("All Python files"))
@@ -120,7 +120,7 @@ void ScriptWindow::LoadScriptFunction()
 
   if (!path.isEmpty())
   {
-    settings.setValue(QStringLiteral("scriptwindow/lastdir"),
+    settings.setValue(QStringLiteral("ScriptManager/lastdir"),
                       QFileInfo(path).absoluteDir().absolutePath());
     row_num_to_is_running[next_unique_identifier] = false;
     QStringList list;
@@ -134,7 +134,7 @@ void ScriptWindow::LoadScriptFunction()
   return;
 }
 
-void ScriptWindow::PlayScriptFunction()
+void ScriptManager::PlayScriptFunction()
 {
   print_lock.lock();
   script_output_list_widget_ptr->clear();
@@ -154,7 +154,7 @@ void ScriptWindow::PlayScriptFunction()
                                                          finished_script_callback_function);
 }
 
-void ScriptWindow::StopScriptFunction()
+void ScriptManager::StopScriptFunction()
 {
   if (!Scripting::ScriptUtilities::IsScriptingCoreInitialized())
     return;
@@ -168,7 +168,7 @@ void ScriptWindow::StopScriptFunction()
   UpdateButtonText();
 }
 
-void ScriptWindow::PlayOrStopScriptFunction()
+void ScriptManager::PlayOrStopScriptFunction()
 {
   if (script_name_list_widget_ptr->count() == 0)
     return;
@@ -183,7 +183,7 @@ void ScriptWindow::PlayOrStopScriptFunction()
   UpdateButtonText();
 }
 
-void ScriptWindow::UpdateOutputWindow()
+void ScriptManager::UpdateOutputWindow()
 {
   std::lock_guard<std::mutex> lock(print_lock);
   QStringList list;
@@ -195,7 +195,7 @@ void ScriptWindow::UpdateOutputWindow()
   script_output_list_widget_ptr->setSpacing(1);
 }
 
-void ScriptWindow::OnScriptFinish()
+void ScriptManager::OnScriptFinish()
 {
   int id_of_script_to_stop = ids_of_scripts_to_stop.pop();
   if (id_of_script_to_stop > 0 && row_num_to_is_running[id_of_script_to_stop])
@@ -205,7 +205,7 @@ void ScriptWindow::OnScriptFinish()
   }
 }
 
-void ScriptWindow::UpdateButtonText()
+void ScriptManager::UpdateButtonText()
 {
   if (script_name_list_widget_ptr->count() == 0)
   {

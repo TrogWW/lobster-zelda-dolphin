@@ -1,5 +1,5 @@
-#ifndef WIIMOTE_ENUMS
-#define WIIMOTE_ENUMS
+#pragma once
+
 #include "Common/CommonTypes.h"
 
 namespace WiiControllerEnums
@@ -171,5 +171,5 @@ extern const char* ConvertNunchuckButtonToString(NunchuckButtonsEnum button);
 
 extern ClassicControllerButtonsEnum ParseClassicControllerButton(const char* button_name);
 extern const char* ConvertClassicControllerButtonToString(ClassicControllerButtonsEnum button);
+
 }  // namespace WiiControllerEnums
-#endif

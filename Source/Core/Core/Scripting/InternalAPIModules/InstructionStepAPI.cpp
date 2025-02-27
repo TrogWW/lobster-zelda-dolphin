@@ -7,7 +7,7 @@
 #include "Core/Movie.h"
 #include "Core/PowerPC/MMU.h"
 #include "Core/PowerPC/PowerPC.h"
-#include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
+#include "Core/Scripting/CoreScriptInterface/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/EventCallbackRegistrationAPIs/OnInstructionHitCallbackAPI.h"
 #include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressReadFromCallbackAPI.h"
 #include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressWrittenToCallbackAPI.h"
@@ -16,21 +16,22 @@
 
 namespace Scripting::InstructionStepAPI
 {
+
 const char* class_name = "InstructionStepAPI";
 
 static std::array all_instruction_step_functions_metadata_list = {
     FunctionMetadata("singleStep", "1.0", "singleStep()", SingleStep,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {}),
+                     Scripting::ArgTypeEnum::VoidType, {}),
     FunctionMetadata("stepOver", "1.0", "stepOver()", StepOver,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {}),
-    FunctionMetadata("stepOut", "1.0", "stepOut()", StepOut, ScriptingEnums::ArgTypeEnum::VoidType,
+                     Scripting::ArgTypeEnum::VoidType, {}),
+    FunctionMetadata("stepOut", "1.0", "stepOut()", StepOut, Scripting::ArgTypeEnum::VoidType,
                      {}),
-    FunctionMetadata("skip", "1.0", "skip()", Skip, ScriptingEnums::ArgTypeEnum::VoidType, {}),
+    FunctionMetadata("skip", "1.0", "skip()", Skip, Scripting::ArgTypeEnum::VoidType, {}),
     FunctionMetadata("setPC", "1.0", "setPC(0X80000045)", SetPC,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::U32}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::U32}),
     FunctionMetadata("getInstructionFromAddress", "1.0", "getInstructionFromAddress(0X80000032)",
-                     GetInstructionFromAddress, ScriptingEnums::ArgTypeEnum::String,
-                     {ScriptingEnums::ArgTypeEnum::U32})};
+                     GetInstructionFromAddress, Scripting::ArgTypeEnum::String,
+                     {Scripting::ArgTypeEnum::U32})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -139,7 +140,8 @@ ArgHolder* StepOut(ScriptContext* current_script, std::vector<ArgHolder*>* args_
   PowerPC::CoreMode old_mode = power_pc.GetMode();
   power_pc.SetMode(PowerPC::CoreMode::Interpreter);
 
-  while (function_call_depth_from_start >= 0 && movie_manager.GetCurrentFrame() == starting_frame_number)
+  while (function_call_depth_from_start >= 0 &&
+         movie_manager.GetCurrentFrame() == starting_frame_number)
   {
     UGeckoInstruction current_instruction =
         PowerPC::MMU::HostRead_Instruction(guard, power_pc.GetPPCState().pc);
@@ -192,4 +194,5 @@ ArgHolder* GetInstructionFromAddress(ScriptContext* current_script,
   std::string disasm = Common::GekkoDisassembler::Disassemble(op, instruction_addr);
   return CreateStringArgHolder(disasm);
 }
+
 }  // namespace Scripting::InstructionStepAPI

@@ -8,6 +8,7 @@
 
 namespace Scripting
 {
+// Since these are template functions, their definition has to be in the header file.
 
 template <size_t array_size>
 std::vector<FunctionMetadata>
@@ -20,8 +21,8 @@ GetLatestFunctionsForVersion(const std::array<FunctionMetadata, array_size> all_
   //  For example, suppose we have a function that we want to be
   // called "writeBytes" in scripts, which refers to a function called do_general_write on the
   // backend. The key value pairs might look like:
-  //  "writeBytes", {"writeBytes", "1.0", do_general_write, ScriptingEnums::ArgTypeEnum::VoidType,
-  //  {ScriptingEnums::ArgTypeEnum::UnsignedByteVector}}
+  //  "writeBytes", {"writeBytes", "1.0", do_general_write, Scripting::ArgTypeEnum::VoidType,
+  //  {Scripting::ArgTypeEnum::UnsignedByteVector}}
   std::unordered_map<std::string, FunctionMetadata> function_to_latest_version_found_map;
 
   for (int i = 0; i < array_size; ++i)
@@ -31,14 +32,18 @@ GetLatestFunctionsForVersion(const std::array<FunctionMetadata, array_size> all_
 
     if (function_to_latest_version_found_map.count(current_function_name) == 0 &&
         !IsFirstVersionGreaterThanSecondVersion(function_version_number, api_version))
+    {
       function_to_latest_version_found_map[current_function_name] = all_functions[i];
+    }
 
     else if (function_to_latest_version_found_map.count(current_function_name) > 0 &&
              IsFirstVersionGreaterThanSecondVersion(
                  function_version_number,
                  function_to_latest_version_found_map[current_function_name].function_version) &&
              !IsFirstVersionGreaterThanSecondVersion(function_version_number, api_version))
+    {
       function_to_latest_version_found_map[current_function_name] = all_functions[i];
+    }
   }
 
   std::vector<FunctionMetadata> final_list_of_functions_for_version_with_deprecated_functions;

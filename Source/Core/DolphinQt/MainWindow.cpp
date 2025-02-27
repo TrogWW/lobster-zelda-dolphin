@@ -116,7 +116,7 @@
 #include "DolphinQt/ResourcePackManager.h"
 #include "DolphinQt/Resources.h"
 #include "DolphinQt/RiivolutionBootWidget.h"
-#include "DolphinQt/ScriptWindow.h"
+#include "DolphinQt/ScriptManager.h"
 #include "DolphinQt/SearchBar.h"
 #include "DolphinQt/Settings.h"
 #include "DolphinQt/SkylanderPortal/SkylanderPortalWindow.h"
@@ -478,7 +478,7 @@ void MainWindow::CreateComponents()
   m_breakpoint_widget = new BreakpointWidget(this);
   m_code_widget = new CodeWidget(this);
   m_cheats_manager = new CheatsManager(m_system, this);
-  m_script_manager = new ScriptWindow(this);
+  m_script_manager = new ScriptManager(this);
   m_assembler_widget = new AssemblerWidget(this);
 
   const auto request_watch = [this](QString name, u32 addr) {

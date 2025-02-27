@@ -15,6 +15,7 @@
 
 namespace Scripting::GameCubeControllerApi
 {
+
 extern const char* class_name;
 
 extern std::array<Movie::ControllerState, 4> controller_inputs_on_last_frame;

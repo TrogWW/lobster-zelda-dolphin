@@ -9,7 +9,7 @@
 #include "Common/CommonTypes.h"
 #include "Core/Core.h"
 #include "Core/PowerPC/PowerPC.h"
-#include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
+#include "Core/Scripting/CoreScriptInterface/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
 #include "Core/Scripting/HelperClasses/ClassMetadata.h"
 #include "Core/Scripting/HelperClasses/VersionResolver.h"
@@ -17,95 +17,94 @@
 
 namespace Scripting::RegistersAPI
 {
+
 const char* class_name = "RegistersAPI";
 
 static std::array all_registers_functions_metadata_list = {
     FunctionMetadata("getU8FromRegister", "1.0", "getU8FromRegister(\"R5\", 3)", GetU8FromRegister,
-                     ScriptingEnums::ArgTypeEnum::U8,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     Scripting::ArgTypeEnum::U8,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getU16FromRegister", "1.0", "getU16FromRegister(\"R5\", 2)",
-                     GetU16FromRegister, ScriptingEnums::ArgTypeEnum::U16,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetU16FromRegister, Scripting::ArgTypeEnum::U16,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getU32FromRegister", "1.0", "getU32FromRegister(\"R5\", 0)",
-                     GetU32FromRegister, ScriptingEnums::ArgTypeEnum::U32,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetU32FromRegister, Scripting::ArgTypeEnum::U32,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getU64FromRegister", "1.0", "getU64FromRegister(\"F5\", 0)",
-                     GetU64FromRegister, ScriptingEnums::ArgTypeEnum::U64,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetU64FromRegister, Scripting::ArgTypeEnum::U64,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getS8FromRegister", "1.0", "getS8FromRegister(\"R5\", 3)", GetS8FromRegister,
-                     ScriptingEnums::ArgTypeEnum::S8,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     Scripting::ArgTypeEnum::S8,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getS16FromRegister", "1.0", "getS16FromRegister(\"R5\", 2)",
-                     GetS16FromRegister, ScriptingEnums::ArgTypeEnum::S16,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetS16FromRegister, Scripting::ArgTypeEnum::S16,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getS32FromRegister", "1.0", "getS32FromRegister(\"R5\", 0)",
-                     GetS32FromRegister, ScriptingEnums::ArgTypeEnum::S32,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetS32FromRegister, Scripting::ArgTypeEnum::S32,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getS64FromRegister", "1.0", "getS64FromRegister(\"F5\", 0)",
-                     GetS64FromRegister, ScriptingEnums::ArgTypeEnum::S64,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetS64FromRegister, Scripting::ArgTypeEnum::S64,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getFloatFromRegister", "1.0", "getFloatFromRegister(\"F5\", 4)",
-                     GetFloatFromRegister, ScriptingEnums::ArgTypeEnum::Float,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
+                     GetFloatFromRegister, Scripting::ArgTypeEnum::Float,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("getDoubleFromRegister", "1.0", "getDoubleFromRegister(\"F5\", 0)",
-                     GetDoubleFromRegister, ScriptingEnums::ArgTypeEnum::Double,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("getUnsignedBytesFromRegister", "1.0",
-                     "getUnsignedBytesFromRegister(\"R5\", 3, 1)", GetUnsignedBytesFromRegister,
-                     ScriptingEnums::ArgTypeEnum::AddressToByteMap,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("getSignedBytesFromRegister", "1.0",
-                     "getSignedBytesFromRegister(\"R5\", 3, 1)", GetSignedBytesFromRegister,
-                     ScriptingEnums::ArgTypeEnum::AddressToByteMap,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-
-    FunctionMetadata("writeU8ToRegister", "1.0", "writeU8ToRegister(\"R5\", 41, 3)",
-                     WriteU8ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U8,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeU16ToRegister", "1.0", "writeU16ToRegister(\"R5\", 410, 2)",
-                     WriteU16ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U16,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeU32ToRegister", "1.0", "writeU32ToRegister(\"R5\", 500300, 0)",
-                     WriteU32ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U32,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeU64ToRegister", "1.0", "writeU64ToRegister(\"F5\", 700000, 0)",
-                     WriteU64ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::U64,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeS8ToRegister", "1.0", "writeS8ToRegister(\"R5\", -41, 3)",
-                     WriteS8ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S8,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeS16ToRegister", "1.0", "writeS16ToRegister(\"R5\", -9850, 2)",
-                     WriteS16ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S16,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeS32ToRegister", "1.0", "writeS32ToRegister(\"R5\", -800567, 0)",
-                     WriteS32ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S32,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeS64ToRegister", "1.0", "writeS64ToRegister(\"F5\", -1123456, 0)",
-                     WriteS64ToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S64,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeFloatToRegister", "1.0", "writeFloatToRegister(\"F5\", 41.23, 4)",
-                     WriteFloatToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::U8}),
-    FunctionMetadata("writeDoubleToRegister", "1.0", "writeDoubleToRegister(\"R5\", 78.32, 0)",
-                     WriteDoubleToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::Double,
-                      ScriptingEnums::ArgTypeEnum::U8}),
+                     GetDoubleFromRegister, Scripting::ArgTypeEnum::Double,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata(
-        "writeBytesToRegister", "1.0", "writeBytesToRegister(\"R5\", indexToByteMap, 1)",
-        WriteBytesToRegister, ScriptingEnums::ArgTypeEnum::VoidType,
-        {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::AddressToByteMap,
-         ScriptingEnums::ArgTypeEnum::U8})};
+        "getUnsignedBytesFromRegister", "1.0", "getUnsignedBytesFromRegister(\"R5\", 3, 1)",
+        GetUnsignedBytesFromRegister, Scripting::ArgTypeEnum::ListOfBytes,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "getSignedBytesFromRegister", "1.0", "getSignedBytesFromRegister(\"R5\", 3, 1)",
+        GetSignedBytesFromRegister, Scripting::ArgTypeEnum::ListOfBytes,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8, Scripting::ArgTypeEnum::U8}),
+
+    FunctionMetadata(
+        "writeU8ToRegister", "1.0", "writeU8ToRegister(\"R5\", 41, 3)", WriteU8ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U8, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeU16ToRegister", "1.0", "writeU16ToRegister(\"R5\", 410, 2)", WriteU16ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U16, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeU32ToRegister", "1.0", "writeU32ToRegister(\"R5\", 500300, 0)", WriteU32ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U32, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeU64ToRegister", "1.0", "writeU64ToRegister(\"F5\", 700000, 0)", WriteU64ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::U64, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeS8ToRegister", "1.0", "writeS8ToRegister(\"R5\", -41, 3)", WriteS8ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S8, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeS16ToRegister", "1.0", "writeS16ToRegister(\"R5\", -9850, 2)", WriteS16ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S16, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeS32ToRegister", "1.0", "writeS32ToRegister(\"R5\", -800567, 0)", WriteS32ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S32, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata(
+        "writeS64ToRegister", "1.0", "writeS64ToRegister(\"F5\", -1123456, 0)", WriteS64ToRegister,
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata("writeFloatToRegister", "1.0", "writeFloatToRegister(\"F5\", 41.23, 4)",
+                     WriteFloatToRegister, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata("writeDoubleToRegister", "1.0", "writeDoubleToRegister(\"R5\", 78.32, 0)",
+                     WriteDoubleToRegister, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::Double,
+                      Scripting::ArgTypeEnum::U8}),
+    FunctionMetadata("writeBytesToRegister", "1.0",
+                     "writeBytesToRegister(\"R5\", indexToByteMap, 1)", WriteBytesToRegister,
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::ListOfBytes,
+                      Scripting::ArgTypeEnum::U8})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -469,15 +468,15 @@ ArgHolder* GetUnsignedBytesFromRegister(ScriptContext* current_script,
   if (address_pointer == nullptr)
     return ReturnInvalidRegisterNameArgHolder(register_string);
 
-  std::map<long long, s16> index_to_unsigned_byte_map = std::map<long long, s16>();
+  std::vector<s16> unsigned_bytes = std::vector<s16>();
   for (u8 i = 0; i < num_bytes_to_read; ++i)
   {
     u8 next_byte = 0;
     memcpy(&next_byte, address_pointer + i, sizeof(u8));
-    index_to_unsigned_byte_map[i + 1] = next_byte;
+    unsigned_bytes.push_back(next_byte);
   }
 
-  return CreateAddressToByteMapArgHolder(index_to_unsigned_byte_map);
+  return CreateBytesListArgHolder(unsigned_bytes);
 }
 
 ArgHolder* GetSignedBytesFromRegister(ScriptContext* current_script,
@@ -500,15 +499,15 @@ ArgHolder* GetSignedBytesFromRegister(ScriptContext* current_script,
   if (address_pointer == nullptr)
     return ReturnInvalidRegisterNameArgHolder(register_string);
 
-  std::map<long long, s16> index_to_signed_byte_map = std::map<long long, s16>();
+  std::vector<s16> bytes_list = std::vector<s16>();
   for (u8 i = 0; i < num_bytes_to_read; ++i)
   {
     s8 next_byte = 0;
     memcpy(&next_byte, address_pointer + i, sizeof(s8));
-    index_to_signed_byte_map[i + 1] = next_byte;
+    bytes_list.push_back(next_byte);
   }
 
-  return CreateAddressToByteMapArgHolder(index_to_signed_byte_map);
+  return CreateBytesListArgHolder(bytes_list);
 }
 
 ArgHolder* WriteU8ToRegister(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
@@ -714,23 +713,23 @@ ArgHolder* WriteDoubleToRegister(ScriptContext* current_script, std::vector<ArgH
 ArgHolder* WriteBytesToRegister(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
   const std::string register_string = (*args_list)[0]->string_val;
-  std::map<long long, s16> index_to_byte_map = (*args_list)[1]->address_to_byte_map;
+  std::vector<s16> bytes_list = (*args_list)[1]->bytes_list;
   u8 offset = (*args_list)[2]->u8_val;
 
   RegisterObject register_val = ParseRegister(register_string);
   if (IsRegisterObjectUndefined(register_val))
     return ReturnInvalidRegisterNameArgHolder(register_string);
-  if (IsOperationOutOfBounds(register_val, offset, static_cast<u8>(index_to_byte_map.size())))
+  if (IsOperationOutOfBounds(register_val, offset, static_cast<u8>(bytes_list.size())))
     return ReturnOperationOutOfBoundsError("write", "Bytes", register_string, offset);
 
   u8* address_pointer = GetAddressForRegister(register_val, offset);
   if (address_pointer == nullptr)
     return ReturnInvalidRegisterNameArgHolder(register_string);
 
-  int i = 0;
-  for (auto& it : index_to_byte_map)
+  size_t bytes_list_size = bytes_list.size();
+  for (size_t i = 0; i < bytes_list_size; ++i)
   {
-    s16 curr_byte = it.second;
+    s16 curr_byte = bytes_list[i];
     if (curr_byte < -128 || curr_byte > 255)
       return CreateErrorStringArgHolder(
           fmt::format("Byte at offset of {} from start of register {} was outside the valid range "

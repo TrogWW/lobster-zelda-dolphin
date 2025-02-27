@@ -1,28 +1,18 @@
-#ifndef INSTRUCTION_BREAKPOINTS_HOLDER_IMPL
-#define INSTRUCTION_BREAKPOINTS_HOLDER_IMPL
+#pragma once
 
 #include <vector>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+// This is a helper class which stores all instruction breakpoints for a particular ScriptContext*
 class InstructionBreakpointsHolder
 {
 public:
   InstructionBreakpointsHolder();
   ~InstructionBreakpointsHolder();
   void AddBreakpoint(unsigned int addr);
-  bool ContainsBreakpoint(unsigned int addr);
+  bool ContainsBreakpoint(unsigned int addr) const;
   void RemoveBreakpoint(unsigned int addr);
   void RemoveAllBreakpoints();
 
 private:
   std::vector<unsigned int> breakpoint_addresses;
 };
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif

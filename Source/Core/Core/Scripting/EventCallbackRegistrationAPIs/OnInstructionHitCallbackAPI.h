@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
@@ -7,6 +8,7 @@
 
 namespace Scripting::OnInstructionHitCallbackAPI
 {
+
 extern const char* class_name;
 extern u32 instruction_address_for_current_callback;
 extern bool in_instruction_hit_breakpoint;
@@ -24,4 +26,5 @@ ArgHolder* IsInInstructionHitCallback(ScriptContext* current_script,
                                       std::vector<ArgHolder*>* args_list);
 ArgHolder* GetAddressOfInstructionForCurrentCallback(ScriptContext* current_script,
                                                      std::vector<ArgHolder*>* args_list);
+
 }  // namespace Scripting::OnInstructionHitCallbackAPI

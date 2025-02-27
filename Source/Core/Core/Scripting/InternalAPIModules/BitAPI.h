@@ -1,13 +1,15 @@
 #pragma once
+
 #include <string>
 #include <vector>
-#include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
+#include "Core/Scripting/CoreScriptInterface/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
 #include "Core/Scripting/HelperClasses/ClassMetadata.h"
 #include "Core/Scripting/HelperClasses/FunctionMetadata.h"
 
 namespace Scripting::BitApi
 {
+
 extern const char* class_name;
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version);

@@ -9,7 +9,7 @@
 #include <stack>
 #include <string>
 
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ScriptContext_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ScriptContext_APIs.h"
 #include "Core/Scripting/HelperClasses/VersionResolver.h"
 #include "Core/Scripting/ScriptUtilities.h"
 
@@ -31,118 +31,118 @@ static std::map<long long, std::string*> id_to_text_box_map = std::map<long long
 
 static std::array all_graphics_functions_metadata_list = {
     FunctionMetadata("drawLine", "1.0", "drawLine(40.3, 80, 60.3, 80, 0.8, lineColorString)",
-                     DrawLine, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::String}),
+                     DrawLine, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawEmptyRectangle", "1.0",
                      "drawEmptyRectangle(20.5, 45.8, 100.4, 75.9, 3.0, lineColorString)",
-                     DrawEmptyRectangle, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::String}),
+                     DrawEmptyRectangle, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawFilledRectangle", "1.0",
                      "drawFilledRectangle(20.5, 45.8, 200.4, 75.9, fillColorString)",
-                     DrawFilledRectangle, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::String}),
+                     DrawFilledRectangle, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawEmptyTriangle", "1.0",
                      "drawEmptyTriangle(x1, y1, x2, y2, x3, y3, thickness, color)",
-                     DrawEmptyTriangle, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::String}),
+                     DrawEmptyTriangle, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawFilledTriangle", "1.0",
                      "drawFilledTriangle(x1, y1, x2, y2, x3, y3, color)", DrawFilledTriangle,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawEmptyCircle", "1.0",
                      "drawEmptyCircle(centerX, centerY, radius, thickness, colorString)",
-                     DrawEmptyCircle, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::String}),
+                     DrawEmptyCircle, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawFilledCircle", "1.0",
                      "drawFillecCircle(centerX, centerY, radius, fillColorString)",
-                     DrawFilledCircle, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::String}),
+                     DrawFilledCircle, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawEmptyPolygon", "1.0",
                      "drawEmptyPolygon({ {45.0, 100.0}, {45.0, 500.0}, {67.4, 54.2}}, 12.3, color)",
-                     DrawEmptyPolygon, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::ListOfPoints, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::String}),
+                     DrawEmptyPolygon, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::ListOfPoints, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata(
         "drawFilledPolygon", "1.0",
         "drawFilledPolygon({ {45.0, 100.0}, {45.0, 500.0}, {67.4, 54.2}}, color)",
-        DrawFilledPolygon, ScriptingEnums::ArgTypeEnum::VoidType,
-        {ScriptingEnums::ArgTypeEnum::ListOfPoints, ScriptingEnums::ArgTypeEnum::String}),
+        DrawFilledPolygon, Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::ListOfPoints, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("drawText", "1.0", "drawText(30.0, 45.0, colorString, \"Hello World!\")",
-                     DrawText, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float,
-                      ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::String}),
+                     DrawText, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float,
+                      Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("addCheckbox", "1.0", "addCheckbox(checkboxLabel, 42)", AddCheckbox,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("getCheckboxValue", "1.0", "getCheckboxValue(42)", GetCheckboxValue,
-                     ScriptingEnums::ArgTypeEnum::Boolean, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::Boolean, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("setCheckboxValue", "1.0", "setCheckboxValue(42, true)", SetCheckboxValue,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::Boolean}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::Boolean}),
 
     FunctionMetadata("addRadioButtonGroup", "1.0", "addRadioButtonGroup(42)", AddRadioButtonGroup,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("addRadioButton", "1.0", "addRadioButton(\"apples\", 42, 0)", AddRadioButton,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S64,
-                      ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S64,
+                      Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("getRadioButtonGroupValue", "1.0", "getRadioButtonGroupValue((42)",
-                     GetRadioButtonGroupValue, ScriptingEnums::ArgTypeEnum::S64,
-                     {ScriptingEnums::ArgTypeEnum::S64}),
+                     GetRadioButtonGroupValue, Scripting::ArgTypeEnum::S64,
+                     {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("setRadioButtonGroupValue", "1.0", "setRadioButtonGroupValue(42, 1)",
-                     SetRadioButtonGroupValue, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S64}),
+                     SetRadioButtonGroupValue, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S64}),
 
     FunctionMetadata("addTextBox", "1.0", "addTextBox(42, \"Textbox Label\")", AddTextBox,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::String}),
     FunctionMetadata("getTextBoxValue", "1.0", "getTextBoxValue(42)", GetTextBoxValue,
-                     ScriptingEnums::ArgTypeEnum::String, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::String, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("setTextBoxValue", "1.0", "setTextBoxValue(42, \"Hello World!\")",
-                     SetTextBoxValue, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::String}),
+                     SetTextBoxValue, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::String}),
 
     FunctionMetadata("addButton", "1.0",
                      "addButton(\"Button Label\", 42, callbackFunc, 100.0, 45.0)", AddButton,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::S64,
-                      ScriptingEnums::ArgTypeEnum::RegistrationForButtonCallbackInputType,
-                      ScriptingEnums::ArgTypeEnum::Float, ScriptingEnums::ArgTypeEnum::Float}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::S64,
+                      Scripting::ArgTypeEnum::RegistrationForButtonCallbackInputType,
+                      Scripting::ArgTypeEnum::Float, Scripting::ArgTypeEnum::Float}),
     FunctionMetadata("pressButton", "1.0", "pressButton(42)", PressButton,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::S64}),
 
     FunctionMetadata("newLine", "1.0", "newLine(10.0)", NewLine,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::Float}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::Float}),
 
     FunctionMetadata("beginWindow", "1.0", "beginWindow(windowName)", BeginWindow,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::String}),
     FunctionMetadata("endWindow", "1.0", "endWindow()", EndWindow,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {})};
+                     Scripting::ArgTypeEnum::VoidType, {})};
 
 u32 ParseColor(const char* color_string)
 {
@@ -797,4 +797,5 @@ ArgHolder* EndWindow(ScriptContext* current_script, std::vector<ArgHolder*>* arg
   }
   return CreateVoidTypeArgHolder();
 }
+
 }  // namespace Scripting::GraphicsAPI

@@ -1,15 +1,14 @@
-#ifndef PYTHON_INTERFACE
-#define PYTHON_INTERFACE
+#pragma once
 
 #include <string>
 #include "ClassMetadata.h"
 
-#ifdef __cplusplus
-extern  "C" {
-#endif
-
-  namespace PythonInterface
+namespace Scripting::PythonInterface
   {
+
+#ifdef __cplusplus
+    extern  "C" {
+#endif
     // This file encapsulates all Python DLL operations into one file (all void* are really PyObject*)
     void Python_IncRef(void*);
     void Python_DecRef(void*);
@@ -60,16 +59,17 @@ extern  "C" {
     void* ResetAndGetRef_ToPyKey();
     void* ResetAndGetRef_ToPyVal();
     bool PythonDict_Next(void*, signed long long*, void**, void**);
+    void* PythonList_New();
+    void PyList_Append(void*, void*);
     unsigned long long PythonList_Size(void*);
     void* PythonList_GetItem(void*, unsigned long long);
     bool PythonList_Check(void*);
     void* StringTo_PythonUnicodeObj(const char*);
     void* PythonBooleanObj_FromLong(long long);
 
+#ifdef __cplusplus
+    }
+#endif
 
   }
-#ifdef __cplusplus
-}
-#endif
 
-#endif

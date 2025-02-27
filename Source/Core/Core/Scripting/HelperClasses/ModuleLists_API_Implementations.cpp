@@ -5,20 +5,20 @@
 namespace Scripting
 {
 
-const std::vector<const char*> default_modules = {"dolphin",
-                                                  "OnFrameStart",
-                                                  "OnGCControllerPolled",
-                                                  "OnInstructionHit",
-                                                  "OnMemoryAddressReadFrom",
-                                                  "OnMemoryAddressWrittenTo",
-                                                  "OnWiiInputPolled"};
+static const std::vector<const char*> default_modules = {"dolphin",
+                                                         "OnFrameStart",
+                                                         "OnGCControllerPolled",
+                                                         "OnInstructionHit",
+                                                         "OnMemoryAddressReadFrom",
+                                                         "OnMemoryAddressWrittenTo",
+                                                         "OnWiiInputPolled"};
 
-const std::vector<const char*> non_default_modules = {
+static const std::vector<const char*> non_default_modules = {
     "BitAPI",       "ConfigAPI",          "EmuAPI",    "GameCubeControllerAPI",
     "GraphicsAPI",  "InstructionStepAPI", "MemoryAPI", "RegistersAPI",
     "StatisticsAPI"};
 
-const char* import_module_name = "dolphin";
+static const char import_module_name[] = "dolphin";
 
 const void* GetListOfDefaultModules_impl()
 {

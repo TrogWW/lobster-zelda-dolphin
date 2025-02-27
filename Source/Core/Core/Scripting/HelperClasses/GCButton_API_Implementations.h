@@ -1,9 +1,8 @@
-#ifndef GC_BUTTONS_FUNCS
-#define GC_BUTTONS_FUNCS
+#pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// This file contains the implementations for the APIs in GCButton_APIs
+namespace Scripting
+{
 
 int ParseGCButton_impl(const char* button_name);
 const char* ConvertButtonEnumToString_impl(int button);
@@ -11,8 +10,4 @@ int IsValidButtonEnum_impl(int);
 int IsDigitalButton_impl(int);
 int IsAnalogButton_impl(int);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+}  // namespace Scripting

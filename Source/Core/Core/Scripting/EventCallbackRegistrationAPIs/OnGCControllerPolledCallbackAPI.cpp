@@ -4,6 +4,7 @@
 
 namespace Scripting::OnGCControllerPolledCallbackAPI
 {
+
 const char* class_name = "OnGCControllerPolled";
 
 std::array<bool, 4> overwrite_controller_at_specified_port{};
@@ -13,25 +14,25 @@ int current_controller_number_polled = -1;
 
 static std::array all_on_gc_controller_polled_callback_functions_metadata_list = {
     FunctionMetadata("register", "1.0", "register(value)", Register,
-                     ScriptingEnums::ArgTypeEnum::RegistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::RegistrationInputType}),
+                     Scripting::ArgTypeEnum::RegistrationReturnType,
+                     {Scripting::ArgTypeEnum::RegistrationInputType}),
     FunctionMetadata("registerWithAutoDeregistration", "1.0",
                      "registerWithAutoDeregisteration(value)", RegisterWithAutoDeregistration,
-                     ScriptingEnums::ArgTypeEnum::RegistrationWithAutoDeregistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::RegistrationWithAutoDeregistrationInputType}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::RegistrationWithAutoDeregistrationInputType}),
     FunctionMetadata("unregister", "1.0", "unregister(value)", Unregister,
-                     ScriptingEnums::ArgTypeEnum::UnregistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::UnregistrationInputType}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::UnregistrationInputType}),
 
     FunctionMetadata("isInGCControllerPolledCallback", "1.0", "isInGCControllerPolledCallback()",
-                     IsInGCControllerPolledCallback, ScriptingEnums::ArgTypeEnum::Boolean, {}),
+                     IsInGCControllerPolledCallback, Scripting::ArgTypeEnum::Boolean, {}),
     FunctionMetadata("getCurrentPortNumberOfPoll", "1.0", "getCurrentPortNumberOfPoll()",
-                     GetCurrentPortNumberOfPoll, ScriptingEnums::ArgTypeEnum::S64, {}),
+                     GetCurrentPortNumberOfPoll, Scripting::ArgTypeEnum::S64, {}),
     FunctionMetadata("setInputsForPoll", "1.0", "setInputsForPoll(controllerValuesTable)",
-                     SetInputsForPoll, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::ControllerStateObject}),
+                     SetInputsForPoll, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::GameCubeControllerStateObject}),
     FunctionMetadata("getInputsForPoll", "1.0", "getInputsForPoll()", GetInputsForPoll,
-                     ScriptingEnums::ArgTypeEnum::ControllerStateObject, {})};
+                     Scripting::ArgTypeEnum::GameCubeControllerStateObject, {})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -68,7 +69,7 @@ ArgHolder* RegisterWithAutoDeregistration(ScriptContext* current_script,
   current_script->dll_specific_api_definitions
       .RegisterOnGCControllerPolledWithAutoDeregistrationCallback(
           current_script, (*args_list)[0]->void_pointer_val);
-  return CreateRegistrationWithAutoDeregistrationReturnTypeArgHolder();
+  return CreateVoidTypeArgHolder();
 }
 
 ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
@@ -76,29 +77,39 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
   bool return_value =
       current_script->dll_specific_api_definitions.UnregisterOnGCControllerPolledCallback(
           current_script, (*args_list)[0]->void_pointer_val);
+
   if (!return_value)
+  {
     return CreateErrorStringArgHolder(
         "Argument passed into OnGCControllerPolled:unregister() was not a reference to a function "
         "currently registered as an OnGCControllerPolled callback!");
+  }
+
   else
-    return CreateUnregistrationReturnTypeArgHolder(nullptr);
+  {
+    return CreateVoidTypeArgHolder();
+  }
 }
 
 ArgHolder* IsInGCControllerPolledCallback(ScriptContext* current_script,
                                           std::vector<ArgHolder*>* args_list)
 {
-  return CreateBoolArgHolder(current_script->current_script_call_location ==
-                             ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled);
+  return CreateBoolArgHolder(
+      current_script->current_script_call_location ==
+      Scripting::ScriptCallLocationsEnum::FromGCControllerInputPolledCallback);
 }
 
 ArgHolder* GetCurrentPortNumberOfPoll(ScriptContext* current_script,
                                       std::vector<ArgHolder*>* args_list)
 {
   if (current_script->current_script_call_location !=
-      ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled)
+      Scripting::ScriptCallLocationsEnum::FromGCControllerInputPolledCallback)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnGCControllerPolled:getCurrentPortNumberOfPoll() outside of an "
         "OnGCControllerPolled callback function!");
+  }
+
   return CreateS64ArgHolder(current_controller_number_polled + 1);
 }
 
@@ -107,22 +118,31 @@ ArgHolder* GetCurrentPortNumberOfPoll(ScriptContext* current_script,
 ArgHolder* SetInputsForPoll(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
   if (current_script->current_script_call_location !=
-      ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled)
+      Scripting::ScriptCallLocationsEnum::FromGCControllerInputPolledCallback)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnGCControllerPolled:setInputsForPoll() outside of an "
         "OnGCControllerPolled callback function!");
+  }
+
   overwrite_controller_at_specified_port[current_controller_number_polled] = true;
-  new_controller_inputs[current_controller_number_polled] = (*args_list)[0]->controller_state_val;
+  new_controller_inputs[current_controller_number_polled] =
+      (*args_list)[0]->game_cube_controller_state_val;
   return CreateVoidTypeArgHolder();
 }
 
 ArgHolder* GetInputsForPoll(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
   if (current_script->current_script_call_location !=
-      ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled)
+      Scripting::ScriptCallLocationsEnum::FromGCControllerInputPolledCallback)
+  {
     return CreateErrorStringArgHolder(
         "User attempted to call OnGCControllerPolled:getInputsForPoll() outside of an "
         "OnGCControllerPolled callback function!");
-  return CreateControllerStateArgHolder(new_controller_inputs[current_controller_number_polled]);
+  }
+
+  return CreateGameCubeControllerStateArgHolder(
+      new_controller_inputs[current_controller_number_polled]);
 }
+
 }  // namespace Scripting::OnGCControllerPolledCallbackAPI

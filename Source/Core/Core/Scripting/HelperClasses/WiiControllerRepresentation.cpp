@@ -1,4 +1,5 @@
 #include "Core/Scripting/HelperClasses/WiiControllerRepresentation.h"
+
 namespace WiiControllerEnums
 {
 

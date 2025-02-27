@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include "Core/Scripting/HelperClasses/ClassMetadata.h"
@@ -40,4 +41,5 @@ ArgHolder* PressButton(ScriptContext* current_script, std::vector<ArgHolder*>* a
 ArgHolder* NewLine(ScriptContext* current_script, std::vector<ArgHolder*>* args_list);
 ArgHolder* BeginWindow(ScriptContext* current_script, std::vector<ArgHolder*>* args_list);
 ArgHolder* EndWindow(ScriptContext* current_script, std::vector<ArgHolder*>* args_list);
+
 }  // namespace Scripting::GraphicsAPI

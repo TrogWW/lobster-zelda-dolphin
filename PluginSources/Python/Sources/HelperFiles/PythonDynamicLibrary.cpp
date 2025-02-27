@@ -1,12 +1,14 @@
 #include "PythonDynamicLibrary.h"
 #include "../DolphinDefinedAPIs.h"
-#include "../CopiedScriptContextFiles/Enums/ScriptReturnCodes.h"
+#include "../CopiedScriptContextFiles/Enums/ScriptReturnCodesEnum.h"
+#include <iostream>
 #include <filesystem>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace PythonDynamicLibrary
+namespace Scripting::PythonDynamicLibrary
 {
   DynamicLibrary* python_lib_ptr = nullptr;
   static std::string path_to_lib = "";
@@ -33,9 +35,11 @@ namespace PythonDynamicLibrary
   static const char* PY_INC_REF_FUNC_NAME = "Py_IncRef";
   static const char* PY_INITIALIZE_FUNC_NAME = "Py_Initialize";
   static const char* PY_IS_TRUE_FUNC_NAME = "Py_IsTrue";
+  static const char* PY_LIST_NEW_FUNC_NAME = "PyList_New";
   //static const char* PY_LIST_CHECK_FUNC_NAME = "PyList_Check";
   static const char* PY_LIST_GET_ITEM_FUNC_NAME = "PyList_GetItem";
   static const char* PY_LIST_SIZE_FUNC_NAME = "PyList_Size";
+  static const char* PY_LIST_APPEND_FUNC_NAME = "PyList_Append";
   static const char* PY_LONG_AS_LONG_LONG_FUNC_NAME = "PyLong_AsLongLong";
   static const char* PY_LONG_AS_UNSIGNED_LONG_LONG_FUNC_NAME = "PyLong_AsUnsignedLongLong";
   static const char* PY_LONG_FROM_LONG_LONG_FUNC_NAME = "PyLong_FromLongLong";
@@ -84,6 +88,8 @@ namespace PythonDynamicLibrary
   void (*Py_Initialize)() = nullptr;
   int (*Py_IsTrue)(void*) = nullptr;
   //int (*PyList_Check)(void*) = nullptr;
+  void* (*PyList_New)(long long) = nullptr;
+  int (*PyList_Append)(void*, void*) = nullptr;
   void* (*PyList_GetItem)(void*, long long) = nullptr;
   long long (*PyList_Size)(void*) = nullptr;
   long long (*PyLong_AsLongLong)(void*) = nullptr;
@@ -116,10 +122,10 @@ namespace PythonDynamicLibrary
   static const char PYTHON_PATH_SEPERATOR_CHAR = ":";
 #endif
 
-  void SetErrorCodeAndMessage(void* script_context_ptr, ScriptingEnums::ScriptReturnCodes error_code, const char* error_msg)
+  void SetErrorCodeAndMessage(void* script_context_ptr, Scripting::ScriptReturnCodesEnum error_code, const char* error_msg)
   {
-    dolphinDefinedScriptContext_APIs.set_script_return_code(script_context_ptr, error_code);
-    dolphinDefinedScriptContext_APIs.set_error_message(script_context_ptr, error_msg);
+    dolphinDefinedScriptContext_APIs.SetScriptReturnCode(script_context_ptr, error_code);
+    dolphinDefinedScriptContext_APIs.SetErrorMessage(script_context_ptr, error_msg);
     delete python_lib_ptr;
     python_lib_ptr = nullptr;
     return;
@@ -131,7 +137,7 @@ namespace PythonDynamicLibrary
     *func_ptr = reinterpret_cast<T*>(python_lib_ptr->GetSymbolAddress(func_name));
     if (*func_ptr == nullptr)
     {
-      SetErrorCodeAndMessage(base_script_context_ptr, ScriptingEnums::ScriptReturnCodes::DLLComponentNotFoundError, (std::string("Error: ") + func_name + " component was not found in " + path_to_lib + " file.").c_str());
+      SetErrorCodeAndMessage(base_script_context_ptr, Scripting::ScriptReturnCodesEnum::DLLComponentNotFoundError, (std::string("Error: ") + func_name + " component was not found in " + path_to_lib + " file.").c_str());
       return false;
     }
     return true;
@@ -163,9 +169,11 @@ namespace PythonDynamicLibrary
       GetFuncFromDLL(base_script_context_ptr, PY_INC_REF_FUNC_NAME, &Py_IncRef) &&
       GetFuncFromDLL(base_script_context_ptr, PY_INITIALIZE_FUNC_NAME, &Py_Initialize) &&
       GetFuncFromDLL(base_script_context_ptr, PY_IS_TRUE_FUNC_NAME, &Py_IsTrue) &&
+      GetFuncFromDLL(base_script_context_ptr, PY_LIST_NEW_FUNC_NAME, &PyList_New) &&
       //GetFuncFromDLL(base_script_context_ptr, PY_LIST_CHECK_FUNC_NAME, &PyList_Check) &&
       GetFuncFromDLL(base_script_context_ptr, PY_LIST_GET_ITEM_FUNC_NAME, &PyList_GetItem) &&
       GetFuncFromDLL(base_script_context_ptr, PY_LIST_SIZE_FUNC_NAME, &PyList_Size) &&
+      GetFuncFromDLL(base_script_context_ptr, PY_LIST_APPEND_FUNC_NAME, &PyList_Append) &&
       GetFuncFromDLL(base_script_context_ptr, PY_LONG_AS_LONG_LONG_FUNC_NAME, &PyLong_AsLongLong) &&
       GetFuncFromDLL(base_script_context_ptr, PY_LONG_AS_UNSIGNED_LONG_LONG_FUNC_NAME, &PyLong_AsUnsignedLongLong) &&
       GetFuncFromDLL(base_script_context_ptr, PY_LONG_FROM_LONG_LONG_FUNC_NAME, &PyLong_FromLongLong) &&
@@ -233,7 +241,7 @@ namespace PythonDynamicLibrary
   static const std::string LIBRARY_SUFFIX = std::string(".so");
 #endif
 
-  // python311_d.dll
+  // ex. python311.dll or python311_d.dll
   bool stringIsPathToPythonLib(std::string path_string)
   {
     unsigned long long path_string_length = path_string.length();
@@ -262,9 +270,9 @@ namespace PythonDynamicLibrary
       if (number_of_digits < 2) // NOTE: This code will work until Python10 comes out. However, based on Python's release schedule, that probably won't happen for another 150 years - so this should be safe for the forseeable future...
         return false;
 
-#ifndef NDEBUG // case where we're in debug mode
+#ifdef _DEBUG // case where we're in debug mode
       if (path_string[index_in_string] == '_' &&
-        (path_string[index_in_string + 1] == 'd') || path_string[index_in_string + 1] == 'D')
+        (path_string[index_in_string + 1] == 'd' || path_string[index_in_string + 1] == 'D'))
         index_in_string += 2;
       else
         return false;
@@ -274,6 +282,25 @@ namespace PythonDynamicLibrary
         return true;
     }
     return false;
+  }
+
+  // If this is the first file exception encountered on this run, then we first delete the old contents of the pythonDllLoadErrors.txt file.
+  static bool exception_loading_lib_occurred = false;
+
+  void HandleFileErrors(const std::exception& e)
+  {
+    if (!exception_loading_lib_occurred) {
+      std::ofstream exception_file("pythonDllLoadErrors.txt");
+      exception_file << "";
+      exception_file.flush();
+      exception_file.close();
+      exception_loading_lib_occurred = true;
+    }
+    std::cerr << e.what();
+    std::ofstream exception_file("pythonDllLoadErrors.txt", std::ios::app);
+    exception_file << e.what() << std::endl;
+    exception_file.flush();
+    exception_file.close();
   }
 
   void GetPythonLibFromEnvVariable(const char* env_variable)
@@ -287,23 +314,38 @@ namespace PythonDynamicLibrary
 
     for (unsigned long long i = 0; i < number_of_paths; ++i)
     {
-      std::string path_to_search = python_paths_to_search[i];
-      if (std::filesystem::is_directory(std::filesystem::path(path_to_search)))
+      std::string path_to_search_string = python_paths_to_search[i];
+      try
       {
-        for (auto& entry : std::filesystem::directory_iterator(path_to_search))
+        std::filesystem::path current_search_path = std::filesystem::path(path_to_search_string);
+        if (std::filesystem::is_directory(current_search_path))
         {
-          const std::string inner_filename = entry.path().filename().string();
-          if (!entry.is_directory() && stringIsPathToPythonLib(inner_filename))
+          for (auto& entry : std::filesystem::directory_iterator(current_search_path))
           {
-            path_to_lib = path_to_search + inner_filename;
-            return;
+            try
+            {
+              const std::string inner_filename = entry.path().filename().string();
+              if (!entry.is_directory() && stringIsPathToPythonLib(inner_filename))
+              {
+                path_to_lib = entry.path().string();
+                return;
+              }
+            }
+            catch (const std::exception& e)
+            {
+              HandleFileErrors(e);
+            }
           }
         }
+        else if (stringIsPathToPythonLib(current_search_path.filename().string()))
+        {
+          path_to_lib = current_search_path.string();
+          return;
+        }
       }
-      else if (stringIsPathToPythonLib(path_to_search))
+      catch (const std::exception& e)
       {
-        path_to_lib = path_to_search;
-        return;
+        HandleFileErrors(e);
       }
     }
   }
@@ -324,7 +366,7 @@ namespace PythonDynamicLibrary
 
     if (path_to_lib.empty())
     {
-      SetErrorCodeAndMessage(base_script_ptr, ScriptingEnums::ScriptReturnCodes::DLLFileNotFoundError, (std::string("Error: The ") + LIBRARY_SUFFIX + " file for Python could not be located. Environment variables that were searched for Python DLLs (in order) were DOLPHIN_PYTHON_PATH, PYTHONPATH, PYTHONHOME and PATH").c_str());
+      SetErrorCodeAndMessage(base_script_ptr, Scripting::ScriptReturnCodesEnum::DLLFileNotFoundError, (std::string("Error: The ") + LIBRARY_SUFFIX + " file for Python could not be located. Environment variables that were searched for Python DLLs (in order) were DOLPHIN_PYTHON_PATH, PYTHONPATH, PYTHONHOME and PATH").c_str());
       return;
     }
 
@@ -332,7 +374,7 @@ namespace PythonDynamicLibrary
 
     if (!python_lib_ptr->IsOpen())
     {
-      SetErrorCodeAndMessage(base_script_ptr, ScriptingEnums::ScriptReturnCodes::DLLFileNotFoundError, (std::string("Error: The ") + path_to_lib + " file for Python could not be opened!").c_str());
+      SetErrorCodeAndMessage(base_script_ptr, Scripting::ScriptReturnCodesEnum::DLLFileNotFoundError, (std::string("Error: The ") + path_to_lib + " file for Python could not be opened!").c_str());
       DeletePythonLib();
       return;
     }

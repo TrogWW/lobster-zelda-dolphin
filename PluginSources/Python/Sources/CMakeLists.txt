@@ -7,8 +7,8 @@ project(PythonDLL)
 add_library(PYTHON SHARED
 CopiedScriptContextFiles/Enums/ArgTypeEnum.h
 CopiedScriptContextFiles/Enums/GCButtonNameEnum.h
-CopiedScriptContextFiles/Enums/ScriptCallLocations.h
-CopiedScriptContextFiles/Enums/ScriptReturnCodes.h
+CopiedScriptContextFiles/Enums/ScriptCallLocationsEnum.h
+CopiedScriptContextFiles/Enums/ScriptReturnCodesEnum.h
 CopiedScriptContextFiles/InternalScriptAPIs/ArgHolder_APIs.h
 CopiedScriptContextFiles/InternalScriptAPIs/ClassFunctionsResolver_APIs.h
 CopiedScriptContextFiles/InternalScriptAPIs/ClassMetadata_APIs.h

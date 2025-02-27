@@ -1,11 +1,14 @@
 #pragma once
-#ifndef ARG_TYPE_ENUM
-#define ARG_TYPE_ENUM
-namespace ScriptingEnums
+
+namespace Scripting
 {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// This enum represents the types of parameters for Scripting API functions, and the return types
+// of Scripting API functions (which are both specified in FunctionMetadata definitions).
 enum ArgTypeEnum
 {
   VoidType = 0,
@@ -22,23 +25,22 @@ enum ArgTypeEnum
   Double = 11,
   String = 12,
   VoidPointer = 13,
-  AddressToByteMap = 14,
-  ControllerStateObject = 15,
+  ListOfBytes = 14,
+  GameCubeControllerStateObject = 15,
   ListOfPoints = 16,
-  ErrorStringType = 17,
-  YieldType = 18,
-  RegistrationInputType = 19,
-  RegistrationWithAutoDeregistrationInputType = 20,
-  RegistrationForButtonCallbackInputType = 21,
-  UnregistrationInputType = 22,
-  RegistrationReturnType = 23,
-  RegistrationWithAutoDeregistrationReturnType = 24,
-  UnregistrationReturnType = 25,
-  ShutdownType = 26,
-  UnknownArgTypeEnum = 27
+  RegistrationInputType = 17,
+  RegistrationWithAutoDeregistrationInputType = 18,
+  RegistrationForButtonCallbackInputType = 19,
+  UnregistrationInputType = 20,
+  RegistrationReturnType = 21,
+  YieldType = 22,
+  ShutdownType = 23,
+  ErrorStringType = 24,
+  UnknownArgTypeEnum = 25
 };
+
 #ifdef __cplusplus
 }
 #endif
-}  // namespace ScriptingEnums
-#endif
+
+}  // namespace Scripting

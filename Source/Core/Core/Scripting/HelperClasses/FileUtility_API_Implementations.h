@@ -1,23 +1,17 @@
-#ifndef FILE_UTILITY_API_IMPLS
-#define FILE_UTILITY_API_IMPLS
+#pragma once
 
 #include <string>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// This file contains the implementations for the APIs in FileUtility_APIs
+namespace Scripting
+{
 
-extern std::string user_path;
-extern std::string sys_path;
+// These 2 functions are called once at startup to set the user and system paths variables to their
+// actual values.
+void SetUserPath(std::string new_user_path);
+void SetSysPath(std::string new_sys_path);
 
-void setUserPath(const std::string new_user_path);
-void setSysPath(const std::string new_sys_path);
+const char* GetUserDirectoryPath_impl();
+const char* GetSystemDirectoryPath_impl();
 
-const char* GetUserPath_impl();
-const char* GetSystemDirectory_impl();
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+}  // namespace Scripting

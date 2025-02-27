@@ -1,9 +1,8 @@
-#ifndef PYTHON_DYNAMIC_LIBRARY
-#define PYTHON_DYNAMIC_LIBRARY
+#pragma once
 
 #include "DynamicLibrary.h"
 
-namespace PythonDynamicLibrary
+namespace Scripting::PythonDynamicLibrary
 {
   extern DynamicLibrary* python_lib_ptr;
 
@@ -35,6 +34,8 @@ namespace PythonDynamicLibrary
   extern void (*Py_Initialize)();
   extern int (*Py_IsTrue)(void*);
   //extern int (*PyList_Check)(void*);
+  extern void* (*PyList_New)(long long);
+  extern int (*PyList_Append)(void*, void*);
   extern void* (*PyList_GetItem)(void*, long long);
   extern long long (*PyList_Size)(void*);
   extern long long (*PyLong_AsLongLong)(void*);
@@ -61,4 +62,3 @@ namespace PythonDynamicLibrary
   extern void* PY_NONE_STRUCT_DATA;
   extern void* PY_TRUE_STRUCT_DATA;
 }
-#endif

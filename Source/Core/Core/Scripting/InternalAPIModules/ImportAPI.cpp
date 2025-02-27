@@ -4,29 +4,30 @@
 #include <memory>
 #include <unordered_map>
 
-#include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
+#include "Core/Scripting/CoreScriptInterface/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/HelperClasses/ArgHolder.h"
 #include "Core/Scripting/HelperClasses/ClassMetadata.h"
 #include "Core/Scripting/HelperClasses/FunctionMetadata.h"
 #include "Core/Scripting/HelperClasses/VersionResolver.h"
 
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ScriptContext_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ScriptContext_APIs.h"
 
 namespace Scripting::ImportAPI
 {
 
 const char* class_name = "dolphin";
+
 static std::array all_import_functions_metadata_list = {
     FunctionMetadata("importModule", "1.0", "importModule(apiName, versionNumber)", ImportModule,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::String}),
     FunctionMetadata("import", "1.0", "import(apiName, versionNumber)", ImportAlt,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String, ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String, Scripting::ArgTypeEnum::String}),
     FunctionMetadata("shutdownScript", "1.0", "shutdownScript()", ShutdownScript,
-                     ScriptingEnums::ArgTypeEnum::ShutdownType, {}),
+                     Scripting::ArgTypeEnum::ShutdownType, {}),
     FunctionMetadata("exitDolphin", "1.0", "exitDolphin(0)", ExitDolphin,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::S32})};
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::S32})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {

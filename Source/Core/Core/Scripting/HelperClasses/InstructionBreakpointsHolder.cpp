@@ -3,27 +3,26 @@
 #include "Core/PowerPC/PowerPC.h"
 #include "Core/System.h"
 
-InstructionBreakpointsHolder::InstructionBreakpointsHolder()
-{
-  this->breakpoint_addresses = std::vector<unsigned int>();
-}
+InstructionBreakpointsHolder::InstructionBreakpointsHolder() = default;
 
 InstructionBreakpointsHolder::~InstructionBreakpointsHolder()
 {
-  this->RemoveAllBreakpoints();
+  RemoveAllBreakpoints();
 }
 
 void InstructionBreakpointsHolder::AddBreakpoint(unsigned int addr)
 {
-  if (!this->ContainsBreakpoint(addr))
+  if (!ContainsBreakpoint(addr))
+  {
     Core::System::GetInstance().GetPowerPC().GetBreakPoints().Add(addr, true, false,
                                                                   std::nullopt);
+  }
 
-  breakpoint_addresses.push_back(
-      addr);  // add this to the list of breakpoints regardless of whether or not its a duplicate
+  // add this to the list of breakpoints regardless of whether or not its a duplicate
+  breakpoint_addresses.push_back(addr);
 }
 
-bool InstructionBreakpointsHolder::ContainsBreakpoint(unsigned int addr)
+bool InstructionBreakpointsHolder::ContainsBreakpoint(unsigned int addr) const
 {
   return (std::count(breakpoint_addresses.begin(), breakpoint_addresses.end(), addr) > 0);
 }
@@ -34,20 +33,20 @@ void InstructionBreakpointsHolder::RemoveBreakpoint(unsigned int addr)
   if (it != breakpoint_addresses.end())
     breakpoint_addresses.erase(it);
 
-  if (!this->ContainsBreakpoint(addr))
+  if (!ContainsBreakpoint(addr))
     Core::System::GetInstance().GetPowerPC().GetBreakPoints().Remove(addr);
 }
 
 void InstructionBreakpointsHolder::RemoveAllBreakpoints()
 {
-  if (breakpoint_addresses.size() == 0)
+  if (breakpoint_addresses.empty())
     return;
 
-  while (breakpoint_addresses.size() > 0)
+  while (!breakpoint_addresses.empty())
   {
     unsigned int addr = breakpoint_addresses[0];
     breakpoint_addresses.erase(breakpoint_addresses.begin());
-    if (!this->ContainsBreakpoint(addr))
+    if (!ContainsBreakpoint(addr))
       Core::System::GetInstance().GetPowerPC().GetBreakPoints().Remove(addr);
   }
 }

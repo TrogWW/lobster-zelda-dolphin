@@ -532,19 +532,19 @@ add_library(core
   PowerPC/SignatureDB/MEGASignatureDB.h
   PowerPC/SignatureDB/SignatureDB.cpp
   PowerPC/SignatureDB/SignatureDB.h
-  Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h
-  Scripting/CoreScriptContextFiles/Enums/GCButtonNameEnum.h
-  Scripting/CoreScriptContextFiles/Enums/ScriptCallLocations.h
-  Scripting/CoreScriptContextFiles/Enums/ScriptReturnCodes.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/ArgHolder_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/ClassFunctionsResolver_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/ClassMetadata_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/FileUtility_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/FunctionMetadata_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/GCButton_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/ModuleLists_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/ScriptContext_APIs.h
-  Scripting/CoreScriptContextFiles/InternalScriptAPIs/VectorOfArgHolders_APIs.h
+  Scripting/CoreScriptInterface/Enums/ArgTypeEnum.h
+  Scripting/CoreScriptInterface/Enums/GCButtonNameEnum.h
+  Scripting/CoreScriptInterface/Enums/ScriptCallLocationsEnum.h
+  Scripting/CoreScriptInterface/Enums/ScriptReturnCodesEnum.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/ArgHolder_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/ClassFunctionsResolver_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/ClassMetadata_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/FileUtility_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/FunctionMetadata_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/GCButton_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/ModuleLists_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/ScriptContext_APIs.h
+  Scripting/CoreScriptInterface/InternalScriptAPIs/VectorOfArgHolders_APIs.h
   Scripting/EventCallbackRegistrationAPIs/OnFrameStartCallbackAPI.cpp
   Scripting/EventCallbackRegistrationAPIs/OnFrameStartCallbackAPI.h
   Scripting/EventCallbackRegistrationAPIs/OnGCControllerPolledCallbackAPI.cpp
@@ -561,16 +561,16 @@ add_library(core
   Scripting/HelperClasses/ArgHolder.h
   Scripting/HelperClasses/ArgHolder_API_Implementations.cpp
   Scripting/HelperClasses/ArgHolder_API_Implementations.h
-  Scripting/HelperClasses/ClassFunctionsResolver.cpp
-  Scripting/HelperClasses/ClassFunctionsResolver.h
+  Scripting/HelperClasses/ClassFunctionsResolver_API_Implementations.cpp
+  Scripting/HelperClasses/ClassFunctionsResolver_API_Implementations.h
   Scripting/HelperClasses/ClassMetadata.cpp
   Scripting/HelperClasses/ClassMetadata.h
   Scripting/HelperClasses/FileUtility_API_Implementations.cpp
   Scripting/HelperClasses/FileUtility_API_Implementations.h
   Scripting/HelperClasses/FunctionMetadata.cpp
   Scripting/HelperClasses/FunctionMetadata.h
-  Scripting/HelperClasses/GCButtonFunctions.cpp
-  Scripting/HelperClasses/GCButtonFunctions.h
+  Scripting/HelperClasses/GCButton_API_Implementations.cpp
+  Scripting/HelperClasses/GCButton_API_Implementations.h
   Scripting/HelperClasses/InstructionBreakpointsHolder.cpp
   Scripting/HelperClasses/InstructionBreakpointsHolder.h
   Scripting/HelperClasses/MemoryAddressBreakpointsHolder.cpp
@@ -581,8 +581,8 @@ add_library(core
   Scripting/HelperClasses/ScriptContext.h
   Scripting/HelperClasses/ScriptQueueEvent.h
   Scripting/HelperClasses/ScriptQueueEventTypes.h
-  Scripting/HelperClasses/VectorOfArgHolders.cpp
-  Scripting/HelperClasses/VectorOfArgHolders.h
+  Scripting/HelperClasses/VectorOfArgHolders_API_Implementations.cpp
+  Scripting/HelperClasses/VectorOfArgHolders_API_Implementaions.h
   Scripting/HelperClasses/VersionComparisonFunctions.cpp
   Scripting/HelperClasses/VersionComparisonFunctions.h
   Scripting/HelperClasses/VersionResolver.h

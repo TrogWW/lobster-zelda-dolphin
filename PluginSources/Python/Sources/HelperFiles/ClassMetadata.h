@@ -1,7 +1,11 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include "FunctionMetadata.h"
+
+namespace Scripting
+{
 
 class ClassMetadata
 {
@@ -22,3 +26,5 @@ public:
   std::string class_name;
   std::vector<FunctionMetadata> functions_list;
 };
+
+}
