@@ -9,17 +9,17 @@ const char* class_name = "OnFrameStart";
 
 static std::array all_on_frame_start_callback_functions_metadata_list = {
     FunctionMetadata("register", "1.0", "register(value)", Register,
-                     ScriptingEnums::ArgTypeEnum::RegistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::RegistrationInputType}),
+                     Scripting::ArgTypeEnum::RegistrationReturnType,
+                     {Scripting::ArgTypeEnum::RegistrationInputType}),
     FunctionMetadata("registerWithAutoDeregistration", "1.0",
                      "registerWithAutoDeregistration(value)", RegisterWithAutoDeregistration,
-                     ScriptingEnums::ArgTypeEnum::RegistrationWithAutoDeregistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::RegistrationWithAutoDeregistrationInputType}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::RegistrationWithAutoDeregistrationInputType}),
     FunctionMetadata("unregister", "1.0", "unregister(value)", Unregister,
-                     ScriptingEnums::ArgTypeEnum::UnregistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::UnregistrationInputType}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::UnregistrationInputType}),
     FunctionMetadata("isInFrameStartCallback", "1.0", "isInFrameStartCallback()",
-                     IsInFrameStartCallback, ScriptingEnums::ArgTypeEnum::Boolean, {})};
+                     IsInFrameStartCallback, Scripting::ArgTypeEnum::Boolean, {})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -54,13 +54,14 @@ ArgHolder* RegisterWithAutoDeregistration(ScriptContext* current_script,
 {
   current_script->dll_specific_api_definitions.RegisterOnFrameStartWithAutoDeregistrationCallback(
       current_script, (*args_list)[0]->void_pointer_val);
-  return CreateRegistrationWithAutoDeregistrationReturnTypeArgHolder();
+  return CreateVoidTypeArgHolder();
 }
 
 ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
   bool return_value = current_script->dll_specific_api_definitions.UnregisterOnFrameStartCallback(
       current_script, (*args_list)[0]->void_pointer_val);
+
   if (!return_value)
   {
     return CreateErrorStringArgHolder(
@@ -70,14 +71,14 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
 
   else
   {
-    return CreateUnregistrationReturnTypeArgHolder(nullptr);
+    return CreateVoidTypeArgHolder();
   }
 }
 
 ArgHolder* IsInFrameStartCallback(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
   return CreateBoolArgHolder(current_script->current_script_call_location ==
-                             ScriptingEnums::ScriptCallLocations::FromFrameStartCallback);
+                             Scripting::ScriptCallLocationsEnum::FromFrameStartCallback);
 }
 
 }  // namespace Scripting::OnFrameStartCallbackAPI

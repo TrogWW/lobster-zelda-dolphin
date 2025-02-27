@@ -65,7 +65,7 @@
 #include "Core/IOS/USB/Bluetooth/BTEmu.h"
 #include "Core/IOS/USB/Bluetooth/WiimoteDevice.h"
 #include "Core/NetPlayProto.h"
-#include "Core/Scripting/CoreScriptContextFiles/Enums/GCButtonNameEnum.h"
+#include "Core/Scripting/CoreScriptInterface/Enums/GCButtonNameEnum.h"
 #include "Core/Scripting/EventCallbackRegistrationAPIs/OnGCControllerPolledCallbackAPI.h"
 #include "Core/Scripting/InternalAPIModules/GameCubeControllerAPI.h"
 #include "Core/Scripting/ScriptUtilities.h"

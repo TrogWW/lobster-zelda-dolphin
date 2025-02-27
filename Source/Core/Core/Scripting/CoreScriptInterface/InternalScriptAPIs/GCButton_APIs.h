@@ -1,9 +1,13 @@
 #pragma once
 
+namespace Scripting
+{
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// GCButton_APIs contains the APIs for handling GCButtonNameEnum values.
 typedef struct GCButton_APIs
 {
   // Takes as input a string (case-insensitive) representing a button name, and returns the int that
@@ -33,3 +37,5 @@ typedef struct GCButton_APIs
 #ifdef __cplusplus
 }
 #endif
+
+}  // namespace Scripting

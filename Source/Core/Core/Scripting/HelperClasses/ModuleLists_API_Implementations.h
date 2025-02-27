@@ -1,3 +1,6 @@
+#pragma once
+
+// This file contains the implementations for the APIs in ModuleLists_APIs
 namespace Scripting
 {
 

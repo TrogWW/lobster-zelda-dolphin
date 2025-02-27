@@ -19,15 +19,15 @@ namespace Scripting::EmuApi
 const char* class_name = "EmuAPI";
 static std::array all_emu_functions_metadata_list = {
     FunctionMetadata("frameAdvance", "1.0", "frameAdvance()", EmuFrameAdvance,
-                     ScriptingEnums::ArgTypeEnum::YieldType, {}),
+                     Scripting::ArgTypeEnum::YieldType, {}),
     FunctionMetadata("loadState", "1.0", "loadState(\"savestateFilename.sav\")", EmuLoadState,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::String}),
     FunctionMetadata("saveState", "1.0", "saveState(\"savestateFilename.sav\")", EmuSaveState,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::String}),
     FunctionMetadata("playMovie", "1.0", "playMovie(\"movieFilename.dtm\")", EmuPlayMovie,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::String}),
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::String}),
     FunctionMetadata("saveMovie", "1.0", "saveMovie(\"movieFilename.dtm\")", EmuSaveMovie,
-                     ScriptingEnums::ArgTypeEnum::VoidType, {ScriptingEnums::ArgTypeEnum::String})};
+                     Scripting::ArgTypeEnum::VoidType, {Scripting::ArgTypeEnum::String})};
 
 static std::string load_state_name;
 static std::string save_state_name;

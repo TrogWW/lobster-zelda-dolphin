@@ -13,28 +13,26 @@ bool in_memory_address_read_from_breakpoint = false;
 
 static std::array all_on_memory_address_read_from_callback_functions_metadata_list = {
     FunctionMetadata("register", "1.0", "register(memoryStartAddress, memoryEndAddress, value)",
-                     Register, ScriptingEnums::ArgTypeEnum::RegistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::U32, ScriptingEnums::ArgTypeEnum::U32,
-                      ScriptingEnums::ArgTypeEnum::RegistrationInputType}),
+                     Register, Scripting::ArgTypeEnum::RegistrationReturnType,
+                     {Scripting::ArgTypeEnum::U32, Scripting::ArgTypeEnum::U32,
+                      Scripting::ArgTypeEnum::RegistrationInputType}),
     FunctionMetadata("registerWithAutoDeregistration", "1.0",
                      "registerWithAutoDeregistration(memoryStartAddress, memoryEndAddress, value)",
-                     RegisterWithAutoDeregistration,
-                     ScriptingEnums::ArgTypeEnum::RegistrationWithAutoDeregistrationReturnType,
-                     {ScriptingEnums::ArgTypeEnum::U32, ScriptingEnums::ArgTypeEnum::U32,
-                      ScriptingEnums::ArgTypeEnum::RegistrationWithAutoDeregistrationInputType}),
+                     RegisterWithAutoDeregistration, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::U32, Scripting::ArgTypeEnum::U32,
+                      Scripting::ArgTypeEnum::RegistrationWithAutoDeregistrationInputType}),
     FunctionMetadata(
         "unregister", "1.0", "unregister(memoryStartAddress, value)", Unregister,
-        ScriptingEnums::ArgTypeEnum::UnregistrationReturnType,
-        {ScriptingEnums::ArgTypeEnum::U32, ScriptingEnums::ArgTypeEnum::UnregistrationInputType}),
+        Scripting::ArgTypeEnum::VoidType,
+        {Scripting::ArgTypeEnum::U32, Scripting::ArgTypeEnum::UnregistrationInputType}),
     FunctionMetadata("isInMemoryAddressReadFromCallback", "1.0",
                      "isInMemoryAddressReadFromCallback()", IsInMemoryAddressReadFromCallback,
-                     ScriptingEnums::ArgTypeEnum::Boolean, {}),
+                     Scripting::ArgTypeEnum::Boolean, {}),
     FunctionMetadata("getMemoryAddressReadFromForCurrentCallback", "1.0",
                      "getMemoryAddressReadFromForCurrentCallback()",
-                     GetMemoryAddressReadFromForCurrentCallback, ScriptingEnums::ArgTypeEnum::U32,
-                     {}),
+                     GetMemoryAddressReadFromForCurrentCallback, Scripting::ArgTypeEnum::U32, {}),
     FunctionMetadata("getReadSize", "1.0", "getReadSize()", GetReadSize,
-                     ScriptingEnums::ArgTypeEnum::U32, {})};
+                     Scripting::ArgTypeEnum::U32, {})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -76,8 +74,8 @@ ArgHolder* Register(ScriptContext* current_script, std::vector<ArgHolder*>* args
         "than its starting address!");
   }
 
-  current_script->memoryAddressBreakpointsHolder.AddReadBreakpoint(memory_breakpoint_start_address,
-                                                                   memory_breakpoint_end_address);
+  current_script->memory_address_breakpoints_holder.AddReadBreakpoint(
+      memory_breakpoint_start_address, memory_breakpoint_end_address);
   return CreateRegistrationReturnTypeArgHolder(
       current_script->dll_specific_api_definitions.RegisterOnMemoryAddressReadFromCallback(
           current_script, memory_breakpoint_start_address, memory_breakpoint_end_address,
@@ -102,13 +100,13 @@ ArgHolder* RegisterWithAutoDeregistration(ScriptContext* current_script,
                                       "less than its starting address!");
   }
 
-  current_script->memoryAddressBreakpointsHolder.AddReadBreakpoint(memory_breakpoint_start_address,
-                                                                   memory_breakpoint_end_address);
+  current_script->memory_address_breakpoints_holder.AddReadBreakpoint(
+      memory_breakpoint_start_address, memory_breakpoint_end_address);
 
   current_script->dll_specific_api_definitions
       .RegisterOnMemoryAddressReadFromWithAutoDeregistrationCallback(
           current_script, memory_breakpoint_start_address, memory_breakpoint_end_address, callback);
-  return CreateRegistrationWithAutoDeregistrationReturnTypeArgHolder();
+  return CreateVoidTypeArgHolder();
 }
 
 ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
@@ -116,7 +114,7 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
   u32 memory_breakpoint_start_address = (*args_list)[0]->u32_val;
   void* callback = (*args_list)[1]->void_pointer_val;
 
-  if (!current_script->memoryAddressBreakpointsHolder.ContainsReadBreakpoint(
+  if (!current_script->memory_address_breakpoints_holder.ContainsReadBreakpoint(
           memory_breakpoint_start_address))
   {
     return CreateErrorStringArgHolder(
@@ -125,7 +123,7 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
         "breakpoint that was currently enabled!");
   }
 
-  current_script->memoryAddressBreakpointsHolder.RemoveReadBreakpoint(
+  current_script->memory_address_breakpoints_holder.RemoveReadBreakpoint(
       memory_breakpoint_start_address);
 
   bool return_value =
@@ -141,22 +139,21 @@ ArgHolder* Unregister(ScriptContext* current_script, std::vector<ArgHolder*>* ar
 
   else
   {
-    return CreateUnregistrationReturnTypeArgHolder(nullptr);
+    return CreateVoidTypeArgHolder();
   }
 }
 
 ArgHolder* IsInMemoryAddressReadFromCallback(ScriptContext* current_script,
                                              std::vector<ArgHolder*>* args_list)
 {
-  return CreateBoolArgHolder(
-      current_script->current_script_call_location ==
-      ScriptingEnums::ScriptCallLocations::FromMemoryAddressReadFromCallback);
+  return CreateBoolArgHolder(current_script->current_script_call_location ==
+                             Scripting::ScriptCallLocationsEnum::FromMemoryAddressReadFromCallback);
 }
 ArgHolder* GetMemoryAddressReadFromForCurrentCallback(ScriptContext* current_script,
                                                       std::vector<ArgHolder*>* args_list)
 {
   if (current_script->current_script_call_location !=
-      ScriptingEnums::ScriptCallLocations::FromMemoryAddressReadFromCallback)
+      Scripting::ScriptCallLocationsEnum::FromMemoryAddressReadFromCallback)
   {
     return CreateErrorStringArgHolder(
         "User attempted to call "
@@ -170,7 +167,7 @@ ArgHolder* GetMemoryAddressReadFromForCurrentCallback(ScriptContext* current_scr
 ArgHolder* GetReadSize(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
   if (current_script->current_script_call_location !=
-      ScriptingEnums::ScriptCallLocations::FromMemoryAddressReadFromCallback)
+      Scripting::ScriptCallLocationsEnum::FromMemoryAddressReadFromCallback)
   {
     return CreateErrorStringArgHolder("User attempted to call "
                                       "OnMemoryAddressReadFrom:getReadSize() outside of an "
