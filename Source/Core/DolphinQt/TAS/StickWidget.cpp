@@ -114,23 +114,23 @@ void StickWidget::keyReleaseEvent(QKeyEvent* event)
         changed = true;
         break;
       case Qt::Key_Period:
-        m_x = 146;
-        m_y = 110;
+        m_x = 145;
+        m_y = 111;
         changed = true;
         break;
       case Qt::Key_M:
-        m_x = 110;
-        m_y = 110;
+        m_x = 111;
+        m_y = 111;
         changed = true;
         break;
       case Qt::Key_U:
-        m_x = 110;
-        m_y = 146;
+        m_x = 111;
+        m_y = 145;
         changed = true;
         break;
       case Qt::Key_O:
-        m_x = 146;
-        m_y = 146;
+        m_x = 145;
+        m_y = 145;
         changed = true;
         break;
       case Qt::Key_K:
