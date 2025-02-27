@@ -17,79 +17,79 @@ namespace Scripting::MemoryApi
 const char* class_name = "MemoryAPI";
 
 static std::array all_memory_functions_metadata_list = {
-    FunctionMetadata("read_u8", "1.0", "read_u8(0X80003421)", ReadU8,
-                     ScriptingEnums::ArgTypeEnum::U8, {ScriptingEnums::ArgTypeEnum::S64}),
+    FunctionMetadata("read_u8", "1.0", "read_u8(0X80003421)", ReadU8, Scripting::ArgTypeEnum::U8,
+                     {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_u16", "1.0", "read_u16(0X80003421)", ReadU16,
-                     ScriptingEnums::ArgTypeEnum::U16, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::U16, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_u32", "1.0", "read_u32(0X80003421)", ReadU32,
-                     ScriptingEnums::ArgTypeEnum::U32, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::U32, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_u64", "1.0", "read_u64(0X80003421)", ReadU64,
-                     ScriptingEnums::ArgTypeEnum::U64, {ScriptingEnums::ArgTypeEnum::S64}),
-    FunctionMetadata("read_s8", "1.0", "read_s8(0X80003421)", ReadS8,
-                     ScriptingEnums::ArgTypeEnum::S8, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::U64, {Scripting::ArgTypeEnum::S64}),
+    FunctionMetadata("read_s8", "1.0", "read_s8(0X80003421)", ReadS8, Scripting::ArgTypeEnum::S8,
+                     {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_s16", "1.0", "read_s16(0X80003421)", ReadS16,
-                     ScriptingEnums::ArgTypeEnum::S16, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::S16, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_s32", "1.0", "read_s32(0X80003421)", ReadS32,
-                     ScriptingEnums::ArgTypeEnum::S32, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::S32, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_s64", "1.0", "read_s64(0X80003421)", ReadS64,
-                     ScriptingEnums::ArgTypeEnum::S64, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::S64, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_float", "1.0", "read_float(0X80003421)", ReadFloat,
-                     ScriptingEnums::ArgTypeEnum::Float, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::Float, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_double", "1.0", "read_double(0X80003421)", ReadDouble,
-                     ScriptingEnums::ArgTypeEnum::Double, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::Double, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_fixed_length_string", "1.0", "read_fixed_length_string(0X80003421, 8)",
-                     ReadFixedLengthString, ScriptingEnums::ArgTypeEnum::String,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S64}),
+                     ReadFixedLengthString, Scripting::ArgTypeEnum::String,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_null_terminated_string", "1.0",
                      "read_null_terminated_string(0X80003421)", ReadNullTerminatedString,
-                     ScriptingEnums::ArgTypeEnum::String, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::String, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_unsigned_bytes", "1.0", "read_unsigned_bytes(0X80003421, 6)",
-                     ReadUnsignedBytes, ScriptingEnums::ArgTypeEnum::AddressToByteMap,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S64}),
+                     ReadUnsignedBytes, Scripting::ArgTypeEnum::ListOfBytes,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("read_signed_bytes", "1.0", "read_signed_bytes(0X80003421, 6)",
-                     ReadSignedBytes, ScriptingEnums::ArgTypeEnum::AddressToByteMap,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S64}),
+                     ReadSignedBytes, Scripting::ArgTypeEnum::ListOfBytes,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S64}),
 
     FunctionMetadata("write_u8", "1.0", "write_u8(0X80003421, 41)", WriteU8,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::U8}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::U8}),
     FunctionMetadata("write_u16", "1.0", "write_u16(0X80003421, 400)", WriteU16,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::U16}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::U16}),
     FunctionMetadata("write_u32", "1.0", "write_u32(0X80003421, 500000)", WriteU32,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::U32}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::U32}),
     FunctionMetadata("write_u64", "1.0", "write_u64(0X80003421, 7000000)", WriteU64,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::U64}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::U64}),
     FunctionMetadata("write_s8", "1.0", "write_s8(0X80003421, -42)", WriteS8,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S8}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S8}),
     FunctionMetadata("write_s16", "1.0", "write_s16(0X80003421, -500)", WriteS16,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S16}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S16}),
     FunctionMetadata("write_s32", "1.0", "write_s32(0X80003421, -100000)", WriteS32,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S32}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S32}),
     FunctionMetadata("write_s64", "1.0", "write_s64(0X80003421, -70000000)", WriteS64,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("write_float", "1.0", "write_float(0X80003421, 85.64)", WriteFloat,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::Float}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::Float}),
     FunctionMetadata("write_double", "1.0", "write_double(0X80003421, 143.51)", WriteDouble,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::Double}),
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::Double}),
     FunctionMetadata("write_string", "1.0", "write_string(0X80003421, \"Hello World!\")",
-                     WriteString, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::S64, ScriptingEnums::ArgTypeEnum::String}),
-    FunctionMetadata("write_bytes", "1.0", "write_bytes(addressToValueMap)", WriteBytes,
-                     ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::AddressToByteMap}),
+                     WriteString, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::String}),
+    FunctionMetadata("write_bytes", "1.0", "write_bytes(0x80003421, {54, 23, 32})", WriteBytes,
+                     Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::S64, Scripting::ArgTypeEnum::ListOfBytes}),
     FunctionMetadata("writeAllMemoryAsUnsignedBytesToFile", "1.0",
                      "ReadAllMemoryAsUnsignedBytes(myFileName)",
-                     WriteAllMemoryAsUnsignedBytesToFile, ScriptingEnums::ArgTypeEnum::VoidType,
-                     {ScriptingEnums::ArgTypeEnum::String})};
+                     WriteAllMemoryAsUnsignedBytesToFile, Scripting::ArgTypeEnum::VoidType,
+                     {Scripting::ArgTypeEnum::String})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -327,7 +327,7 @@ ArgHolder* ReadUnsignedBytes(ScriptContext* current_script, std::vector<ArgHolde
   if (number_of_bytes < 0)
     return CreateErrorStringArgHolder("Number of bytes is not allowed to be negative!");
 
-  std::map<long long, s16> address_to_unsigned_byte_map = std::map<long long, s16>();
+  std::vector<s16> bytes_list = std::vector<s16>();
 
   for (long long i = 0; i < number_of_bytes; ++i)
   {
@@ -336,10 +336,10 @@ ArgHolder* ReadUnsignedBytes(ScriptContext* current_script, std::vector<ArgHolde
     if (!read_result.has_value())
       return CreateErrorStringArgHolder(
           fmt::format("Could not read unsigned byte at address {}", address + i));
-    address_to_unsigned_byte_map[address + i] = read_result.value().value;
+    bytes_list.push_back(read_result.value().value);
   }
 
-  return CreateAddressToByteMapArgHolder(address_to_unsigned_byte_map);
+  return CreateBytesListArgHolder(bytes_list);
 }
 
 ArgHolder* ReadSignedBytes(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
@@ -352,7 +352,7 @@ ArgHolder* ReadSignedBytes(ScriptContext* current_script, std::vector<ArgHolder*
   if (number_of_bytes < 0)
     return CreateErrorStringArgHolder("Number of bytes is not allowed to be negative!");
 
-  std::map<long long, s16> address_to_signed_byte_map = std::map<long long, s16>();
+  std::vector<s16> bytes_list = std::vector<s16>();
 
   for (long long i = 0; i < number_of_bytes; ++i)
   {
@@ -364,10 +364,10 @@ ArgHolder* ReadSignedBytes(ScriptContext* current_script, std::vector<ArgHolder*
     s8 s8_val = 0;
     u8 u8_val = read_result.value().value;
     memcpy(&s8_val, &u8_val, sizeof(s8));
-    address_to_signed_byte_map[address + i] = s8_val;
+    bytes_list.push_back(s8_val);
   }
 
-  return CreateAddressToByteMapArgHolder(address_to_signed_byte_map);
+  return CreateBytesListArgHolder(bytes_list);
 }
 
 ArgHolder* WriteU8(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
@@ -546,37 +546,49 @@ ArgHolder* WriteString(ScriptContext* current_script, std::vector<ArgHolder*>* a
   return CreateVoidTypeArgHolder();
 }
 
+// TODO: Update documentation for this function (and any functions that involve ListOfBytes
+// ArgHolders).
 ArgHolder* WriteBytes(ScriptContext* current_script, std::vector<ArgHolder*>* args_list)
 {
-  std::map<long long, s16> address_to_byte_map = (*args_list)[0]->address_to_byte_map;
-  for (auto& it : address_to_byte_map)
+  long long address = (*args_list)[0]->s64_val;
+  std::vector<s16> bytes_list = (*args_list)[0]->bytes_list;
+  size_t num_bytes = bytes_list.size();
+
+  for (size_t i = 0; i < num_bytes; ++i)
   {
-    long long address = it.first;
-    s16 raw_value = it.second;
-    if (address < 0)
-      return CreateErrorStringArgHolder("Address was negative!");
-    if (raw_value < -128 || raw_value > 255)
-      return CreateErrorStringArgHolder(
-          fmt::format("Number of {} cannot be converted to a byte!", raw_value));
-    if (raw_value < 0)
+    long long next_write_address = address + i;
+    s16 raw_byte_value = bytes_list[i];
+
+    if (raw_byte_value < -128 || raw_byte_value > 255)
     {
-      s8 raw_s8 = static_cast<s8>(raw_value);
+      return CreateErrorStringArgHolder(
+          fmt::format("Number of {} cannot be converted to a byte!", raw_byte_value));
+    }
+
+    if (raw_byte_value < 0)
+    {
+      s8 raw_s8 = static_cast<s8>(raw_byte_value);
       u8 u8_val = 0;
       memcpy(&u8_val, &raw_s8, sizeof(u8));
       std::optional<PowerPC::WriteResult> write_result = PowerPC::MMU::HostTryWriteU8(
-          Core::CPUThreadGuard(Core::System::GetInstance()), u8_val, address);
+          Core::CPUThreadGuard(Core::System::GetInstance()), u8_val, next_write_address);
       if (!write_result.has_value())
-        return CreateErrorStringArgHolder(
-            fmt::format("Could not write byte of {} to address {}", raw_value, address));
+      {
+        return CreateErrorStringArgHolder(fmt::format("Could not write byte of {} to address {}",
+                                                      raw_byte_value, next_write_address));
+      }
     }
+
     else
     {
-      u8 u8_val = static_cast<u8>(raw_value);
+      u8 u8_val = static_cast<u8>(raw_byte_value);
       std::optional<PowerPC::WriteResult> write_result = PowerPC::MMU::HostTryWriteU8(
-          Core::CPUThreadGuard(Core::System::GetInstance()), u8_val, address);
+          Core::CPUThreadGuard(Core::System::GetInstance()), u8_val, next_write_address);
       if (!write_result.has_value())
-        return CreateErrorStringArgHolder(
-            fmt::format("Could not write byte of {} to address {}", raw_value, address));
+      {
+        return CreateErrorStringArgHolder(fmt::format("Could not write byte of {} to address {}",
+                                                      raw_byte_value, next_write_address));
+      }
     }
   }
   return CreateVoidTypeArgHolder();

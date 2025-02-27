@@ -8,6 +8,7 @@
 
 namespace Scripting
 {
+// Since these are template functions, their definition has to be in the header file.
 
 template <size_t array_size>
 std::vector<FunctionMetadata>
@@ -20,8 +21,8 @@ GetLatestFunctionsForVersion(const std::array<FunctionMetadata, array_size> all_
   //  For example, suppose we have a function that we want to be
   // called "writeBytes" in scripts, which refers to a function called do_general_write on the
   // backend. The key value pairs might look like:
-  //  "writeBytes", {"writeBytes", "1.0", do_general_write, ScriptingEnums::ArgTypeEnum::VoidType,
-  //  {ScriptingEnums::ArgTypeEnum::UnsignedByteVector}}
+  //  "writeBytes", {"writeBytes", "1.0", do_general_write, Scripting::ArgTypeEnum::VoidType,
+  //  {Scripting::ArgTypeEnum::UnsignedByteVector}}
   std::unordered_map<std::string, FunctionMetadata> function_to_latest_version_found_map;
 
   for (int i = 0; i < array_size; ++i)
@@ -94,5 +95,4 @@ GetAllFunctions(const std::array<FunctionMetadata, array_size> all_functions)
 {
   return std::vector<FunctionMetadata>(&all_functions[0], &all_functions[0] + array_size);
 }
-
 }  // namespace Scripting

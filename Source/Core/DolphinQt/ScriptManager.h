@@ -12,12 +12,12 @@ class QDialogButtonBox;
 class QListWidget;
 class NonDefaultQPushButton;
 
-class ScriptWindow : public QDialog
+class ScriptManager : public QDialog
 {
   Q_OBJECT
 public:
-  explicit ScriptWindow(QWidget* parent = nullptr);
-  ~ScriptWindow();
+  explicit ScriptManager(QWidget* parent = nullptr);
+  ~ScriptManager();
   void LoadScriptFunction();
   void PlayScriptFunction();
   void StopScriptFunction();

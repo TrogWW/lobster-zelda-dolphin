@@ -1,7 +1,7 @@
 #include "Core/Scripting/InternalAPIModules/GameCubeControllerAPI.h"
 
 #include <fmt/format.h>
-#include "Core/Scripting/CoreScriptContextFiles/Enums/ArgTypeEnum.h"
+#include "Core/Scripting/CoreScriptInterface/Enums/ArgTypeEnum.h"
 #include "Core/Scripting/HelperClasses/FunctionMetadata.h"
 #include "Core/Scripting/HelperClasses/VersionResolver.h"
 #include "Core/System.h"
@@ -14,12 +14,13 @@ std::array<Movie::ControllerState, 4> controller_inputs_on_last_frame{};
 
 static std::array all_game_cube_controller_functions_metadata_list = {
     FunctionMetadata("getInputsForPreviousFrame", "1.0", "getInputsForPreviousFrame(1)",
-                     GetInputsForPreviousFrame, ScriptingEnums::ArgTypeEnum::ControllerStateObject,
-                     {ScriptingEnums::ArgTypeEnum::S64}),
+                     GetInputsForPreviousFrame,
+                     Scripting::ArgTypeEnum::GameCubeControllerStateObject,
+                     {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("isGcControllerInPort", "1.0", "isGcControllerInPort(1)", IsGcControllerInPort,
-                     ScriptingEnums::ArgTypeEnum::Boolean, {ScriptingEnums::ArgTypeEnum::S64}),
+                     Scripting::ArgTypeEnum::Boolean, {Scripting::ArgTypeEnum::S64}),
     FunctionMetadata("isUsingPort", "1.0", "isUsingPort(1)", IsUsingPort,
-                     ScriptingEnums::ArgTypeEnum::Boolean, {ScriptingEnums::ArgTypeEnum::S64})};
+                     Scripting::ArgTypeEnum::Boolean, {Scripting::ArgTypeEnum::S64})};
 
 ClassMetadata GetClassMetadataForVersion(const std::string& api_version)
 {
@@ -50,7 +51,7 @@ ArgHolder* GetInputsForPreviousFrame(ScriptContext* current_script,
     return CreateErrorStringArgHolder("controller port number was not between 1 and 4 !");
   }
 
-  return CreateControllerStateArgHolder(
+  return CreateGameCubeControllerStateArgHolder(
       controller_inputs_on_last_frame[controller_port_number - 1]);
 }
 

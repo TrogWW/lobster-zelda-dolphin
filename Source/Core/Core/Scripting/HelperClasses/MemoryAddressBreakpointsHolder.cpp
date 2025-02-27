@@ -1,40 +1,36 @@
 #include "Core/Scripting/HelperClasses/MemoryAddressBreakpointsHolder.h"
 
-#include "Core/PowerPC/PowerPC.h"
 #include "Core/System.h"
 
-MemoryAddressBreakpointsHolder::MemoryAddressBreakpointsHolder()
-{
-  memory_breakpoints = std::vector<MemCheckAndCounts>();
-}
+MemoryAddressBreakpointsHolder::MemoryAddressBreakpointsHolder() = default;
 
 MemoryAddressBreakpointsHolder::~MemoryAddressBreakpointsHolder()
 {
-  this->RemoveAllBreakpoints();
+  RemoveAllBreakpoints();
 }
 
 void MemoryAddressBreakpointsHolder::AddReadBreakpoint(unsigned int start_address,
                                                        unsigned int end_address)
 
 {
-  int indexOfBreakpoint = GetIndexOfStartAddress(start_address);
-  if (indexOfBreakpoint == -1)
+  int index_of_breakpoint = GetIndexOfStartAddress(start_address);
+  if (index_of_breakpoint == -1)
   {
     memory_breakpoints.push_back(MemCheckAndCounts());
-    indexOfBreakpoint = static_cast<int>(memory_breakpoints.size()) - 1;
-    memory_breakpoints[indexOfBreakpoint].start_address = start_address;
-    memory_breakpoints[indexOfBreakpoint].end_address = end_address;
-    memory_breakpoints[indexOfBreakpoint].read_breakpoint_count = 1;
+    index_of_breakpoint = static_cast<int>(memory_breakpoints.size()) - 1;
+    memory_breakpoints[index_of_breakpoint].start_address = start_address;
+    memory_breakpoints[index_of_breakpoint].end_address = end_address;
+    memory_breakpoints[index_of_breakpoint].read_breakpoint_count = 1;
   }
   else
   {
-    if (end_address > memory_breakpoints[indexOfBreakpoint].end_address)
-      memory_breakpoints[indexOfBreakpoint].end_address = end_address;
-    memory_breakpoints[indexOfBreakpoint].read_breakpoint_count++;
+    if (end_address > memory_breakpoints[index_of_breakpoint].end_address)
+      memory_breakpoints[index_of_breakpoint].end_address = end_address;
+    memory_breakpoints[index_of_breakpoint].read_breakpoint_count++;
   }
 
   TMemCheck check = {};
-  PopulateBreakpointFromValueAtIndex(check, indexOfBreakpoint);
+  PopulateBreakpointFromValueAtIndex(check, index_of_breakpoint);
 
   Core::System::GetInstance().GetPowerPC().GetMemChecks().Add(std::move(check));
 }
@@ -42,24 +38,24 @@ void MemoryAddressBreakpointsHolder::AddReadBreakpoint(unsigned int start_addres
 void MemoryAddressBreakpointsHolder::AddWriteBreakpoint(unsigned int start_address,
                                                         unsigned int end_address)
 {
-  int indexOfBreakpoint = GetIndexOfStartAddress(start_address);
-  if (indexOfBreakpoint == -1)
+  int index_of_breakpoint = GetIndexOfStartAddress(start_address);
+  if (index_of_breakpoint == -1)
   {
     memory_breakpoints.push_back(MemCheckAndCounts());
-    indexOfBreakpoint = static_cast<int>(memory_breakpoints.size()) - 1;
-    memory_breakpoints[indexOfBreakpoint].start_address = start_address;
-    memory_breakpoints[indexOfBreakpoint].end_address = end_address;
-    memory_breakpoints[indexOfBreakpoint].write_breakpoint_count = 1;
+    index_of_breakpoint = static_cast<int>(memory_breakpoints.size()) - 1;
+    memory_breakpoints[index_of_breakpoint].start_address = start_address;
+    memory_breakpoints[index_of_breakpoint].end_address = end_address;
+    memory_breakpoints[index_of_breakpoint].write_breakpoint_count = 1;
   }
   else
   {
-    if (end_address > memory_breakpoints[indexOfBreakpoint].end_address)
-      memory_breakpoints[indexOfBreakpoint].end_address = end_address;
-    memory_breakpoints[indexOfBreakpoint].write_breakpoint_count++;
+    if (end_address > memory_breakpoints[index_of_breakpoint].end_address)
+      memory_breakpoints[index_of_breakpoint].end_address = end_address;
+    memory_breakpoints[index_of_breakpoint].write_breakpoint_count++;
   }
 
   TMemCheck check = {};
-  PopulateBreakpointFromValueAtIndex(check, indexOfBreakpoint);
+  PopulateBreakpointFromValueAtIndex(check, index_of_breakpoint);
 
   Core::System::GetInstance().GetPowerPC().GetMemChecks().Add(std::move(check));
 }
@@ -115,7 +111,7 @@ void MemoryAddressBreakpointsHolder::RemoveReadBreakpoint(unsigned int start_add
 
   memory_breakpoints[index_of_last_read_breakpoint].read_breakpoint_count--;
 
-  if (this->ContainsReadBreakpoint(start_address) || this->ContainsWriteBreakpoint(start_address))
+  if (ContainsReadBreakpoint(start_address) || ContainsWriteBreakpoint(start_address))
   {
     TMemCheck check = {};
     PopulateBreakpointFromValueAtIndex(check, index_of_last_read_breakpoint);
@@ -139,7 +135,7 @@ void MemoryAddressBreakpointsHolder::RemoveWriteBreakpoint(unsigned int start_ad
 
   memory_breakpoints[index_of_last_write_breakpoint].write_breakpoint_count--;
 
-  if (this->ContainsReadBreakpoint(start_address) || this->ContainsWriteBreakpoint(start_address))
+  if (ContainsReadBreakpoint(start_address) || ContainsWriteBreakpoint(start_address))
   {
     TMemCheck check = {};
     PopulateBreakpointFromValueAtIndex(check, index_of_last_write_breakpoint);

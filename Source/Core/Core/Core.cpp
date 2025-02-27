@@ -889,6 +889,9 @@ void Callback_FramePresented(double actual_emulation_speed)
 // Called from VideoInterface::Update (CPU thread) at emulated field boundaries
 void Callback_NewField(Core::System& system)
 {
+  // This is where script queue events are processed, where scripts are started, where frame start
+  // callbacks are run, where global script code is run, and where button callbacks are run (in that
+  // order)
   if (Scripting::ScriptUtilities::IsScriptingCoreInitialized())
   {
     Core::QueueHostJob(

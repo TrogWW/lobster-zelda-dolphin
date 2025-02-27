@@ -3,15 +3,15 @@
 #include "Common/DynamicLibrary.h"
 #include "Common/FileUtil.h"
 
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ArgHolder_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ClassFunctionsResolver_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ClassMetadata_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/FileUtility_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/FunctionMetadata_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/GCButton_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ModuleLists_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/ScriptContext_APIs.h"
-#include "Core/Scripting/CoreScriptContextFiles/InternalScriptAPIs/VectorOfArgHolders_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ArgHolder_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ClassFunctionsResolver_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ClassMetadata_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/FileUtility_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/FunctionMetadata_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/GCButton_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ModuleLists_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/ScriptContext_APIs.h"
+#include "Core/Scripting/CoreScriptInterface/InternalScriptAPIs/VectorOfArgHolders_APIs.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -24,14 +24,14 @@
 #include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressReadFromCallbackAPI.h"
 #include "Core/Scripting/EventCallbackRegistrationAPIs/OnMemoryAddressWrittenToCallbackAPI.h"
 #include "Core/Scripting/HelperClasses/ArgHolder_API_Implementations.h"
-#include "Core/Scripting/HelperClasses/ClassFunctionsResolver.h"
+#include "Core/Scripting/HelperClasses/ClassFunctionsResolver_API_Implementations.h"
 #include "Core/Scripting/HelperClasses/ClassMetadata.h"
 #include "Core/Scripting/HelperClasses/FileUtility_API_Implementations.h"
 #include "Core/Scripting/HelperClasses/FunctionMetadata.h"
-#include "Core/Scripting/HelperClasses/GCButtonFunctions.h"
+#include "Core/Scripting/HelperClasses/GCButton_API_Implementations.h"
 #include "Core/Scripting/HelperClasses/ModuleLists_API_Implementations.h"
 #include "Core/Scripting/HelperClasses/ScriptQueueEvent.h"
-#include "Core/Scripting/HelperClasses/VectorOfArgHolders.h"
+#include "Core/Scripting/HelperClasses/VectorOfArgHolders_API_Implementations.h"
 #include "Core/Scripting/InternalAPIModules/GraphicsAPI.h"
 #include "Core/System.h"
 
@@ -95,15 +95,14 @@ static bool ValidateApiStruct(void* start_of_struct, unsigned int struct_size,
 
 static void Initialize_ArgHolder_APIs()
 {
-  argHolder_apis.AddPairToAddressToByteMapArgHolder = AddPairToAddressToByteMapArgHolder_impl;
-  argHolder_apis.CreateAddressToByteMapArgHolder = CreateAddressToByteMapArgHolder_API_impl;
+  argHolder_apis.AddByteToBytesArgHolder = AddByteToBytesArgHolder_API_impl;
+  argHolder_apis.CreateBytesArgHolder = CreateBytesArgHolder_API_impl;
   argHolder_apis.CreateBoolArgHolder = CreateBoolArgHolder_API_impl;
-  argHolder_apis.CreateControllerStateArgHolder = CreateControllerStateArgHolder_API_impl;
+  argHolder_apis.CreateGameCubeControllerStateArgHolder =
+      CreateGameCubeControllerStateArgHolder_API_impl;
   argHolder_apis.CreateDoubleArgHolder = CreateDoubleArgHolder_API_impl;
   argHolder_apis.CreateEmptyOptionalArgHolder = CreateEmptyOptionalArgHolder_API_impl;
   argHolder_apis.CreateFloatArgHolder = CreateFloatArgHolder_API_impl;
-  argHolder_apis.CreateIteratorForAddressToByteMapArgHolder =
-      Create_IteratorForAddressToByteMapArgHolder_impl;
   argHolder_apis.CreateListOfPointsArgHolder = CreateListOfPointsArgHolder_API_impl;
   argHolder_apis.CreateRegistrationForButtonCallbackInputTypeArgHolder =
       CreateRegistrationForButtonCallbackInputTypeArgHolder_API_impl;
@@ -123,39 +122,35 @@ static void Initialize_ArgHolder_APIs()
   argHolder_apis.CreateUnregistrationInputTypeArgHolder =
       CreateUnregistrationInputTypeArgHolder_API_impl;
   argHolder_apis.CreateVoidPointerArgHolder = CreateVoidPointerArgHolder_API_impl;
-  argHolder_apis.Delete_ArgHolder = Delete_ArgHolder_impl;
-  argHolder_apis.Delete_IteratorForAddressToByteMapArgHolder =
-      Delete_IteratorForAddressToByteMapArgHolder_impl;
-  argHolder_apis.GetArgType = GetArgType_ArgHolder_impl;
-  argHolder_apis.GetBoolFromArgHolder = GetBoolFromArgHolder_impl;
-  argHolder_apis.GetControllerStateArgHolderValue = GetControllerStateArgHolderValue_impl;
-  argHolder_apis.GetDoubleFromArgHolder = GetDoubleFromArgHolder_impl;
-  argHolder_apis.GetErrorStringFromArgHolder = GetErrorStringFromArgHolder_impl;
-  argHolder_apis.GetFloatFromArgHolder = GetFloatFromArgHolder_impl;
-  argHolder_apis.GetIsEmpty = GetIsEmpty_ArgHolder_impl;
-  argHolder_apis.GetKeyForAddressToByteMapArgHolder = GetKeyForAddressToByteMapArgHolder_impl;
+  argHolder_apis.Delete_ArgHolder = Delete_ArgHolder_API_impl;
+  argHolder_apis.GetArgType = GetArgType_API_impl;
+  argHolder_apis.GetBoolFromArgHolder = GetBoolFromArgHolder_API_impl;
+  argHolder_apis.GetGameCubeControllerStateArgHolderValue =
+      GetGameCubeControllerStateArgHolderValue_API_impl;
+  argHolder_apis.GetDoubleFromArgHolder = GetDoubleFromArgHolder_API_impl;
+  argHolder_apis.GetErrorStringFromArgHolder = GetErrorStringFromArgHolder_API_impl;
+  argHolder_apis.GetFloatFromArgHolder = GetFloatFromArgHolder_API_impl;
+  argHolder_apis.GetIsEmpty = GetIsEmpty_API_impl;
+  argHolder_apis.GetByteFromBytesArgHolderAtIndex = GetByteFromBytesArgHolderAtIndex_API_impl;
   argHolder_apis.GetListOfPointsXValueAtIndexForArgHolder =
-      GetListOfPointsXValueAtIndexForArgHolder_impl;
+      GetListOfPointsXValueAtIndexForArgHolder_API_impl;
   argHolder_apis.GetListOfPointsYValueAtIndexForArgHolder =
-      GetListOfPointsYValueAtIndexForArgHolder_impl;
-  argHolder_apis.GetS8FromArgHolder = GetS8FromArgHolder_impl;
-  argHolder_apis.GetS16FromArgHolder = GetS16FromArgHolder_impl;
-  argHolder_apis.GetS32FromArgHolder = GetS32FromArgHolder_impl;
-  argHolder_apis.GetS64FromArgHolder = GetS64FromArgHolder_impl;
-  argHolder_apis.GetSizeOfAddressToByteMapArgHolder = GetSizeOfAddressToByteMapArgHolder_impl;
-  argHolder_apis.GetSizeOfListOfPointsArgHolder = GetSizeOfListOfPointsArgHolder_impl;
-  argHolder_apis.GetStringFromArgHolder = GetStringFromArgHolder_impl;
-  argHolder_apis.GetU8FromArgHolder = GetU8FromArgHolder_impl;
-  argHolder_apis.GetU16FromArgHolder = GetU16FromArgHolder_impl;
-  argHolder_apis.GetU32FromArgHolder = GetU32FromArgHolder_impl;
-  argHolder_apis.GetU64FromArgHolder = GetU64FromArgHolder_impl;
-  argHolder_apis.GetValueForAddressToUnsignedByteMapArgHolder =
-      GetValueForAddressToUnsignedByteMapArgHolder_impl;
-  argHolder_apis.GetVoidPointerFromArgHolder = GetVoidPointerFromArgHolder_impl;
-  argHolder_apis.IncrementIteratorForAddressToByteMapArgHolder =
-      IncrementIteratorForAddressToByteMapArgHolder_impl;
+      GetListOfPointsYValueAtIndexForArgHolder_API_impl;
+  argHolder_apis.GetS8FromArgHolder = GetS8FromArgHolder_API_impl;
+  argHolder_apis.GetS16FromArgHolder = GetS16FromArgHolder_API_impl;
+  argHolder_apis.GetS32FromArgHolder = GetS32FromArgHolder_API_impl;
+  argHolder_apis.GetS64FromArgHolder = GetS64FromArgHolder_API_impl;
+  argHolder_apis.GetSizeOfBytesArgHolder = GetSizeOfBytesArgHolder_API_impl;
+  argHolder_apis.GetSizeOfListOfPointsArgHolder = GetSizeOfListOfPointsArgHolder_API_impl;
+  argHolder_apis.GetStringFromArgHolder = GetStringFromArgHolder_API_impl;
+  argHolder_apis.GetU8FromArgHolder = GetU8FromArgHolder_API_impl;
+  argHolder_apis.GetU16FromArgHolder = GetU16FromArgHolder_API_impl;
+  argHolder_apis.GetU32FromArgHolder = GetU32FromArgHolder_API_impl;
+  argHolder_apis.GetU64FromArgHolder = GetU64FromArgHolder_API_impl;
+  argHolder_apis.GetVoidPointerFromArgHolder = GetVoidPointerFromArgHolder_API_impl;
   argHolder_apis.ListOfPointsArgHolderPushBack = ListOfPointsArgHolderPushBack_API_impl;
-  argHolder_apis.SetControllerStateArgHolderValue = SetControllerStateArgHolderValue_impl;
+  argHolder_apis.SetGameCubeControllerStateArgHolderValue =
+      SetGameCubeControllerStateArgHolderValue_API_impl;
 
   ValidateApiStruct(&argHolder_apis, sizeof(argHolder_apis), "ArgHolder_APIs");
 }
@@ -173,7 +168,7 @@ static void Initialize_ClassFunctionsResolver_APIs()
 
 static void Initialize_ClassMetadata_APIs()
 {
-  classMetadata_apis.GetClassName = GetClassName_ClassMetadata_impl;
+  classMetadata_apis.GetClassNameForClassMetadata = GetClassName_ClassMetadata_impl;
   classMetadata_apis.GetFunctionMetadataAtPosition =
       GetFunctionMetadataAtPosition_ClassMetadata_impl;
   classMetadata_apis.GetNumberOfFunctions = GetNumberOfFunctions_ClassMetadata_impl;
@@ -183,26 +178,25 @@ static void Initialize_ClassMetadata_APIs()
 
 static void Initialize_FileUtility_APIs()
 {
-  setUserPath(File::GetUserPath(D_LOAD_IDX));
-  setSysPath(File::GetSysDirectory());
+  SetUserPath(File::GetUserPath(D_LOAD_IDX));
+  SetSysPath(File::GetSysDirectory());
 
-  fileUtility_apis.GetSystemDirectory = GetSystemDirectory_impl;
-  fileUtility_apis.GetUserPath = GetUserPath_impl;
+  fileUtility_apis.GetSystemDirectoryPath = GetSystemDirectoryPath_impl;
+  fileUtility_apis.GetUserDirectoryPath = GetUserDirectoryPath_impl;
 
   ValidateApiStruct(&fileUtility_apis, sizeof(fileUtility_apis), "FileUtility_APIs");
 }
 
 static void Initialize_FunctionMetadata_APIs()
 {
-  functionMetadata_apis.GetExampleFunctionCall = GetExampleFunctionCall_FunctionMetadata_impl;
-  functionMetadata_apis.GetFunctionName = GetFunctionName_FunctionMetadta_impl;
-  functionMetadata_apis.GetFunctionPointer = GetFunctionPointer_FunctionMetadata_impl;
-  functionMetadata_apis.GetFunctionVersion = GetFunctionVersion_FunctionMetadata_impl;
-  functionMetadata_apis.GetNumberOfArguments = GetNumberOfArguments_FunctionMetadata_impl;
-  functionMetadata_apis.GetReturnType = GetReturnType_FunctionMetadata_impl;
-  functionMetadata_apis.GetTypeOfArgumentAtIndex =
-      GetArgTypeEnumAtIndexInArguments_FunctionMetadata_impl;
-  functionMetadata_apis.RunFunction = RunFunctionMain_impl;
+  functionMetadata_apis.GetExampleFunctionCall = GetExampleFunctionCall_impl;
+  functionMetadata_apis.GetFunctionName = GetFunctionName_impl;
+  functionMetadata_apis.GetFunctionPointer = GetFunctionPointer_impl;
+  functionMetadata_apis.GetFunctionVersion = GetFunctionVersion_impl;
+  functionMetadata_apis.GetNumberOfArguments = GetNumberOfArguments_impl;
+  functionMetadata_apis.GetReturnType = GetReturnType_impl;
+  functionMetadata_apis.GetTypeOfArgumentAtIndex = GetTypeOfArgumentAtIndex_impl;
+  functionMetadata_apis.RunFunction = RunFunction_impl;
 
   ValidateApiStruct(&functionMetadata_apis, sizeof(functionMetadata_apis), "FunctionMetadata_APIs");
 }
@@ -235,7 +229,7 @@ static void Initialize_VectorOfArgHolders_APIs()
   vectorOfArgHolders_apis.Delete_VectorOfArgHolders = Delete_VectorOfArgHolders_impl;
   vectorOfArgHolders_apis.GetArgumentForVectorOfArgHolders = GetArgumentForVectorOfArgHolders_impl;
   vectorOfArgHolders_apis.GetSizeOfVectorOfArgHolders = GetSizeOfVectorOfArgHolders_impl;
-  vectorOfArgHolders_apis.PushBack = PushBack_VectorOfArgHolders_impl;
+  vectorOfArgHolders_apis.PushBack_VectorOfArgHolders = PushBack_VectorOfArgHolders_impl;
 
   ValidateApiStruct(&vectorOfArgHolders_apis, sizeof(vectorOfArgHolders_apis),
                     "VectorOfArgHolders_APIs");
@@ -243,50 +237,38 @@ static void Initialize_VectorOfArgHolders_APIs()
 
 static void Initialize_DolphinDefined_ScriptContext_APIs()
 {
-  dolphin_defined_scriptContext_apis
-      .get_called_yielding_function_in_last_frame_callback_script_resume =
-      ScriptContext_GetCalledYieldingFunctionInLastFrameCallbackScriptResume_impl;
-  dolphin_defined_scriptContext_apis.get_called_yielding_function_in_last_global_script_resume =
-      ScriptContext_GetCalledYieldingFunctionInLastGlobalScriptResume_impl;
-  dolphin_defined_scriptContext_apis.get_derived_script_context_ptr =
-      ScriptContext_GetDerivedScriptContextPtr_impl;
-  dolphin_defined_scriptContext_apis.set_derived_script_context_ptr =
-      ScriptContext_SetDerivedScriptContextPtr_impl;
-  dolphin_defined_scriptContext_apis.get_dll_defined_script_context_apis =
-      ScriptContext_GetDllDefinedScriptContextAPIs_impl;
-  dolphin_defined_scriptContext_apis.set_dll_defined_script_context_apis =
-      ScriptContext_SetDLLDefinedScriptContextAPIs_impl;
-  dolphin_defined_scriptContext_apis.get_is_finished_with_global_code =
-      ScriptContext_GetIsFinishedWithGlobalCode_impl;
-  dolphin_defined_scriptContext_apis.get_is_script_active = ScriptContext_GetIsScriptActive_impl;
-  dolphin_defined_scriptContext_apis.get_print_callback_function =
-      ScriptContext_GetPrintCallback_impl;
-  dolphin_defined_scriptContext_apis.get_script_call_location =
-      ScriptContext_GetScriptCallLocation_impl;
-  dolphin_defined_scriptContext_apis.get_script_return_code =
-      ScriptContext_GetScriptReturnCode_impl;
-  dolphin_defined_scriptContext_apis.set_script_return_code =
-      ScriptContext_SetScriptReturnCode_impl;
-  dolphin_defined_scriptContext_apis.get_error_message = ScriptContext_GetErrorMessage_impl;
-  dolphin_defined_scriptContext_apis.set_error_message = ScriptContext_SetErrorMessage_impl;
-  dolphin_defined_scriptContext_apis.get_script_end_callback_function =
-      ScriptContext_GetScriptEndCallback_impl;
-  dolphin_defined_scriptContext_apis.get_script_filename = ScriptContext_GetScriptFilename_impl;
-  dolphin_defined_scriptContext_apis.get_script_version = ScriptContext_GetScriptVersion_impl;
+  dolphin_defined_scriptContext_apis.GetCalledYieldingFunctionInLastFrameCallbackScriptResume =
+      GetCalledYieldingFunctionInLastFrameCallbackScriptResume_impl;
+  dolphin_defined_scriptContext_apis.GetCalledYieldingFunctionInLastGlobalScriptResume =
+      GetCalledYieldingFunctionInLastGlobalScriptResume_impl;
+  dolphin_defined_scriptContext_apis.GetDerivedScriptContextPtr = GetDerivedScriptContextPtr_impl;
+  dolphin_defined_scriptContext_apis.SetDerivedScriptContextPtr = SetDerivedScriptContextPtr_impl;
+  dolphin_defined_scriptContext_apis.GetDLLDefinedScriptContextAPIs =
+      GetDLLDefinedScriptContextAPIs_impl;
+  dolphin_defined_scriptContext_apis.SetDLLDefinedScriptContextAPIs =
+      SetDLLDefinedScriptContextAPIs_impl;
+  dolphin_defined_scriptContext_apis.GetIsFinishedWithGlobalCode = GetIsFinishedWithGlobalCode_impl;
+  dolphin_defined_scriptContext_apis.GetIsScriptActive = GetIsScriptActive_impl;
+  dolphin_defined_scriptContext_apis.GetPrintCallbackFunction = GetPrintCallback_impl;
+  dolphin_defined_scriptContext_apis.GetScriptCallLocation = GetScriptCallLocation_impl;
+  dolphin_defined_scriptContext_apis.GetScriptReturnCode = GetScriptReturnCode_impl;
+  dolphin_defined_scriptContext_apis.SetScriptReturnCode = SetScriptReturnCode_impl;
+  dolphin_defined_scriptContext_apis.GetErrorMessage = GetErrorMessage_impl;
+  dolphin_defined_scriptContext_apis.SetErrorMessage = SetErrorMessage_impl;
+  dolphin_defined_scriptContext_apis.GetScriptEndCallbackFunction = GetScriptEndCallback_impl;
+  dolphin_defined_scriptContext_apis.GetScriptFilename = GetScriptFilename_impl;
+  dolphin_defined_scriptContext_apis.GetScriptVersion = GetScriptVersion_impl;
   dolphin_defined_scriptContext_apis.ScriptContext_Destructor = ScriptContext_Destructor_impl;
   dolphin_defined_scriptContext_apis.ScriptContext_Initializer = ScriptContext_Initializer_impl;
-  dolphin_defined_scriptContext_apis
-      .set_called_yielding_function_in_last_frame_callback_script_resume =
-      ScriptContext_SetCalledYieldingFunctionInLastFrameCallbackScriptResume_impl;
-  dolphin_defined_scriptContext_apis.set_called_yielding_function_in_last_global_script_resume =
-      ScriptContext_SetCalledYieldingFunctionInLastGlobalScriptResume_impl;
-  dolphin_defined_scriptContext_apis.set_is_finished_with_global_code =
-      ScriptContext_SetIsFinishedWithGlobalCode_impl;
-  dolphin_defined_scriptContext_apis.set_is_script_active = ScriptContext_SetIsScriptActive_impl;
-  dolphin_defined_scriptContext_apis.add_script_to_queue_of_scripts_waiting_to_start =
-      ScriptContext_AddScriptToQueueOfScriptsWaitingToStart_impl;
-  dolphin_defined_scriptContext_apis.get_unique_script_identifier =
-      ScriptContext_GetUniqueScriptIdentifier_impl;
+  dolphin_defined_scriptContext_apis.SetCalledYieldingFunctionInLastFrameCallbackScriptResume =
+      SetCalledYieldingFunctionInLastFrameCallbackScriptResume_impl;
+  dolphin_defined_scriptContext_apis.SetCalledYieldingFunctionInLastGlobalScriptResume =
+      SetCalledYieldingFunctionInLastGlobalScriptResume_impl;
+  dolphin_defined_scriptContext_apis.SetIsFinishedWithGlobalCode = SetIsFinishedWithGlobalCode_impl;
+  dolphin_defined_scriptContext_apis.SetIsScriptActive = SetIsScriptActive_impl;
+  dolphin_defined_scriptContext_apis.AddScriptToQueueOfScriptsWaitingToStart =
+      AddScriptToQueueOfScriptsWaitingToStart_impl;
+  dolphin_defined_scriptContext_apis.GetUniqueScriptIdentifier = GetUniqueScriptIdentifier_impl;
 
   ValidateApiStruct(&dolphin_defined_scriptContext_apis, sizeof(dolphin_defined_scriptContext_apis),
                     "DolphinDefined_ScriptContext_APIs");
@@ -345,7 +327,7 @@ void InitializeDLLs()
 #endif
 
   std::string base_plugins_directory =
-      std::string(fileUtility_apis.GetSystemDirectory()) + "ScriptingPlugins";
+      std::string(fileUtility_apis.GetSystemDirectoryPath()) + "ScriptingPlugins";
 
   for (auto const& dir_entry : std::filesystem::directory_iterator(base_plugins_directory))
   {
@@ -503,7 +485,7 @@ void InitializeScript(
           new_script_end_callback)));
 
   if (list_of_all_scripts[list_of_all_scripts.size() - 1]->script_return_code !=
-      ScriptingEnums::ScriptReturnCodes::SuccessCode)
+      Scripting::ScriptReturnCodesEnum::SuccessCode)
   {
     queuePanicAlertEvent(list_of_all_scripts[list_of_all_scripts.size() - 1]->last_script_error);
   }
@@ -511,7 +493,7 @@ void InitializeScript(
 
 void SetIsScriptActiveToFalse(void* base_script_context_ptr)
 {
-  dolphin_defined_scriptContext_apis.set_is_script_active(base_script_context_ptr, 0);
+  dolphin_defined_scriptContext_apis.SetIsScriptActive(base_script_context_ptr, 0);
 }
 
 void StopScript(int unique_script_identifier)
@@ -639,18 +621,20 @@ bool StartScripts()
   std::lock_guard<std::mutex> lock(initialization_and_destruction_lock);
   std::lock_guard<std::mutex> second_lock(global_code_and_frame_callback_running_lock);
   bool return_value = false;
-  if (list_of_all_scripts.size() == 0 || queue_of_scripts_waiting_to_start.IsEmpty())
+  if (list_of_all_scripts.size() == 0 || queue_of_scripts_waiting_to_start.Empty())
     return false;
-  while (!queue_of_scripts_waiting_to_start.IsEmpty())
+  while (!queue_of_scripts_waiting_to_start.Empty())
   {
-    ScriptContext* next_script = queue_of_scripts_waiting_to_start.pop();
+    ScriptContext* next_script = queue_of_scripts_waiting_to_start.Front();
+    queue_of_scripts_waiting_to_start.Pop();
+
     if (next_script == nullptr)
       break;
     next_script->script_specific_lock.lock();
     if (next_script->is_script_active)
     {
       next_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromScriptStartup;
+          Scripting::ScriptCallLocationsEnum::FromScriptStartup;
       next_script->dll_specific_api_definitions.StartScript(next_script);
       return_value = next_script->called_yielding_function_in_last_global_script_resume;
       if (next_script->script_return_code != 0)
@@ -674,7 +658,7 @@ bool RunGlobalCode()
     if (current_script->is_script_active && !current_script->finished_with_global_code)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromFrameStartGlobalScope;
+          Scripting::ScriptCallLocationsEnum::FromFrameStartGlobalScope;
       current_script->dll_specific_api_definitions.RunGlobalScopeCode(current_script);
       return_value = current_script->called_yielding_function_in_last_global_script_resume;
       if (current_script->script_return_code != 0)
@@ -698,7 +682,7 @@ bool RunOnFrameStartCallbacks()
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromFrameStartCallback;
+          Scripting::ScriptCallLocationsEnum::FromFrameStartCallback;
       current_script->dll_specific_api_definitions.RunOnFrameStartCallbacks(current_script);
       return_value = current_script->called_yielding_function_in_last_frame_callback_script_resume;
       if (current_script->script_return_code != 0)
@@ -721,7 +705,7 @@ void RunOnGCInputPolledCallbacks()
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromGCControllerInputPolled;
+          Scripting::ScriptCallLocationsEnum::FromGCControllerInputPolledCallback;
       current_script->dll_specific_api_definitions.RunOnGCControllerPolledCallbacks(current_script);
       if (current_script->script_return_code != 0)
         queuePanicAlertEvent(current_script->last_script_error);
@@ -742,8 +726,8 @@ void RunOnInstructionHitCallbacks(u32 instruction_address)
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromInstructionHitCallback;
-      current_script->dll_specific_api_definitions.RunOnInstructionReachedCallbacks(
+          Scripting::ScriptCallLocationsEnum::FromInstructionHitCallback;
+      current_script->dll_specific_api_definitions.RunOnInstructionHitCallbacks(
           current_script, instruction_address);
       if (current_script->script_return_code != 0)
         queuePanicAlertEvent(current_script->last_script_error);
@@ -765,7 +749,7 @@ void RunOnMemoryAddressReadFromCallbacks(u32 memory_address)
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromMemoryAddressReadFromCallback;
+          Scripting::ScriptCallLocationsEnum::FromMemoryAddressReadFromCallback;
       current_script->dll_specific_api_definitions.RunOnMemoryAddressReadFromCallbacks(
           current_script, memory_address);
       if (current_script->script_return_code != 0)
@@ -790,7 +774,7 @@ void RunOnMemoryAddressWrittenToCallbacks(u32 memory_address, s64 new_value)
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromMemoryAddressWrittenToCallback;
+          Scripting::ScriptCallLocationsEnum::FromMemoryAddressWrittenToCallback;
       current_script->dll_specific_api_definitions.RunOnMemoryAddressWrittenToCallbacks(
           current_script, memory_address);
       if (current_script->script_return_code != 0)
@@ -811,7 +795,7 @@ void RunOnWiiInputPolledCallbacks()
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromWiiInputPolled;
+          Scripting::ScriptCallLocationsEnum::FromWiiInputPolledCallback;
       current_script->dll_specific_api_definitions.RunOnWiiInputPolledCallbacks(current_script);
       if (current_script->script_return_code != 0)
         queuePanicAlertEvent(current_script->last_script_error);
@@ -830,7 +814,7 @@ void RunButtonCallbacksInQueues()
     if (current_script->is_script_active)
     {
       current_script->current_script_call_location =
-          ScriptingEnums::ScriptCallLocations::FromGraphicsCallback;
+          Scripting::ScriptCallLocationsEnum::FromGraphicsCallback;
       current_script->dll_specific_api_definitions.RunButtonCallbacksInQueue(current_script);
       if (current_script->script_return_code != 0)
         queuePanicAlertEvent(current_script->last_script_error);
