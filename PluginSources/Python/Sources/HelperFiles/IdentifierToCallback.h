@@ -1,19 +1,21 @@
-#ifndef IDENTIFIER_TO_CALLBACK
-#define IDENTIFIER_TO_CALLBACK    
+#pragma once 
+
+namespace Scripting
+{
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif	
 
-typedef struct IdentifierToCallback
-{
-	size_t identifier;
-	void* callback;
-	
-} IdentifierToCallback;
-	
+    typedef struct IdentifierToCallback
+    {
+      size_t identifier;
+      void* callback;
+
+    } IdentifierToCallback;
+
 #ifdef __cplusplus
-}
+  }
 #endif
 
-#endif
+}
