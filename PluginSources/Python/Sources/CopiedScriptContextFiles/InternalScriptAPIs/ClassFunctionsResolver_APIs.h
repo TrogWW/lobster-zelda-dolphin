@@ -1,9 +1,16 @@
 #pragma once
 
+namespace Scripting
+{
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// ClassFunctionsResolver_APIs contains the APIs which get a specified ClassMetadata* object or a
+// specified FunctionMetadata* object and send an opaque handle to the object to the DLL. The DLL
+// then needs to copy the fields of these objects to a buffer, since they will be deleted when they
+// go out of scope.
 typedef struct ClassFunctionsResolver_APIs
 {
   // This function is called by the DLL. Takes a ScriptContext* as 1st param, an input module name
@@ -27,3 +34,5 @@ typedef struct ClassFunctionsResolver_APIs
 #ifdef __cplusplus
 }
 #endif
+
+}  // namespace Scripting
