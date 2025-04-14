@@ -17,6 +17,7 @@
 #include "InputCommon/ControllerInterface/DInput/DInput.h"
 #include "InputCommon/ControllerInterface/WGInput/WGInput.h"
 #include "InputCommon/ControllerInterface/XInput/XInput.h"
+#include "InputCommon/ControllerInterface/ScriptInput/ScriptInput.h"
 
 #pragma comment(lib, "OneCoreUAP.Lib")
 
@@ -82,7 +83,7 @@ InputBackend::InputBackend(ControllerInterface* controller_interface)
 {
   XInput::Init();
   WGInput::Init();
-
+  ScriptInput::Init();
   CM_NOTIFY_FILTER notify_filter{.cbSize = sizeof(notify_filter),
                                  .FilterType = CM_NOTIFY_FILTER_TYPE_DEVICEINTERFACE,
                                  .u{.DeviceInterface{.ClassGuid = GUID_DEVINTERFACE_HID}}};
@@ -101,6 +102,7 @@ void InputBackend::PopulateDevices()
   ciface::DInput::PopulateDevices(GetHWND());
   ciface::XInput::PopulateDevices();
   ciface::WGInput::PopulateDevices();
+  ciface::ScriptInput::PopulateDevices();
 }
 
 void InputBackend::HandleWindowChange()
@@ -126,6 +128,7 @@ InputBackend::~InputBackend()
 
   XInput::DeInit();
   WGInput::DeInit();
+  ScriptInput::DeInit();
 }
 
 }  // namespace ciface::Win32

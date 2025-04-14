@@ -550,6 +550,28 @@ u64 MemoryManager::Read_U64(u32 address) const
   return Common::swap64(value);
 }
 
+// Dragonbane/TrogWW
+std::string MemoryManager::Read_String(const u32 startAddress, int count) const
+{
+  std::string output = "";
+  //auto& memchecks = Core::System::GetInstance().GetPowerPC().GetMemChecks();
+  for (int i = 0; i < count; i++)
+  {
+    u32 address = startAddress + i;
+    std::string result;
+
+    u8 ch = 0;
+    CopyFromEmu(&ch, address, sizeof(ch));
+    // memchecks.GetMemCheck(startAddress)
+    // PowerPC::MMU::GetInstance().Memcheck(address, var, false, 1);
+
+    result = ch;
+
+    output.append(result);
+  }
+  return output;
+}
+
 void MemoryManager::Write_U8(u8 value, u32 address)
 {
   CopyToEmu(address, &value, sizeof(value));

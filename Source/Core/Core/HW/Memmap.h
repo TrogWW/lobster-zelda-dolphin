@@ -132,6 +132,7 @@ public:
   u32 Read_U32(u32 address) const;
   float Read_F32(u32 address) const;
   u64 Read_U64(u32 address) const;
+  std::string Read_String(const u32 startAddress, int count) const;
   void Write_U8(u8 var, u32 address);
   void Write_U16(u16 var, u32 address);
   void Write_U32(u32 var, u32 address);
