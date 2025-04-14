@@ -35,6 +35,10 @@ private:
   // Processes a single message from the pipe.
   bool ProcessMessage();
 
+  bool HandleMemoryRead();
+
+  bool HandleMemoryWrite();
+
   bool HandleSaveState();
 
   bool HandleLoadState();

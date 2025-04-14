@@ -588,7 +588,22 @@ void MemoryManager::Write_U32(u32 value, u32 address)
   u32 swapped_value = Common::swap32(value);
   CopyToEmu(address, &swapped_value, sizeof(swapped_value));
 }
+void MemoryManager::Write_F32(u32 address, float value)
+{
+  // Convert the float value into its 32-bit integer representation.
+  u32 intValue;
+  std::memcpy(&intValue, &value, sizeof(u32));
 
+  // Swap the byte order.
+  intValue = Common::swap32(intValue);
+
+  // Reassemble the swapped bytes into a float.
+  float swappedValue;
+  std::memcpy(&swappedValue, &intValue, sizeof(float));
+
+  // Write the swapped float value to emulated memory.
+  CopyToEmu(address,&swappedValue, sizeof(swappedValue));
+}
 void MemoryManager::Write_U64(u64 value, u32 address)
 {
   u64 swapped_value = Common::swap64(value);
