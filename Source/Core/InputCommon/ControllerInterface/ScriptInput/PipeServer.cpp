@@ -104,7 +104,7 @@ void PipeServer::ServerLoop()
       }
 
       // For increased responsiveness, a short sleep is used (adjust as needed).
-      //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     // Cleanup upon disconnection.
@@ -124,7 +124,6 @@ bool PipeServer::ProcessMessage()
 {
   BYTE command = 0;
   DWORD bytesRead = 0;
-  Core::System& system = Core::System::GetInstance();
 
   if (!ReadFile(m_pipeHandle, &command, 1, &bytesRead, nullptr) || bytesRead != 1)
     return false;
@@ -145,40 +144,84 @@ bool PipeServer::ProcessMessage()
   }
   case 3:
   {
-    Core::SetState(system, Core::State::Paused);
-    // Send a success response back to the client (0 indicates success).
-    BYTE response = 0;
-    WriteFile(m_pipeHandle, &response, 1, &bytesRead, nullptr);
+    // Capture a snapshot of m_pipeHandle to use for the response.
+    HANDLE pipe = m_pipeHandle;
+    Core::QueueHostJob(
+        [pipe](Core::System& system) {
+          // Perform the frame step operation.
+          Core::SetState(system, Core::State::Paused);
+
+          // Send a response back to the client (0 for success)
+          if (pipe != INVALID_HANDLE_VALUE)
+          {
+            BYTE response = 0;
+            DWORD bytesWritten = 0;
+            WriteFile(pipe, &response, 1, &bytesWritten, nullptr);
+          }
+        },
+        /* run_during_stop = */ false);
     return true;
   }
   case 4:
   {
-    Core::SetState(system, Core::State::Running);
-    // Send a success response back to the client (0 indicates success).
-    BYTE response = 0;
-    WriteFile(m_pipeHandle, &response, 1, &bytesRead, nullptr);
+    // Capture a snapshot of m_pipeHandle to use for the response.
+    HANDLE pipe = m_pipeHandle;
+    Core::QueueHostJob(
+        [pipe](Core::System& system) {
+          // Perform the frame step operation.
+          Core::SetState(system, Core::State::Running);
+
+          // Send a response back to the client (0 for success)
+          if (pipe != INVALID_HANDLE_VALUE)
+          {
+            BYTE response = 0;
+            DWORD bytesWritten = 0;
+            WriteFile(pipe, &response, 1, &bytesWritten, nullptr);
+          }
+        },
+        /* run_during_stop = */ false);
     return true;
   }
   case 5:
   {
-    //frame step
-    Core::DoFrameStep(system);
-    BYTE response = 0;
-    WriteFile(m_pipeHandle, &response, 1, &bytesRead, nullptr);
+    // Capture a snapshot of m_pipeHandle to use for the response.
+    HANDLE pipe = m_pipeHandle;
+    Core::QueueHostJob(
+        [pipe](Core::System& system) {
+          // Perform the frame step operation.
+          Core::DoFrameStep(system);
+
+          // Send a response back to the client (0 for success)
+          if (pipe != INVALID_HANDLE_VALUE)
+          {
+            BYTE response = 0;
+            DWORD bytesWritten = 0;
+            WriteFile(pipe, &response, 1, &bytesWritten, nullptr);
+          }
+        },
+        /* run_during_stop = */ false);
     return true;
   }
   case 6: //Get Frame Count
   {
-    if (g_presenter)
-    {
-      int frameCount = g_presenter->FrameCount();
-      WriteFile(m_pipeHandle, &frameCount, sizeof(frameCount), &bytesRead, nullptr);
-    }
-    else
-    {
-      BYTE errorResponse = 0xFF;
-      WriteFile(m_pipeHandle, &errorResponse, 1, &bytesRead, nullptr);
-    }
+    // Capture a snapshot of m_pipeHandle to use for the response.
+    HANDLE pipe = m_pipeHandle;
+    Core::QueueHostJob(
+        [pipe](Core::System& system) {
+          DWORD bytesWritten = 0;
+          if (g_presenter)
+          {
+            int frameCount = g_presenter->FrameCount();
+            WriteFile(pipe, &frameCount, sizeof(frameCount), &bytesWritten, nullptr);
+          }
+          else
+          {
+            BYTE errorResponse = 0xFF;
+            WriteFile(pipe, &errorResponse, 1, &bytesWritten, nullptr);
+          }
+        },
+        /* run_during_stop = */ false);
+
     return true;
   }
   case 7: //Read value
